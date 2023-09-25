@@ -1,5 +1,5 @@
 {
-  "name": "Prefab Language Server",
+  "name": "prefab-language-server",
   "description": "REPLACE_ME",
   "author": "Jeffrey Chupp",
   "license": "MIT",
@@ -13,16 +13,30 @@
   ],
   "main": "./client/out/extension",
   "contributes": {
-    "configuration": {}
+    "configuration": {
+      "type": "object",
+      "title": "Prefab Language Server configuration",
+      "properties": {
+        "prefab.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your personal API key for Prefab"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -b",
+    "lint": "npx eslint . --ext .ts",
     "watch": "tsc -b -w",
     "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
     "typescript": "^5.2.2"
   }
 }
