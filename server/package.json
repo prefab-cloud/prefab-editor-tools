@@ -1,8 +1,8 @@
 {
-  "name": "REPLACE_ME",
+  "name": "Prefab Language Server",
   "description": "REPLACE_ME",
   "version": "1.0.0",
-  "author": "REPLACE_ME",
+  "author": "Jeffrey Chupp",
   "license": "MIT",
   "engines": {
     "node": "*"

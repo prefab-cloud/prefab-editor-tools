@@ -26,12 +26,6 @@ connection.onInitialize((params: InitializeParams) => {
   return result;
 });
 
-documents.onDidChangeContent((change) => {
-  connection.window.showInformationMessage(
-    "onDidChangeContent: " + change.document.uri
-  );
-});
-
 // Make the text document manager listen on the connection
 // for open, change and close text document events
 documents.listen(connection);
