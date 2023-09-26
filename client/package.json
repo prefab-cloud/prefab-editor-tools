@@ -1,10 +1,10 @@
 {
-  "name": "prefab-language-server",
-  "description": "REPLACE_ME",
+  "name": "prefab-language-server-client",
+  "description": "Tooling for Prefab Config, Feature flags, and Log Levels",
   "author": "Jeffrey Chupp",
   "license": "MIT",
   "version": "0.0.1",
-  "publisher": "REPLACE_ME",
+  "publisher": "Prefab",
   "repository": {
     "type": "git",
     "url": "REPLACE_ME"

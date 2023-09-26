@@ -1,8 +1,10 @@
 {
-  "name": "prefab-language-server",
-  "description": "REPLACE_ME",
+  "name": "Prefab",
+  "description": "Tooling for Prefab Config, Feature flags, and Log Levels",
   "author": "Jeffrey Chupp",
+  "publisher": "Prefab",
   "license": "MIT",
+  "icon": "client/images/logo.png",
   "version": "1.0.0",
   "categories": [],
   "engines": {
@@ -27,7 +29,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -b",
+    "compile": "esbuild ./client/src/extension.ts --minify --bundle --outfile=client/out/extension.js --external:vscode --format=cjs --platform=node && esbuild ./server/src/server.ts --minify --bundle --outfile=server/out/server.js --external:vscode --format=cjs --platform=node",
     "lint": "npx eslint . --ext .ts",
     "watch": "tsc -b -w",
     "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
@@ -36,6 +38,7 @@
     "@types/node": "^20.5.7",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
+    "esbuild": "^0.19.3",
     "eslint": "^8.50.0",
     "typescript": "^5.2.2"
   }
