@@ -11,7 +11,7 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 import onCompletion from "./requests/onCompletion";
 
 import { getSettings as rawGetSettings, updateSettings } from "./settings";
-import { prefabConfigNamesOfType } from "./prefabClient";
+import { keysForCompletionType } from "./prefabClient";
 
 // Create a connection for the server, using Node's IPC as a
 // transport (overridden with `--stdio` flag).
@@ -41,7 +41,7 @@ connection.onDidChangeConfiguration((change) => {
 });
 
 connection.onCompletion(
-  onCompletion({ documents, getSettings, prefabConfigNamesOfType })
+  onCompletion({ documents, getSettings, keysForCompletionType })
 );
 
 // Make the text document manager listen on the connection

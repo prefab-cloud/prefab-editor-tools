@@ -1,4 +1,3 @@
-import { log, logj } from "./log";
 import { Connection } from "vscode-languageserver/node";
 import { prefabInit } from "./prefabClient";
 
@@ -16,15 +15,12 @@ const getSettings = async (connection: Connection) => {
 };
 
 const updateSettings = (newSettings: Partial<Settings>) => {
-  logj({ updateSettings: newSettings });
-
   if (!newSettings) {
     return;
   }
 
   if (settings.apiKey !== newSettings.apiKey) {
     if (newSettings.apiKey) {
-      log("prefabInit");
       // TODO: respond to updates on Prefab's internal settings (SSE)
       prefabInit({ apiKey: newSettings.apiKey, apiUrl: newSettings.apiUrl });
     }

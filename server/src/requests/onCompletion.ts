@@ -1,16 +1,18 @@
 import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
-import type { ConfigTypeValue } from "../prefabClient";
+import type { CompletionTypeValue } from "../prefabClient";
 import type { Documents } from "../types";
-import { getMethodFromContext } from "../prefabMethodDetector";
+import { detectSDK } from "../sdks/detection";
 
 const onCompletion = ({
   documents,
   getSettings,
-  prefabConfigNamesOfType,
+  keysForCompletionType,
 }: {
   documents: Documents;
   getSettings: () => Promise<void>;
-  prefabConfigNamesOfType: (type: ConfigTypeValue) => Promise<string[]>;
+  keysForCompletionType: (
+    type: CompletionTypeValue | null
+  ) => Promise<string[]>;
 }) => {
   return async (params: HoverParams) => {
     await getSettings();
@@ -21,22 +23,17 @@ const onCompletion = ({
       return null;
     }
 
-    const configTypeValue: ConfigTypeValue | null = getMethodFromContext(
-      document,
-      params.position
+    const sdk = detectSDK(document);
+
+    const configKeys = await keysForCompletionType(
+      sdk.completionType(document, params.position)
     );
 
-    if (!configTypeValue) {
-      return null;
-    }
-
-    const configKeys = await prefabConfigNamesOfType(configTypeValue);
-
-    return configKeys.map((flagName) => {
+    return configKeys.map((name) => {
       return {
-        label: flagName,
+        label: name,
         kind: CompletionItemKind.Constant,
-        data: flagName,
+        data: name,
       };
     });
   };

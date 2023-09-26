@@ -8,12 +8,12 @@ type NewDoc = {
   version?: number;
 };
 
-export const mkDocument = (doc: NewDoc): TextDocument => {
+export const mkDocument = (doc: Partial<NewDoc>): TextDocument => {
   return TextDocument.create(
-    doc.uri,
-    doc.languageId,
+    doc.uri ?? "file:///some/path",
+    doc.languageId ?? "some-language",
     doc.version ?? 1,
-    doc.text
+    doc.text ?? "some text"
   );
 };
 

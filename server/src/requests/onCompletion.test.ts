@@ -1,6 +1,6 @@
 import { expect, it, describe } from "bun:test";
 import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
-import { ConfigType, type ConfigTypeValue } from "../prefabClient";
+import { CompletionType, type CompletionTypeValue } from "../prefabClient";
 import onCompletion from "./onCompletion";
 import { mkDocumentStore } from "../testHelpers";
 
@@ -18,12 +18,15 @@ foo = prefab.get("
 
 const getSettings = async () => {};
 
-const prefabConfigNamesOfType = async (type: ConfigTypeValue) => {
-  if (type === ConfigType.FEATURE_FLAG) {
-    return ["flag1", "flag2"];
+const keysForCompletionType = async (type: CompletionTypeValue | null) => {
+  switch (type) {
+    case CompletionType.BOOLEAN_FEATURE_FLAGS:
+      return ["flag1", "flag2"];
+    case CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS:
+      return ["config1", "config2", "wordy-flag"];
+    default:
+      return [];
   }
-
-  return ["config1", "config2"];
 };
 
 const documents = mkDocumentStore([
@@ -39,7 +42,7 @@ describe("onCompletion function", () => {
     const func = onCompletion({
       documents,
       getSettings,
-      prefabConfigNamesOfType,
+      keysForCompletionType,
     });
 
     const params = {
@@ -67,7 +70,7 @@ describe("onCompletion function", () => {
     const func = onCompletion({
       documents,
       getSettings,
-      prefabConfigNamesOfType,
+      keysForCompletionType,
     });
 
     const params = {
@@ -88,6 +91,11 @@ describe("onCompletion function", () => {
         kind: CompletionItemKind.Constant,
         data: "config2",
       },
+      {
+        label: "wordy-flag",
+        kind: CompletionItemKind.Constant,
+        data: "wordy-flag",
+      },
     ]);
   });
 
@@ -95,7 +103,7 @@ describe("onCompletion function", () => {
     const func = onCompletion({
       documents,
       getSettings,
-      prefabConfigNamesOfType,
+      keysForCompletionType,
     });
 
     const params = {
@@ -105,6 +113,6 @@ describe("onCompletion function", () => {
 
     const results = await func(params);
 
-    expect(results).toBeNull();
+    expect(results).toStrictEqual([]);
   });
 });
