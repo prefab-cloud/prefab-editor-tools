@@ -1,6 +1,10 @@
 import { expect, it, describe } from "bun:test";
 import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
-import { CompletionType, type CompletionTypeValue } from "../prefabClient";
+import {
+  CompletionType,
+  type CompletionTypeValue,
+  type Prefab,
+} from "../prefabClient";
 import onCompletion from "./onCompletion";
 import { mkDocumentStore } from "../testHelpers";
 
@@ -17,6 +21,8 @@ foo = prefab.get("
 `;
 
 const getSettings = async () => {};
+
+const prefab = {} as Prefab;
 
 const keysForCompletionType = async (type: CompletionTypeValue | null) => {
   switch (type) {
@@ -43,6 +49,7 @@ describe("onCompletion function", () => {
       documents,
       getSettings,
       keysForCompletionType,
+      prefab,
     });
 
     const params = {
@@ -71,6 +78,7 @@ describe("onCompletion function", () => {
       documents,
       getSettings,
       keysForCompletionType,
+      prefab,
     });
 
     const params = {
@@ -104,6 +112,7 @@ describe("onCompletion function", () => {
       documents,
       getSettings,
       keysForCompletionType,
+      prefab,
     });
 
     const params = {

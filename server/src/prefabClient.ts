@@ -141,4 +141,4 @@ const prefabInit = ({
   prefabPromise = prefab.init();
 };
 
-export { prefab, prefabInit, keysForCompletionType };
+export { prefab, prefabInit, keysForCompletionType, Prefab };
