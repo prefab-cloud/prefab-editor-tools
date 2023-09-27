@@ -1,49 +1,40 @@
-import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
-import type { CompletionTypeValue } from "../prefabClient";
-import type { Documents } from "../types";
-import { detectSDK } from "../sdks/detection";
-import { Prefab } from "../prefabClient";
+import { log, logj } from "../log";
 
-const onCompletion = ({
-  documents,
-  getSettings,
+import {
+  CompletionItemKind,
+  CompletionParams,
+} from "vscode-languageserver/node";
+import { TextDocument } from "vscode-languageserver-textdocument";
+import type { CompletionTypeValue } from "../types";
+import { SDK } from "../sdks/detection";
+
+const onCompletion = async ({
+  document,
+  params,
   keysForCompletionType,
-  prefab,
+  sdk,
 }: {
-  documents: Documents;
-  getSettings: () => Promise<void>;
+  document: TextDocument;
   keysForCompletionType: (
     type: CompletionTypeValue | null
   ) => Promise<string[]>;
-  prefab: Prefab;
+  sdk: SDK;
+  params: CompletionParams;
 }) => {
-  return async (params: HoverParams) => {
-    await getSettings();
+  logj({ params });
+  logj({ sdk });
+  const completionType = sdk.completionType(document, params.position);
+  logj({ completionType });
 
-    if (!prefab) {
-      return null;
-    }
+  const configKeys = await keysForCompletionType(completionType);
 
-    const document = documents.get(params.textDocument.uri);
-
-    if (!document) {
-      return null;
-    }
-
-    const sdk = detectSDK(document);
-
-    const configKeys = await keysForCompletionType(
-      sdk.completionType(document, params.position)
-    );
-
-    return configKeys.map((name) => {
-      return {
-        label: name,
-        kind: CompletionItemKind.Constant,
-        data: name,
-      };
-    });
-  };
+  return configKeys.map((name) => {
+    return {
+      label: name,
+      kind: CompletionItemKind.Constant,
+      data: name,
+    };
+  });
 };
 
 export default onCompletion;

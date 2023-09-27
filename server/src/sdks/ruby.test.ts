@@ -1,7 +1,7 @@
 import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
 import { mkDocument } from "../testHelpers";
-import { CompletionType, MethodType } from "../prefabClient";
+import { CompletionType, MethodType, MethodLocation } from "../types";
 import RubySDK from "./ruby";
 
 type ExampleStringAndPosition = [string, Position];
@@ -19,6 +19,24 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ['prefab.get("")', { line: 0, character: 12 }],
   ["prefab.get('')", { line: 0, character: 12 }],
 ];
+
+const fs = require("fs");
+const path = require("path");
+
+const missingFlagsAndConfigText = fs.readFileSync(
+  path.join(__dirname, "../fixtures/user.rb.txt"),
+  "utf-8"
+);
+
+const writeStub = (data: any) => {
+  const string = JSON.stringify(data, null, 2);
+
+  const stubPath = path.join(__dirname, "../fixtures/user.rb.parsed.json");
+
+  if (fs.readFileSync(stubPath, "utf-8") !== string) {
+    fs.writeFileSync(stubPath, string);
+  }
+};
 
 describe("RubySDK", () => {
   describe("isApplicable", () => {
@@ -128,6 +146,146 @@ describe("RubySDK", () => {
 
         expect(RubySDK.completionType(document, newPosition)).toBeNull();
       });
+    });
+  });
+
+  describe("detectMethods", () => {
+    it("returns all methods in a document", () => {
+      const document = mkDocument({
+        text: missingFlagsAndConfigText,
+      });
+
+      const methods = RubySDK.detectMethods(document);
+
+      const expected: MethodLocation[] = [
+        {
+          type: MethodType.GET,
+          range: {
+            start: {
+              line: 20,
+              character: 4,
+            },
+            end: {
+              line: 20,
+              character: 41,
+            },
+          },
+          key: "api-rate-limit-per-user",
+          keyRange: {
+            start: {
+              line: 20,
+              character: 16,
+            },
+            end: {
+              line: 20,
+              character: 39,
+            },
+          },
+        },
+
+        {
+          type: MethodType.GET,
+          range: {
+            start: {
+              line: 20,
+              character: 63,
+            },
+            end: {
+              line: 20,
+              character: 98,
+            },
+          },
+          key: "api-rate-limit-window",
+          keyRange: {
+            start: {
+              line: 20,
+              character: 75,
+            },
+            end: {
+              line: 20,
+              character: 96,
+            },
+          },
+        },
+        {
+          type: MethodType.IS_ENABLED,
+          range: {
+            start: {
+              line: 2,
+              character: 7,
+            },
+            end: {
+              line: 4,
+              character: 5,
+            },
+          },
+          key: "everyone.is.pro",
+          keyRange: {
+            start: {
+              line: 3,
+              character: 0,
+            },
+            end: {
+              line: 3,
+              character: 15,
+            },
+          },
+        },
+
+        {
+          key: "api.enabled",
+          keyRange: {
+            end: {
+              character: 32,
+              line: 12,
+            },
+            start: {
+              character: 21,
+              line: 12,
+            },
+          },
+          range: {
+            end: {
+              character: 2,
+              line: 13,
+            },
+            start: {
+              character: 4,
+              line: 12,
+            },
+          },
+          type: 2,
+        },
+
+        {
+          key: "hat.enabled",
+          keyRange: {
+            end: {
+              character: 32,
+              line: 16,
+            },
+            start: {
+              character: 21,
+              line: 16,
+            },
+          },
+          range: {
+            end: {
+              character: 34,
+              line: 16,
+            },
+            start: {
+              character: 4,
+              line: 16,
+            },
+          },
+          type: 2,
+        },
+      ];
+
+      expect(methods).toStrictEqual(expected);
+
+      writeStub(expected);
     });
   });
 });

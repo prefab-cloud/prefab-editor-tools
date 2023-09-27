@@ -32,7 +32,9 @@
     "compile": "esbuild ./client/src/extension.ts --minify --bundle --outfile=client/out/extension.js --external:vscode --format=cjs --platform=node && esbuild ./server/src/server.ts --minify --bundle --outfile=server/out/server.js --external:vscode --format=cjs --platform=node",
     "lint": "npx eslint . --ext .ts",
     "watch": "tsc -b -w",
-    "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+    "test": "bun test",
+    "test-parsers": "cd server && jest"
   },
   "devDependencies": {
     "@types/node": "^20.5.7",

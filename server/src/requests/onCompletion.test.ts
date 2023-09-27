@@ -1,12 +1,10 @@
 import { expect, it, describe } from "bun:test";
 import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
-import {
-  CompletionType,
-  type CompletionTypeValue,
-  type Prefab,
-} from "../prefabClient";
+import { type Prefab } from "../prefabClient";
+import { CompletionType, type CompletionTypeValue } from "../types";
 import onCompletion from "./onCompletion";
-import { mkDocumentStore } from "../testHelpers";
+import { SDK } from "../sdks/detection";
+import { mkDocument } from "../testHelpers";
 
 const uri = "file:///some/path/test.txt";
 
@@ -35,29 +33,29 @@ const keysForCompletionType = async (type: CompletionTypeValue | null) => {
   }
 };
 
-const documents = mkDocumentStore([
-  {
-    uri,
-    text: documentCopy,
-    languageId: "ruby",
-  },
-]);
+const document = mkDocument({
+  uri,
+  text: documentCopy,
+  languageId: "ruby",
+});
 
-describe("onCompletion function", () => {
+describe("onCompletion", () => {
   it("can return flag keys", async () => {
-    const func = onCompletion({
-      documents,
-      getSettings,
-      keysForCompletionType,
-      prefab,
-    });
+    const sdk = {
+      completionType: (): number | null => CompletionType.BOOLEAN_FEATURE_FLAGS,
+    };
 
     const params = {
       textDocument: { uri },
       position: { line: 3, character: 20 },
     } as HoverParams;
 
-    const results = await func(params);
+    const results = await onCompletion({
+      params,
+      document,
+      keysForCompletionType,
+      sdk: sdk as unknown as SDK,
+    });
 
     expect(results).toStrictEqual([
       {
@@ -74,19 +72,22 @@ describe("onCompletion function", () => {
   });
 
   it("can return config keys", async () => {
-    const func = onCompletion({
-      documents,
-      getSettings,
-      keysForCompletionType,
-      prefab,
-    });
+    const sdk = {
+      completionType: (): number | null =>
+        CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+    };
 
     const params = {
       textDocument: { uri },
       position: { line: 7, character: 18 },
     } as HoverParams;
 
-    const results = await func(params);
+    const results = await onCompletion({
+      params,
+      document,
+      keysForCompletionType,
+      sdk: sdk as unknown as SDK,
+    });
 
     expect(results).toStrictEqual([
       {
@@ -108,19 +109,21 @@ describe("onCompletion function", () => {
   });
 
   it("returns an empty array if there's no identifiable FF or Config method", async () => {
-    const func = onCompletion({
-      documents,
-      getSettings,
-      keysForCompletionType,
-      prefab,
-    });
+    const sdk = {
+      completionType: (): number | null => null,
+    };
 
     const params = {
       textDocument: { uri },
       position: { line: 1, character: 10 },
     } as HoverParams;
 
-    const results = await func(params);
+    const results = await onCompletion({
+      params,
+      document,
+      keysForCompletionType,
+      sdk: sdk as unknown as SDK,
+    });
 
     expect(results).toStrictEqual([]);
   });

@@ -1,5 +1,5 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
-import { CompletionTypeValue, MethodTypeValue } from "../prefabClient";
+import { CompletionTypeValue, MethodLocation, MethodTypeValue } from "../types";
 import JavaSDK from "./java";
 import JavascriptSDK from "./javascript";
 import NodeSDK from "./node";
@@ -17,6 +17,7 @@ export type SDK = {
     document: TextDocument,
     position: Position
   ) => MethodTypeValue | null;
+  detectMethods: (document: TextDocument) => MethodLocation[];
   completionType: (
     document: TextDocument,
     position: Position
@@ -28,6 +29,7 @@ export const NullSDK: SDK = {
   isApplicable: () => true,
   detectMethod: () => null,
   completionType: () => null,
+  detectMethods: () => [],
 };
 
 export const detectSDK = (document: TextDocument): SDK => {

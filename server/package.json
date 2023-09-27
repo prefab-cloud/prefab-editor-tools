@@ -14,11 +14,14 @@
   "dependencies": {
     "@prefab-cloud/prefab-cloud-node": "^0.1.5",
     "node-fetch": "^2.7.0",
+    "tree-sitter": "^0.20.5",
+    "tree-sitter-ruby": "^0.19.0",
     "vscode-languageserver": "^8.1.0",
     "vscode-languageserver-textdocument": "^1.0.8"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.6",
-    "bun-types": "^1.0.3"
+    "bun-types": "^1.0.3",
+    "ts-jest": "^29.1.1"
   }
 }

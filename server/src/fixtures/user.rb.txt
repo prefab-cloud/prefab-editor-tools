@@ -1,0 +1,27 @@
+class User < ApplicationRecord
+  def self.pro?
+    if prefab.enabled?(
+      "everyone.is.pro"
+    )
+      true
+    else
+      Pro.enabled?(self)
+    end
+  end
+
+  def can_use_api?
+    prefab.enabled? "api.enabled"
+  end
+
+  def can_use_hat?
+    prefab.enabled?("hat.enabled")
+  end
+
+  def rate_limit
+    prefab.get("api-rate-limit-per-user") - ApiUsage.for(self, prefab.get("api-rate-limit-window"))
+  end
+
+  def does_not_count
+    prefab.get
+  end
+end

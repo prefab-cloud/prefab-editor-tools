@@ -4,9 +4,18 @@ import {
   CompletionTypeValue,
   MethodType,
   MethodTypeValue,
-} from "../prefabClient";
-import { type SDK } from "./detection";
+  MethodLocation,
+} from "../types";
+import type { SDK } from "./detection";
 import { currentLine } from "../documentHelpers";
+
+const ENABLED_REGEX = /prefab\.enabled\?\(?\s*["'](.*?)\s*["']\s*\)?/gs;
+const GET_REGEX = /prefab\.get\(["'](.*?)["']\)/gs;
+
+const METHOD_REGEXES: Record<string, [RegExp, number]> = {
+  [MethodType.IS_ENABLED]: [ENABLED_REGEX, 17],
+  [MethodType.GET]: [GET_REGEX, 12],
+};
 
 const RubySDK: SDK = {
   name: "ruby",
@@ -34,6 +43,45 @@ const RubySDK: SDK = {
     }
 
     return null;
+  },
+
+  detectMethods: (document): MethodLocation[] => {
+    const result: MethodLocation[] = [];
+
+    const text = document.getText();
+
+    const methodKeys = Object.keys(METHOD_REGEXES).sort();
+
+    methodKeys.forEach((methodType) => {
+      const [regex, offset] = METHOD_REGEXES[methodType];
+
+      for (const match of text.matchAll(regex)) {
+        if (!match.index) {
+          continue;
+        }
+
+        const key = match[1];
+
+        const keyRange = {
+          start: document.positionAt(match.index + offset),
+          end: document.positionAt(match.index + offset + key.length),
+        };
+
+        const range = {
+          start: document.positionAt(match.index),
+          end: document.positionAt(match.index + match[0].length),
+        };
+
+        result.push({
+          type: parseInt(methodType),
+          range,
+          key,
+          keyRange,
+        });
+      }
+    });
+
+    return result;
   },
 
   completionType: (

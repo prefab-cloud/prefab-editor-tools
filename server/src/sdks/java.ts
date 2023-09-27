@@ -4,7 +4,8 @@ import {
   CompletionTypeValue,
   MethodType,
   MethodTypeValue,
-} from "../prefabClient";
+  MethodLocation,
+} from "../types";
 import { type SDK } from "./detection";
 import { currentLine } from "../documentHelpers";
 
@@ -34,6 +35,11 @@ const JavaSDK: SDK = {
     }
 
     return null;
+  },
+
+  detectMethods: (document): MethodLocation[] => {
+    // TODO:
+    return [];
   },
 
   completionType: (

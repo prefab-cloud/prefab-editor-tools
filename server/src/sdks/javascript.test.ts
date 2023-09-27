@@ -1,7 +1,7 @@
 import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
 import { mkDocument } from "../testHelpers";
-import { CompletionType, MethodType } from "../prefabClient";
+import { CompletionType, MethodType } from "../types";
 
 import JavascriptSDK, { RELEVANT_FILETYPES } from "./javascript";
 
