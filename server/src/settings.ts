@@ -1,6 +1,20 @@
 import { Connection } from "vscode-languageserver/node";
 import { prefabInit } from "./prefabClient";
 
+let lastApiKeyWarning = 0;
+
+const warnAboutMissingApiKey = (connection: Connection) => {
+  const now = Date.now();
+
+  if (now - lastApiKeyWarning > 1000 * 60 * 5) {
+    lastApiKeyWarning = now;
+
+    connection.window.showWarningMessage(
+      "Prefab: No API key set. Please set your API key in the Prefab extension settings."
+    );
+  }
+};
+
 export interface Settings {
   apiKey?: string;
   apiUrl?: string;
@@ -11,10 +25,17 @@ let settings: Settings = {};
 const getSettings = async (connection: Connection) => {
   const newSettings = await connection.workspace.getConfiguration("prefab");
 
-  updateSettings(newSettings);
+  updateSettings(connection, newSettings);
 };
 
-const updateSettings = (newSettings: Partial<Settings>) => {
+const updateSettings = (
+  connection: Connection,
+  newSettings: Partial<Settings>
+) => {
+  if ((!newSettings || !newSettings.apiKey) && !settings.apiKey) {
+    warnAboutMissingApiKey(connection);
+  }
+
   if (!newSettings) {
     return;
   }
