@@ -1,13 +1,12 @@
 import { expect, it, describe } from "bun:test";
-import { DiagnosticSeverity } from "vscode-languageserver/node";
 import { MethodLocation } from "../types";
 import { SDK } from "../sdks/detection";
 
-import { mkDocument } from "../testHelpers";
+import { log, mkDocument } from "../testHelpers";
 import onDocumentDiagnostic from "./documentDiagnostic";
 
-const fs = require("fs");
-const path = require("path");
+import * as fs from "fs";
+import * as path from "path";
 
 const missingFlagsAndConfigText = fs.readFileSync(
   path.join(__dirname, "../fixtures/user.rb.txt"),
@@ -44,6 +43,7 @@ describe("onDocumentDiagnostic function", () => {
       document,
       filterForMissingKeys,
       sdk: sdk as unknown as SDK,
+      log,
     });
 
     expect(results).toStrictEqual({
@@ -134,6 +134,7 @@ describe("onDocumentDiagnostic function", () => {
       document,
       filterForMissingKeys,
       sdk: sdk as unknown as SDK,
+      log,
     });
 
     expect(results).toStrictEqual({

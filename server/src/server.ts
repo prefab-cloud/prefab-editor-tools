@@ -16,11 +16,14 @@ import onDocumentDiagnostic from "./requests/documentDiagnostic";
 import { detectSDK, SDK } from "./sdks/detection";
 
 import { getSettings as rawGetSettings, updateSettings } from "./settings";
+
 import {
   prefabPromise,
   filterForMissingKeys,
   keysForCompletionType,
 } from "./prefabClient";
+
+import { type Logger } from "./types";
 
 // Create a connection for the server, using Node's IPC as a
 // transport (overridden with `--stdio` flag).
@@ -30,7 +33,15 @@ const connection = createConnection(ProposedFeatures.all);
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-const getSettings = async () => await rawGetSettings(connection);
+const log: Logger = (message: string | object) => {
+  if (typeof message === "string") {
+    connection.console.info(message);
+  } else {
+    connection.console.info(JSON.stringify(message));
+  }
+};
+
+const getSettings = async () => await rawGetSettings(connection, log);
 
 connection.onInitialize(() => {
   const diagnosticProvider: DiagnosticOptions = {
@@ -49,11 +60,13 @@ connection.onInitialize(() => {
     },
   };
 
+  log(`onInitialize returning ${JSON.stringify(result)}`);
+
   return result;
 });
 
 connection.onDidChangeConfiguration((change) => {
-  updateSettings(connection, change.settings.prefab);
+  updateSettings(connection, change.settings.prefab, log);
 });
 
 const ready = async () => {
@@ -97,6 +110,7 @@ connection.onCompletion(async (params) => {
     ...documentWithSDK,
     params,
     keysForCompletionType,
+    log,
   });
 });
 
@@ -109,7 +123,11 @@ connection.onRequest(
       return null;
     }
 
-    return onDocumentDiagnostic({ ...documentWithSDK, filterForMissingKeys });
+    return onDocumentDiagnostic({
+      ...documentWithSDK,
+      filterForMissingKeys,
+      log,
+    });
   }
 );
 

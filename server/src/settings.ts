@@ -1,5 +1,6 @@
 import { Connection } from "vscode-languageserver/node";
 import { prefabInit } from "./prefabClient";
+import { type Logger } from "./types";
 
 let lastApiKeyWarning = 0;
 
@@ -22,17 +23,21 @@ export interface Settings {
 
 let settings: Settings = {};
 
-const getSettings = async (connection: Connection) => {
+const getSettings = async (connection: Connection, log: Logger) => {
   const newSettings = await connection.workspace.getConfiguration("prefab");
 
-  updateSettings(connection, newSettings);
+  updateSettings(connection, newSettings, log);
 };
 
 const updateSettings = (
   connection: Connection,
-  newSettings: Partial<Settings>
+  newSettings: Partial<Settings>,
+  log: Logger
 ) => {
   if ((!newSettings || !newSettings.apiKey) && !settings.apiKey) {
+    connection.console.error(
+      "No API key set. Please update your configuration."
+    );
     warnAboutMissingApiKey(connection);
   }
 
@@ -42,8 +47,13 @@ const updateSettings = (
 
   if (settings.apiKey !== newSettings.apiKey) {
     if (newSettings.apiKey) {
+      log("Initializing internal Prefab client");
       // TODO: respond to updates on Prefab's internal settings (SSE)
-      prefabInit({ apiKey: newSettings.apiKey, apiUrl: newSettings.apiUrl });
+      prefabInit({
+        apiKey: newSettings.apiKey,
+        apiUrl: newSettings.apiUrl,
+        log,
+      });
     }
   }
 

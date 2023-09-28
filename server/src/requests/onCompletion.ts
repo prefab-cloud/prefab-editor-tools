@@ -1,5 +1,3 @@
-import { log, logj } from "../log";
-
 import {
   CompletionItemKind,
   CompletionParams,
@@ -10,23 +8,28 @@ import { SDK } from "../sdks/detection";
 
 const onCompletion = async ({
   document,
+  log,
   params,
   keysForCompletionType,
   sdk,
 }: {
   document: TextDocument;
+  log: (message: string | object) => void;
   keysForCompletionType: (
     type: CompletionTypeValue | null
   ) => Promise<string[]>;
   sdk: SDK;
   params: CompletionParams;
 }) => {
-  logj({ params });
-  logj({ sdk });
+  log({ onCompletion: params });
+
   const completionType = sdk.completionType(document, params.position);
-  logj({ completionType });
+
+  log({ completionType });
 
   const configKeys = await keysForCompletionType(completionType);
+
+  log({ configKeys });
 
   return configKeys.map((name) => {
     return {

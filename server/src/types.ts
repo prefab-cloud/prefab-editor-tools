@@ -2,6 +2,8 @@ import { Range, TextDocuments } from "vscode-languageserver/node";
 
 import { TextDocument } from "vscode-languageserver-textdocument";
 
+export type Logger = (message: string | object) => void;
+
 export type Documents = TextDocuments<TextDocument>;
 
 export type MethodLocation = {

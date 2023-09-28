@@ -20,15 +20,15 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get('')", { line: 0, character: 12 }],
 ];
 
-const fs = require("fs");
-const path = require("path");
+import * as fs from "fs";
+import * as path from "path";
 
 const missingFlagsAndConfigText = fs.readFileSync(
   path.join(__dirname, "../fixtures/user.rb.txt"),
   "utf-8"
 );
 
-const writeStub = (data: any) => {
+const writeStub = (data: object) => {
   const string = JSON.stringify(data, null, 2);
 
   const stubPath = path.join(__dirname, "../fixtures/user.rb.parsed.json");

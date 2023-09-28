@@ -1,4 +1,4 @@
-import { MethodLocation, MethodType } from "../types";
+import { Logger, MethodLocation, MethodType } from "../types";
 
 import {
   Diagnostic,
@@ -15,16 +15,20 @@ const onDocumentDiagnostic = async ({
   document,
   filterForMissingKeys,
   sdk,
+  log,
 }: {
   document: TextDocument;
   filterForMissingKeys: (
     methods: MethodLocation[]
   ) => Promise<MethodLocation[]>;
   sdk: SDK;
+  log: Logger;
 }) => {
   const missingKeyMethods = await filterForMissingKeys(
     sdk.detectMethods(document)
   );
+
+  log({ missingKeyMethods });
 
   const diagnostics: FullDocumentDiagnosticReport = {
     kind: DocumentDiagnosticReportKind.Full,

@@ -37,7 +37,7 @@ const JavaSDK: SDK = {
     return null;
   },
 
-  detectMethods: (document): MethodLocation[] => {
+  detectMethods: (): MethodLocation[] => {
     // TODO:
     return [];
   },

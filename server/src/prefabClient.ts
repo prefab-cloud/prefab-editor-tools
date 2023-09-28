@@ -1,5 +1,3 @@
-import { log, logj } from "./log";
-
 import { Prefab } from "@prefab-cloud/prefab-cloud-node";
 import fetch from "node-fetch";
 import {
@@ -7,6 +5,7 @@ import {
   ConfigType,
   CompletionTypeValue,
   MethodLocation,
+  Logger,
 } from "./types";
 
 let prefab: Prefab;
@@ -94,9 +93,11 @@ export const filterForMissingKeys = async (methods: MethodLocation[]) => {
 const prefabInit = ({
   apiKey,
   apiUrl,
+  log,
 }: {
   apiKey: string;
   apiUrl: string | undefined;
+  log: Logger;
 }) => {
   prefab = new Prefab({
     apiKey,
@@ -107,6 +108,10 @@ const prefabInit = ({
   });
 
   prefabPromise = prefab.init();
+
+  prefabPromise.then(() => {
+    log("Internal Prefab client initialized");
+  });
 };
 
 export { prefab, prefabInit, prefabPromise, keysForCompletionType, Prefab };

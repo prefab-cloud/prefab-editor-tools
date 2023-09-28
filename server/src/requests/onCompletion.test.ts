@@ -1,10 +1,9 @@
 import { expect, it, describe } from "bun:test";
 import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
-import { type Prefab } from "../prefabClient";
 import { CompletionType, type CompletionTypeValue } from "../types";
 import onCompletion from "./onCompletion";
 import { SDK } from "../sdks/detection";
-import { mkDocument } from "../testHelpers";
+import { log, mkDocument } from "../testHelpers";
 
 const uri = "file:///some/path/test.txt";
 
@@ -17,10 +16,6 @@ end
 
 foo = prefab.get("
 `;
-
-const getSettings = async () => {};
-
-const prefab = {} as Prefab;
 
 const keysForCompletionType = async (type: CompletionTypeValue | null) => {
   switch (type) {
@@ -55,6 +50,7 @@ describe("onCompletion", () => {
       document,
       keysForCompletionType,
       sdk: sdk as unknown as SDK,
+      log,
     });
 
     expect(results).toStrictEqual([
@@ -87,6 +83,7 @@ describe("onCompletion", () => {
       document,
       keysForCompletionType,
       sdk: sdk as unknown as SDK,
+      log,
     });
 
     expect(results).toStrictEqual([
@@ -123,6 +120,7 @@ describe("onCompletion", () => {
       document,
       keysForCompletionType,
       sdk: sdk as unknown as SDK,
+      log,
     });
 
     expect(results).toStrictEqual([]);

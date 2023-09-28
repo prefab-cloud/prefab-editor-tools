@@ -32,3 +32,5 @@ export const mkDocumentStore = (newDocs: NewDoc[]): Documents => {
     },
   } as Documents;
 };
+
+export const log = () => {};
