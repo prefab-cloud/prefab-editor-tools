@@ -1,6 +1,6 @@
 import { Connection } from "vscode-languageserver/node";
 import { prefabInit } from "./prefabClient";
-import { type Logger } from "./types";
+import { type Logger, type Settings } from "./types";
 
 let lastApiKeyWarning = 0;
 
@@ -15,11 +15,6 @@ const warnAboutMissingApiKey = (connection: Connection) => {
     );
   }
 };
-
-export interface Settings {
-  apiKey?: string;
-  apiUrl?: string;
-}
 
 let settings: Settings = {};
 
@@ -62,4 +57,10 @@ const updateSettings = (
   return settings;
 };
 
-export { settings, getSettings, updateSettings };
+const DEFAULT_API_URL = "https://api.prefab.cloud";
+
+const apiUrlOrDefault = (settings: Settings) => {
+  return settings.apiUrl ?? DEFAULT_API_URL;
+};
+
+export { settings, getSettings, updateSettings, apiUrlOrDefault };

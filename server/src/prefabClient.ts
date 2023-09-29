@@ -8,10 +8,10 @@ import {
   Logger,
 } from "./types";
 
+import { apiUrlOrDefault } from "./settings";
+
 let prefab: Prefab;
 let prefabPromise: Promise<void>;
-
-const DEFAULT_API_URL = "https://api.prefab.cloud";
 
 type PrefabConfig = Exclude<ReturnType<typeof prefab.raw>, undefined>;
 
@@ -81,9 +81,14 @@ const keysForCompletionType = async (
   }
 };
 
-export const filterForMissingKeys = async (methods: MethodLocation[]) => {
+export const filterForMissingKeys = async (
+  methods: MethodLocation[],
+  log: Logger
+) => {
   const configs = await getAllConfigs();
   const keys = configs.map((config) => config.key);
+
+  log({ keys });
 
   return methods.filter((method) => {
     return !keys.includes(method.key);
@@ -101,7 +106,7 @@ const prefabInit = ({
 }) => {
   prefab = new Prefab({
     apiKey,
-    apiUrl: apiUrl ?? DEFAULT_API_URL,
+    apiUrl: apiUrlOrDefault({ apiUrl }),
     enableSSE: true,
     defaultLogLevel: "warn",
     fetch,
@@ -114,4 +119,36 @@ const prefabInit = ({
   });
 };
 
-export { prefab, prefabInit, prefabPromise, keysForCompletionType, Prefab };
+type ProjectEnvId = {
+  projectId: string;
+  id: string;
+};
+
+const getProjectEnvFromApiKey = (apiKey: string): ProjectEnvId => {
+  const parts = /-P(\d+)-E(\d+)-SDK-/.exec(apiKey);
+
+  if (!parts) {
+    throw new Error("Invalid API key");
+  }
+
+  const projectId = parts[1];
+  const projectEnvId = parts[2];
+
+  if (!projectEnvId || !projectId) {
+    throw new Error("Invalid API key (missing project or environment ID)");
+  }
+
+  return {
+    projectId,
+    id: projectEnvId,
+  };
+};
+
+export {
+  prefab,
+  prefabInit,
+  prefabPromise,
+  keysForCompletionType,
+  Prefab,
+  getProjectEnvFromApiKey,
+};

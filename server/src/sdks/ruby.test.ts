@@ -254,7 +254,7 @@ describe("RubySDK", () => {
               line: 12,
             },
           },
-          type: 2,
+          type: "IS_ENABLED",
         },
 
         {
@@ -279,7 +279,7 @@ describe("RubySDK", () => {
               line: 16,
             },
           },
-          type: 2,
+          type: "IS_ENABLED",
         },
       ];
 

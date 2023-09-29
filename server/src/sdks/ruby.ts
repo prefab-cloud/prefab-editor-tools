@@ -73,7 +73,7 @@ const RubySDK: SDK = {
         };
 
         result.push({
-          type: parseInt(methodType),
+          type: methodType,
           range,
           key,
           keyRange,

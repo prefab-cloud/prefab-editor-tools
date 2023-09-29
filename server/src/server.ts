@@ -1,8 +1,5 @@
 import {
   createConnection,
-  DiagnosticOptions,
-  DocumentDiagnosticParams,
-  DocumentDiagnosticRequest,
   TextDocuments,
   ProposedFeatures,
   TextDocumentSyncKind,
@@ -12,16 +9,21 @@ import {
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 import onCompletion from "./requests/onCompletion";
-import onDocumentDiagnostic from "./requests/documentDiagnostic";
 import { detectSDK, SDK } from "./sdks/detection";
+import { getActiveDiagnostics, runAllDiagnostics } from "./diagnostics";
 
-import { getSettings as rawGetSettings, updateSettings } from "./settings";
+import { commands, commandLookup } from "./commands";
+import { runAllCodeLens } from "./codeLens";
+
+import { debounceHeadTail } from "./utils/debounce";
 
 import {
-  prefabPromise,
-  filterForMissingKeys,
-  keysForCompletionType,
-} from "./prefabClient";
+  settings,
+  getSettings as rawGetSettings,
+  updateSettings,
+} from "./settings";
+
+import { prefabPromise, keysForCompletionType } from "./prefabClient";
 
 import { type Logger } from "./types";
 
@@ -44,19 +46,16 @@ const log: Logger = (message: string | object) => {
 const getSettings = async () => await rawGetSettings(connection, log);
 
 connection.onInitialize(() => {
-  const diagnosticProvider: DiagnosticOptions = {
-    identifier: "Prefab",
-    interFileDependencies: false,
-    workspaceDiagnostics: false,
-  };
-
   const result: InitializeResult = {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
+      codeLensProvider: {
+        resolveProvider: false,
+      },
       completionProvider: {
         triggerCharacters: ["'", '"'],
       },
-      diagnosticProvider,
+      executeCommandProvider: { commands },
     },
   };
 
@@ -85,26 +84,53 @@ type DocumentWithSDK = {
   sdk: SDK;
 };
 
-const getDocumentAndSDK = async (params: {
-  textDocument: { uri: string };
-}): Promise<DocumentWithSDK | null> => {
+const getDocumentAndSDK = async (
+  uriOrDocument: string | TextDocument
+): Promise<DocumentWithSDK> => {
   const isReady = await ready();
 
-  const document = documents.get(params.textDocument.uri);
+  const document =
+    typeof uriOrDocument === "string"
+      ? documents.get(uriOrDocument)
+      : uriOrDocument;
 
   if (document && isReady) {
     return { document, sdk: detectSDK(document) };
   } else {
-    return null;
+    throw new Error(
+      `Could not find the document for ${JSON.stringify(
+        uriOrDocument
+      )} provided.`
+    );
   }
 };
 
-connection.onCompletion(async (params) => {
-  const documentWithSDK = await getDocumentAndSDK(params);
-
-  if (!documentWithSDK) {
-    return null;
+connection.onExecuteCommand(async (params) => {
+  if (!params.arguments || params.arguments.length < 1) {
+    throw new Error("Prefab: executeCommand does not support arguments");
   }
+
+  if (!params.arguments[0].startsWith("file://")) {
+    throw new Error(
+      "Prefab: executeCommand expects the first argument to be a document uri."
+    );
+  }
+
+  const documentWithSDK = await getDocumentAndSDK(params.arguments[0]);
+
+  commandLookup[params.command].execute({
+    ...(documentWithSDK ?? {}),
+    params,
+    connection,
+    settings,
+    log,
+  });
+
+  return null;
+});
+
+connection.onCompletion(async (params) => {
+  const documentWithSDK = await getDocumentAndSDK(params.textDocument.uri);
 
   return onCompletion({
     ...documentWithSDK,
@@ -114,22 +140,43 @@ connection.onCompletion(async (params) => {
   });
 });
 
-connection.onRequest(
-  DocumentDiagnosticRequest.method,
-  async (params: DocumentDiagnosticParams) => {
-    const documentWithSDK = await getDocumentAndSDK(params);
+connection.onCodeLens(async (params) => {
+  const documentWithSDK = await getDocumentAndSDK(params.textDocument.uri);
 
-    if (!documentWithSDK) {
-      return null;
-    }
+  return runAllCodeLens({
+    log,
+    getActiveDiagnostics,
+    ...documentWithSDK,
+  });
+});
 
-    return onDocumentDiagnostic({
-      ...documentWithSDK,
-      filterForMissingKeys,
-      log,
-    });
+const diagnosticDebounces: Record<string, () => void> = {};
+
+const DEBOUNCE_TIME = 1000;
+
+documents.onDidChangeContent(async (change) => {
+  if (!diagnosticDebounces[change.document.uri]) {
+    const documentWithSDK = await getDocumentAndSDK(change.document);
+
+    diagnosticDebounces[change.document.uri] = debounceHeadTail(async () => {
+      const { diagnostics, changed } = await runAllDiagnostics({
+        log,
+        ...documentWithSDK,
+      });
+
+      connection.sendDiagnostics({
+        uri: change.document.uri,
+        diagnostics,
+      });
+
+      if (changed) {
+        connection.sendRequest("workspace/codeLens/refresh");
+      }
+    }, DEBOUNCE_TIME);
   }
-);
+
+  diagnosticDebounces[change.document.uri]();
+});
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
