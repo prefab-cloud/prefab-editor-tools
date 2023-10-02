@@ -8,7 +8,7 @@
       },
       "end": {
         "line": 20,
-        "character": 41
+        "character": 42
       }
     },
     "key": "api-rate-limit-per-user",
@@ -44,6 +44,30 @@
       "end": {
         "line": 20,
         "character": 96
+      }
+    }
+  },
+  {
+    "type": "GET",
+    "range": {
+      "start": {
+        "line": 28,
+        "character": 8
+      },
+      "end": {
+        "line": 29,
+        "character": 2
+      }
+    },
+    "key": "some.value",
+    "keyRange": {
+      "start": {
+        "line": 28,
+        "character": 20
+      },
+      "end": {
+        "line": 28,
+        "character": 30
       }
     }
   },

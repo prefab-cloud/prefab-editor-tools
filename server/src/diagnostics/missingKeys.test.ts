@@ -46,7 +46,7 @@ describe("missingKeys", () => {
       log,
     });
 
-    expect(results).toStrictEqual([
+    const expected = [
       {
         message: "`api-rate-limit-per-user` is not defined.",
         data: {
@@ -84,6 +84,25 @@ describe("missingKeys", () => {
           },
         },
         severity: 1,
+      },
+      {
+        message: "`some.value` is not defined.",
+        severity: 1,
+        data: {
+          key: "some.value",
+          kind: "missingKey",
+          type: "GET",
+        },
+        range: {
+          start: {
+            line: 28,
+            character: 20,
+          },
+          end: {
+            line: 28,
+            character: 30,
+          },
+        },
       },
       {
         message:
@@ -124,7 +143,13 @@ describe("missingKeys", () => {
         },
         severity: 2,
       },
-    ]);
+    ];
+
+    expect(results.length).toEqual(expected.length);
+
+    results.forEach((result, index) => {
+      expect(result).toStrictEqual(expected[index]);
+    });
   });
 
   it("returns nothing if the content has no missing config/flags", async () => {
@@ -183,6 +208,7 @@ describe("missingKeys", () => {
     expect(results.map((r) => r.message)).toStrictEqual([
       "`api-rate-limit-per-user` is not defined.",
       "`api-rate-limit-window` is not defined.",
+      "`some.value` is not defined.",
       "`everyone.is.pro` is not defined. This will always return false.",
       "`hat.enabled` is not defined. This will always return false.",
     ]);
@@ -198,6 +224,7 @@ describe("missingKeys", () => {
     expect(resultsWithExclusion.map((r) => r.message)).toStrictEqual([
       "`api-rate-limit-per-user` is not defined.",
       "`api-rate-limit-window` is not defined.",
+      "`some.value` is not defined.",
       "`hat.enabled` is not defined. This will always return false.",
     ]);
   });

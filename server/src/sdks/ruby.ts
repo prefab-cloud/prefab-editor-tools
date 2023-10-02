@@ -10,7 +10,7 @@ import type { SDK } from "./detection";
 import { currentLine } from "../documentHelpers";
 
 const ENABLED_REGEX = /prefab\.enabled\?\(?\s*["'](.*?)\s*["']\s*\)?/gs;
-const GET_REGEX = /prefab\.get\(["'](.*?)["']\)/gs;
+const GET_REGEX = /prefab\.get\(?\s*["'](.*?)["']\)?\s*/gs;
 
 const METHOD_REGEXES: Record<string, [RegExp, number]> = {
   [MethodType.IS_ENABLED]: [ENABLED_REGEX, 17],
@@ -34,11 +34,11 @@ const RubySDK: SDK = {
       return null;
     }
 
-    if (/prefab\.enabled\?\(["']$/.test(line)) {
+    if (/prefab\.enabled\?\(?\s*["']$/.test(line)) {
       return MethodType.IS_ENABLED;
     }
 
-    if (/prefab\.get\(["']$/.test(line)) {
+    if (/prefab\.get\(?\s*["']$/.test(line)) {
       return MethodType.GET;
     }
 
