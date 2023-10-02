@@ -37,7 +37,8 @@ const document = mkDocument({
 describe("onCompletion", () => {
   it("can return flag keys", async () => {
     const sdk = {
-      completionType: (): number | null => CompletionType.BOOLEAN_FEATURE_FLAGS,
+      completionType: (): CompletionTypeValue | null =>
+        CompletionType.BOOLEAN_FEATURE_FLAGS,
     };
 
     const params = {
@@ -69,7 +70,7 @@ describe("onCompletion", () => {
 
   it("can return config keys", async () => {
     const sdk = {
-      completionType: (): number | null =>
+      completionType: (): CompletionTypeValue | null =>
         CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
     };
 
