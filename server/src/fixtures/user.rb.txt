@@ -27,5 +27,7 @@ class User < ApplicationRecord
 
   def some_value
     x = prefab.get "some.value"
+    y = prefab.get ""
+    z = prefab.get ""
   end
 end

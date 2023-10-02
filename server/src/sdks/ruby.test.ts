@@ -224,7 +224,7 @@ describe("RubySDK", () => {
             },
             end: {
               line: 29,
-              character: 2,
+              character: 4,
             },
           },
           key: "some.value",

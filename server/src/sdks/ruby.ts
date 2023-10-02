@@ -9,8 +9,8 @@ import {
 import type { SDK } from "./detection";
 import { currentLine } from "../documentHelpers";
 
-const ENABLED_REGEX = /prefab\.enabled\?\(?\s*["'](.*?)\s*["']\s*\)?/gs;
-const GET_REGEX = /prefab\.get\(?\s*["'](.*?)["']\)?\s*/gs;
+const ENABLED_REGEX = /prefab\.enabled\?\(?\s*["']([^'\n]+?)\s*["']\s*\)?/gs;
+const GET_REGEX = /prefab\.get\(?\s*["']([^'\n]+?)["']\)?\s*/gs;
 
 const METHOD_REGEXES: Record<string, [RegExp, number]> = {
   [MethodType.IS_ENABLED]: [ENABLED_REGEX, 17],
