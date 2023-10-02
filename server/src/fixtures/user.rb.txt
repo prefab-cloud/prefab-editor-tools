@@ -24,4 +24,8 @@ class User < ApplicationRecord
   def does_not_count
     prefab.get
   end
+
+  def some_value
+    x = prefab.get "some.value"
+  end
 end

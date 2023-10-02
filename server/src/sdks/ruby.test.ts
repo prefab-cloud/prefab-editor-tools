@@ -11,6 +11,10 @@ const FF_EXAMPLES: ExampleStringAndPosition[] = [
   ['prefab.enabled?("', { line: 0, character: 17 }],
   ["prefab.enabled?('", { line: 0, character: 17 }],
   ["prefab.enabled?('')", { line: 0, character: 17 }],
+  ['prefab.enabled? ""', { line: 0, character: 17 }],
+  ['prefab.enabled? "', { line: 0, character: 17 }],
+  ["prefab.enabled? '", { line: 0, character: 17 }],
+  ["prefab.enabled? ''", { line: 0, character: 17 }],
 ];
 
 const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
@@ -18,6 +22,10 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get('", { line: 0, character: 12 }],
   ['prefab.get("")', { line: 0, character: 12 }],
   ["prefab.get('')", { line: 0, character: 12 }],
+  ['prefab.get "', { line: 0, character: 12 }],
+  ["prefab.get '", { line: 0, character: 12 }],
+  ['prefab.get ""', { line: 0, character: 12 }],
+  ["prefab.get ''", { line: 0, character: 12 }],
 ];
 
 import * as fs from "fs";
@@ -104,8 +112,8 @@ describe("RubySDK", () => {
   });
 
   describe("completions", () => {
-    it("returns flag names for FF calls", () => {
-      FF_EXAMPLES.forEach(([text, position]) => {
+    FF_EXAMPLES.forEach(([text, position]) => {
+      it(`returns flag names for \`${text}\``, () => {
         const document = mkDocument({ text });
 
         expect(RubySDK.completionType(document, position)).toEqual(
@@ -114,8 +122,8 @@ describe("RubySDK", () => {
       });
     });
 
-    it("returns config and non-boolean flag names for Config calls", () => {
-      CONFIG_EXAMPLES.forEach(([text, position]) => {
+    CONFIG_EXAMPLES.forEach(([text, position]) => {
+      it(`returns config and non-boolean flag names for \`${text}\``, () => {
         const document = mkDocument({ text });
 
         expect(RubySDK.completionType(document, position)).toEqual(
@@ -167,7 +175,7 @@ describe("RubySDK", () => {
             },
             end: {
               line: 20,
-              character: 41,
+              character: 42,
             },
           },
           key: "api-rate-limit-per-user",
@@ -204,6 +212,30 @@ describe("RubySDK", () => {
             end: {
               line: 20,
               character: 96,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 28,
+              character: 8,
+            },
+            end: {
+              line: 29,
+              character: 2,
+            },
+          },
+          key: "some.value",
+          keyRange: {
+            start: {
+              line: 28,
+              character: 20,
+            },
+            end: {
+              line: 28,
+              character: 30,
             },
           },
         },
@@ -283,7 +315,11 @@ describe("RubySDK", () => {
         },
       ];
 
-      expect(methods).toStrictEqual(expected);
+      expect(methods.length).toEqual(expected.length);
+
+      methods.forEach((method, index) => {
+        expect(method).toStrictEqual(expected[index]);
+      });
 
       writeStub(expected);
     });
