@@ -43,9 +43,20 @@ const log: Logger = (message: string | object) => {
   }
 };
 
-const getSettings = async () => await rawGetSettings(connection, log);
+let refreshDiagnostics = async () => {};
+let refreshCodeLens = async () => {};
 
-connection.onInitialize(() => {
+let refresh = async () => {
+  log({ refreshCodeLens });
+  await refreshDiagnostics();
+  await refreshCodeLens();
+};
+
+const getSettings = async () => await rawGetSettings(connection, log, refresh);
+
+connection.onInitialize((params) => {
+  log({ onInitialize: params });
+
   const result: InitializeResult = {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
@@ -59,13 +70,27 @@ connection.onInitialize(() => {
     },
   };
 
+  if (params.capabilities.workspace?.diagnostics?.refreshSupport) {
+    refreshDiagnostics = async () => {
+      log("Refreshing diagnostics");
+      connection.sendRequest("workspace/diagnostic/refresh");
+    };
+  }
+
+  if (params.capabilities.workspace?.codeLens?.refreshSupport) {
+    refreshCodeLens = async () => {
+      log("Refreshing codeLens");
+      connection.sendRequest("workspace/codeLens/refresh");
+    };
+  }
+
   log(`onInitialize returning ${JSON.stringify(result)}`);
 
   return result;
 });
 
 connection.onDidChangeConfiguration((change) => {
-  updateSettings(connection, change.settings.prefab, log);
+  updateSettings(connection, change.settings.prefab, log, refresh);
 });
 
 const ready = async () => {
@@ -124,6 +149,7 @@ connection.onExecuteCommand(async (params) => {
     connection,
     settings,
     log,
+    refreshCodeLens,
   });
 
   return null;

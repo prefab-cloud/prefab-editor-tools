@@ -64,6 +64,7 @@ export type ExecutableCommand = {
     params,
     settings,
     log,
+    refreshCodeLens,
   }: {
     connection: Connection;
     document: TextDocument;
@@ -71,6 +72,7 @@ export type ExecutableCommand = {
     params: ExecuteCommandParams;
     settings: Settings;
     log: Logger;
+    refreshCodeLens: () => Promise<void>;
   }) => Promise<LSPAny>;
 };
 

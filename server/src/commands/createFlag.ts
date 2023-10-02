@@ -20,6 +20,7 @@ const createBooleanFlag = async ({
   log,
   sdk,
   document,
+  refreshCodeLens,
 }: {
   connection: Connection;
   settings: Settings;
@@ -28,6 +29,7 @@ const createBooleanFlag = async ({
   log: Logger;
   sdk: SDK;
   document: TextDocument;
+  refreshCodeLens: () => Promise<void>;
 }) => {
   const projectEnv = getProjectEnvFromApiKey(apiKey);
 
@@ -67,7 +69,7 @@ const createBooleanFlag = async ({
     diagnostics,
   });
 
-  connection.sendRequest("workspace/codeLens/refresh");
+  refreshCodeLens();
 
   log({ uri: document.uri, updatedDiagnostics: diagnostics });
 };
@@ -101,6 +103,7 @@ const createFlag: ExecutableCommand = {
     params,
     settings,
     log,
+    refreshCodeLens,
   }: {
     connection: Connection;
     document: TextDocument;
@@ -108,6 +111,7 @@ const createFlag: ExecutableCommand = {
     params: ExecuteCommandParams;
     settings: Settings;
     log: Logger;
+    refreshCodeLens: () => Promise<void>;
   }) => {
     log({ createFlag: params, settings });
 
@@ -140,6 +144,7 @@ const createFlag: ExecutableCommand = {
         key,
         log,
         connection,
+        refreshCodeLens,
       });
     }
 
