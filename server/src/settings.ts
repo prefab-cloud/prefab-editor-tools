@@ -18,16 +18,21 @@ const warnAboutMissingApiKey = (connection: Connection) => {
 
 let settings: Settings = {};
 
-const getSettings = async (connection: Connection, log: Logger) => {
+const getSettings = async (
+  connection: Connection,
+  log: Logger,
+  refresh: () => Promise<void>
+) => {
   const newSettings = await connection.workspace.getConfiguration("prefab");
 
-  updateSettings(connection, newSettings, log);
+  updateSettings(connection, newSettings, log, refresh);
 };
 
 const updateSettings = (
   connection: Connection,
   newSettings: Partial<Settings>,
-  log: Logger
+  log: Logger,
+  refresh: () => Promise<void>
 ) => {
   if ((!newSettings || !newSettings.apiKey) && !settings.apiKey) {
     connection.console.error(
@@ -48,6 +53,10 @@ const updateSettings = (
         apiKey: newSettings.apiKey,
         apiUrl: newSettings.apiUrl,
         log,
+        onUpdate: () => {
+          log("Internal Prefab client updated");
+          refresh();
+        },
       });
     }
   }

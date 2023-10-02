@@ -99,10 +99,12 @@ const prefabInit = ({
   apiKey,
   apiUrl,
   log,
+  onUpdate,
 }: {
   apiKey: string;
   apiUrl: string | undefined;
   log: Logger;
+  onUpdate: () => void;
 }) => {
   prefab = new Prefab({
     apiKey,
@@ -110,6 +112,7 @@ const prefabInit = ({
     enableSSE: true,
     defaultLogLevel: "warn",
     fetch,
+    onUpdate,
   });
 
   prefabPromise = prefab.init();
