@@ -33,6 +33,7 @@
     "lint": "npx eslint . --ext .ts",
     "watch": "tsc -b -w",
     "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+    "tsc-server": "cd server && tsc --watch --noEmit",
     "test": "bun test",
     "test-parsers": "cd server && jest"
   },
