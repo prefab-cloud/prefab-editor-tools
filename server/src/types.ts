@@ -14,7 +14,7 @@ import { filterForMissingKeys as defaultFilterForMissingKeys } from "./prefabCli
 
 import { SDK } from "./sdks/detection";
 
-export type Logger = (message: string | object) => void;
+export type Logger = (message: string | object | undefined | null) => void;
 
 export type Documents = TextDocuments<TextDocument>;
 

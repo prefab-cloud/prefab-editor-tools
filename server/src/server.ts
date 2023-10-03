@@ -37,7 +37,7 @@ const connection = createConnection(ProposedFeatures.all);
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-const log: Logger = (message: string | object) => {
+const log: Logger = (message) => {
   if (typeof message === "string") {
     connection.console.info(message);
   } else {
