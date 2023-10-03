@@ -54,6 +54,16 @@ export interface Settings {
   apiUrl?: string;
 }
 
+export type ExecutableCommandExecuteArgs = {
+  connection: Connection;
+  document: TextDocument;
+  sdk: SDK;
+  params: ExecuteCommandParams;
+  settings: Settings;
+  log: Logger;
+  refreshDiagnostics: () => Promise<void>;
+};
+
 export type ExecutableCommand = {
   command: string;
 
@@ -64,16 +74,8 @@ export type ExecutableCommand = {
     params,
     settings,
     log,
-    refreshCodeLens,
-  }: {
-    connection: Connection;
-    document: TextDocument;
-    sdk: SDK;
-    params: ExecuteCommandParams;
-    settings: Settings;
-    log: Logger;
-    refreshCodeLens: () => Promise<void>;
-  }) => Promise<LSPAny>;
+    refreshDiagnostics,
+  }: ExecutableCommandExecuteArgs) => Promise<LSPAny>;
 };
 
 export const DiagnosticDataKind = {

@@ -4,6 +4,8 @@ import {
   ProposedFeatures,
   TextDocumentSyncKind,
   InitializeResult,
+  DocumentDiagnosticRequest,
+  DocumentDiagnosticParams,
 } from "vscode-languageserver/node";
 
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -44,12 +46,10 @@ const log: Logger = (message: string | object) => {
 };
 
 let refreshDiagnostics = async () => {};
-let refreshCodeLens = async () => {};
+let canRefreshCodeLens = false;
 
 let refresh = async () => {
-  log({ refreshCodeLens });
   await refreshDiagnostics();
-  await refreshCodeLens();
 };
 
 const getSettings = async () => await rawGetSettings(connection, log, refresh);
@@ -70,19 +70,8 @@ connection.onInitialize((params) => {
     },
   };
 
-  if (params.capabilities.workspace?.diagnostics?.refreshSupport) {
-    refreshDiagnostics = async () => {
-      log("Refreshing diagnostics");
-      connection.sendRequest("workspace/diagnostic/refresh");
-    };
-  }
-
-  if (params.capabilities.workspace?.codeLens?.refreshSupport) {
-    refreshCodeLens = async () => {
-      log("Refreshing codeLens");
-      connection.sendRequest("workspace/codeLens/refresh");
-    };
-  }
+  canRefreshCodeLens =
+    params.capabilities.workspace?.codeLens?.refreshSupport ?? false;
 
   log(`onInitialize returning ${JSON.stringify(result)}`);
 
@@ -149,7 +138,7 @@ connection.onExecuteCommand(async (params) => {
     connection,
     settings,
     log,
-    refreshCodeLens,
+    refreshDiagnostics,
   });
 
   return null;
@@ -176,33 +165,60 @@ connection.onCodeLens(async (params) => {
   });
 });
 
+connection.onRequest(
+  DocumentDiagnosticRequest.method,
+  async (params: DocumentDiagnosticParams) => {
+    log({ [DocumentDiagnosticRequest.method]: params });
+    const documentWithSDK = await getDocumentAndSDK(params.textDocument.uri);
+
+    const { diagnostics } = await runAllDiagnostics({
+      log,
+      ...documentWithSDK,
+    });
+
+    return { items: diagnostics };
+  }
+);
+
 const diagnosticDebounces: Record<string, () => void> = {};
 
 const DEBOUNCE_TIME = 1000;
 
-documents.onDidChangeContent(async (change) => {
-  if (!diagnosticDebounces[change.document.uri]) {
-    const documentWithSDK = await getDocumentAndSDK(change.document);
+const debouncedRefreshDiagnostics = async (uri: string) => {
+  if (!diagnosticDebounces[uri]) {
+    const documentWithSDK = await getDocumentAndSDK(uri);
 
-    diagnosticDebounces[change.document.uri] = debounceHeadTail(async () => {
+    diagnosticDebounces[uri] = debounceHeadTail(async () => {
       const { diagnostics, changed } = await runAllDiagnostics({
         log,
         ...documentWithSDK,
       });
 
       connection.sendDiagnostics({
-        uri: change.document.uri,
+        uri,
         diagnostics,
       });
 
-      if (changed) {
+      if (changed && canRefreshCodeLens) {
         connection.sendRequest("workspace/codeLens/refresh");
       }
     }, DEBOUNCE_TIME);
   }
 
-  diagnosticDebounces[change.document.uri]();
+  diagnosticDebounces[uri]();
+};
+
+documents.onDidChangeContent(async (change) => {
+  debouncedRefreshDiagnostics(change.document.uri);
 });
+
+refreshDiagnostics = async () => {
+  log("Refreshing diagnostics");
+
+  documents.all().forEach(async (doc) => {
+    debouncedRefreshDiagnostics(doc.uri);
+  });
+};
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events

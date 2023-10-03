@@ -1,8 +1,13 @@
-import { Connection, ExecuteCommandParams } from "vscode-languageserver/node";
+import { Connection } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 import openURL from "../utils/openURL";
-import type { ExecutableCommand, Logger, Settings } from "../types";
+import type {
+  ExecutableCommand,
+  ExecutableCommandExecuteArgs,
+  Logger,
+  Settings,
+} from "../types";
 import { post } from "../apiClient";
 import { runAllDiagnostics } from "../diagnostics";
 import { getProjectEnvFromApiKey } from "../prefabClient";
@@ -20,7 +25,7 @@ const createBooleanFlag = async ({
   log,
   sdk,
   document,
-  refreshCodeLens,
+  refreshDiagnostics,
 }: {
   connection: Connection;
   settings: Settings;
@@ -29,7 +34,7 @@ const createBooleanFlag = async ({
   log: Logger;
   sdk: SDK;
   document: TextDocument;
-  refreshCodeLens: () => Promise<void>;
+  refreshDiagnostics: () => Promise<void>;
 }) => {
   const projectEnv = getProjectEnvFromApiKey(apiKey);
 
@@ -69,7 +74,7 @@ const createBooleanFlag = async ({
     diagnostics,
   });
 
-  refreshCodeLens();
+  refreshDiagnostics();
 
   log({ uri: document.uri, updatedDiagnostics: diagnostics });
 };
@@ -103,16 +108,8 @@ const createFlag: ExecutableCommand = {
     params,
     settings,
     log,
-    refreshCodeLens,
-  }: {
-    connection: Connection;
-    document: TextDocument;
-    sdk: SDK;
-    params: ExecuteCommandParams;
-    settings: Settings;
-    log: Logger;
-    refreshCodeLens: () => Promise<void>;
-  }) => {
+    refreshDiagnostics,
+  }: ExecutableCommandExecuteArgs) => {
     log({ createFlag: params, settings });
 
     if (!settings.apiKey) {
@@ -144,7 +141,7 @@ const createFlag: ExecutableCommand = {
         key,
         log,
         connection,
-        refreshCodeLens,
+        refreshDiagnostics,
       });
     }
 
