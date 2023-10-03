@@ -1,18 +1,9 @@
-import { Connection } from "vscode-languageserver/node";
-import { TextDocument } from "vscode-languageserver-textdocument";
-
 import openURL from "../utils/openURL";
-import type {
-  ExecutableCommand,
-  ExecutableCommandExecuteArgs,
-  Logger,
-  Settings,
-} from "../types";
+import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 import { post } from "../apiClient";
 import { runAllDiagnostics } from "../diagnostics";
 import { getProjectEnvFromApiKey } from "../prefabClient";
-
-import { SDK } from "../sdks/detection";
+import extractKey from "./extractKey";
 
 const BOOL_DEFAULT = "Create boolean flag";
 const CUSTOM_FLAG = "Create flag with custom variants";
@@ -20,23 +11,13 @@ const CUSTOM_FLAG = "Create flag with custom variants";
 const createBooleanFlag = async ({
   connection,
   settings,
-  apiKey,
   key,
   log,
   sdk,
   document,
   refreshDiagnostics,
-}: {
-  connection: Connection;
-  settings: Settings;
-  apiKey: string;
-  key: string;
-  log: Logger;
-  sdk: SDK;
-  document: TextDocument;
-  refreshDiagnostics: () => Promise<void>;
-}) => {
-  const projectEnv = getProjectEnvFromApiKey(apiKey);
+}: ExecutableCommandExecuteArgs & { key: string }) => {
+  const projectEnv = getProjectEnvFromApiKey(settings.apiKey);
 
   const payload = {
     key,
@@ -81,14 +62,10 @@ const createBooleanFlag = async ({
 
 const customFlag = ({
   key,
-  apiKey,
+  settings,
   log,
-}: {
-  key: string;
-  apiKey: string;
-  log: Logger;
-}) => {
-  const projectEnv = getProjectEnvFromApiKey(apiKey);
+}: ExecutableCommandExecuteArgs & { key: string }) => {
+  const projectEnv = getProjectEnvFromApiKey(settings.apiKey);
 
   openURL({
     url: `https://app.prefab.cloud/account/projects/${
@@ -101,30 +78,12 @@ const customFlag = ({
 
 const createFlag: ExecutableCommand = {
   command: "prefab.createFlag",
-  execute: async ({
-    connection,
-    document,
-    sdk,
-    params,
-    settings,
-    log,
-    refreshDiagnostics,
-  }: ExecutableCommandExecuteArgs) => {
+  execute: async (args: ExecutableCommandExecuteArgs) => {
+    const { connection, params, settings, log } = args;
+
     log({ createFlag: params, settings });
 
-    if (!settings.apiKey) {
-      connection.console.error(
-        "No API key set. Please update your configuration."
-      );
-      return;
-    }
-
-    if (!params.arguments || params.arguments.length < 1) {
-      connection.console.error("Prefab: Please provide a key for your flag.");
-      return;
-    }
-
-    const key = params.arguments[1];
+    const key = extractKey(params.arguments);
 
     const result = await connection.window.showInformationMessage(
       `Create ${key} flag`,
@@ -134,19 +93,16 @@ const createFlag: ExecutableCommand = {
 
     if (result?.title === BOOL_DEFAULT) {
       return await createBooleanFlag({
-        sdk,
-        document,
-        settings,
-        apiKey: settings.apiKey,
+        ...args,
         key,
-        log,
-        connection,
-        refreshDiagnostics,
       });
     }
 
     if (result?.title === CUSTOM_FLAG) {
-      return customFlag({ key, apiKey: settings.apiKey, log });
+      return customFlag({
+        ...args,
+        key,
+      });
     }
 
     return null;

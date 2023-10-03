@@ -10,8 +10,8 @@ import {
 
 import { apiUrlOrDefault } from "./settings";
 
-let prefab: Prefab;
-let prefabPromise: Promise<void>;
+export let prefab: Prefab;
+export let prefabPromise: Promise<void>;
 
 type PrefabConfig = Exclude<ReturnType<typeof prefab.raw>, undefined>;
 
@@ -41,7 +41,7 @@ const isBooleanConfig = (config: PrefabConfig) => {
   );
 };
 
-const keysForCompletionType = async (
+export const keysForCompletionType = async (
   completionType: CompletionTypeValue | null
 ) => {
   if (completionType === null) {
@@ -95,7 +95,22 @@ export const filterForMissingKeys = async (
   });
 };
 
-const prefabInit = ({
+export const valueOf = (value: Record<string, any>) =>
+  value[Object.keys(value)[0]];
+
+export const variantsForFeatureFlag = async (key: string, log: Logger) => {
+  await prefabPromise;
+
+  const config = prefab.raw(key);
+
+  if (!config) {
+    return [];
+  }
+
+  return config.allowableValues;
+};
+
+export const prefabInit = ({
   apiKey,
   apiUrl,
   log,
@@ -127,7 +142,13 @@ type ProjectEnvId = {
   id: string;
 };
 
-const getProjectEnvFromApiKey = (apiKey: string): ProjectEnvId => {
+export const getProjectEnvFromApiKey = (
+  apiKey: string | undefined
+): ProjectEnvId => {
+  if (!apiKey) {
+    throw new Error("No API key set. Please update your configuration.");
+  }
+
   const parts = /-P(\d+)-E(\d+)-SDK-/.exec(apiKey);
 
   if (!parts) {
@@ -145,13 +166,4 @@ const getProjectEnvFromApiKey = (apiKey: string): ProjectEnvId => {
     projectId,
     id: projectEnvId,
   };
-};
-
-export {
-  prefab,
-  prefabInit,
-  prefabPromise,
-  keysForCompletionType,
-  Prefab,
-  getProjectEnvFromApiKey,
 };
