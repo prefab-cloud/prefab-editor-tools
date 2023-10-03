@@ -1,4 +1,4 @@
-import { Prefab } from "@prefab-cloud/prefab-cloud-node";
+import { Prefab, type Contexts } from "@prefab-cloud/prefab-cloud-node";
 import fetch from "node-fetch";
 import {
   CompletionType,
@@ -95,10 +95,65 @@ export const filterForMissingKeys = async (
   });
 };
 
+export const allKeys = async () => {
+  await prefabPromise;
+
+  return prefab.keys();
+};
+
+const defaultContext = async (): Promise<Contexts> => {
+  await prefabPromise;
+
+  const context = prefab.defaultContext();
+
+  if (!context) {
+    throw new Error("No default context found");
+  }
+
+  return context;
+};
+
+export const prefabUserId = async (): Promise<string> => {
+  const context = await defaultContext();
+
+  const userId = context.get("prefab")?.get("user-id");
+
+  if (!userId) {
+    throw new Error("No user ID found");
+  }
+
+  return userId as string;
+};
+
+export const getOverride = (key: string, userId: string) => {
+  const config = prefab.raw(key);
+
+  if (!config) {
+    return undefined;
+  }
+
+  for (const row of config.rows) {
+    const override = row.values.find((value) => {
+      return value.criteria.some((criterion) => {
+        return (
+          criterion.propertyName === "prefab.user-id" &&
+          criterion.valueToMatch?.stringList?.values.includes(userId)
+        );
+      });
+    });
+
+    if (override) {
+      return override.value;
+    }
+  }
+
+  return undefined;
+};
+
 export const valueOf = (value: Record<string, any>) =>
   value[Object.keys(value)[0]];
 
-export const variantsForFeatureFlag = async (key: string, log: Logger) => {
+export const variantsForFeatureFlag = async (key: string) => {
   await prefabPromise;
 
   const config = prefab.raw(key);

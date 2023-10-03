@@ -41,7 +41,11 @@ const log: Logger = (message) => {
   if (typeof message === "string") {
     connection.console.info(message);
   } else {
-    connection.console.info(JSON.stringify(message));
+    if (message instanceof Map) {
+      connection.console.info(JSON.stringify(Object.fromEntries(message)));
+    } else {
+      connection.console.info(JSON.stringify(message));
+    }
   }
 };
 

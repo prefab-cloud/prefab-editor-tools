@@ -17,6 +17,8 @@ const METHOD_REGEXES: Record<string, [RegExp, number]> = {
   [MethodType.GET]: [GET_REGEX, 12],
 };
 
+const METHOD_KEYS = Object.keys(METHOD_REGEXES).sort();
+
 const RubySDK: SDK = {
   name: "ruby",
 
@@ -50,9 +52,7 @@ const RubySDK: SDK = {
 
     const text = document.getText();
 
-    const methodKeys = Object.keys(METHOD_REGEXES).sort();
-
-    methodKeys.forEach((methodType) => {
+    METHOD_KEYS.forEach((methodType) => {
       const [regex, offset] = METHOD_REGEXES[methodType];
 
       for (const match of text.matchAll(regex)) {
