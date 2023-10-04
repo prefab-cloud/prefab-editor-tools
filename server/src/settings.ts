@@ -21,6 +21,8 @@ const warnAboutMissingApiKey = (connection: Connection) => {
 
 let settings: Settings = {};
 
+const SUPPORTED_FILES = [".env", ".envrc"];
+
 const getSettings = async (
   connection: Connection,
   log: Logger,
@@ -33,20 +35,22 @@ const getSettings = async (
   log("Lifecyle", { getSettings: { workspaceFolders } });
 
   workspaceFolders?.forEach((folder) => {
-    if (folder.uri.startsWith("file://") && !apiKey) {
-      const envFile = path.join(folder.uri.split("file://")[1], `.env`);
-      if (fs.existsSync(envFile)) {
-        fs.readFileSync(envFile, "utf8")
-          .split("\n")
-          .forEach((line) => {
-            if (line.startsWith("PREFAB_API_KEY=")) {
-              apiKey = line.split("PREFAB_API_KEY=")[1];
+    SUPPORTED_FILES.forEach((file) => {
+      if (folder.uri.startsWith("file://") && !apiKey) {
+        const envFile = path.join(folder.uri.split("file://")[1], file);
+        if (fs.existsSync(envFile)) {
+          fs.readFileSync(envFile, "utf8")
+            .split("\n")
+            .forEach((line) => {
+              if (line.startsWith("PREFAB_API_KEY=")) {
+                apiKey = line.split("PREFAB_API_KEY=")[1];
 
-              log("Settings", `Pulled API key from .env file ${envFile}`);
-            }
-          });
+                log("Settings", `Pulled API key from ${file} file ${envFile}`);
+              }
+            });
+        }
       }
-    }
+    });
   });
 
   const newSettings = await connection.workspace.getConfiguration("prefab");
