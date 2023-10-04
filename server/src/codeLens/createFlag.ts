@@ -10,7 +10,7 @@ const createFlag: CodeLensAnalyzer = async ({
   getActiveDiagnostics,
   log,
 }: CodeLensAnalyzerArgs) => {
-  log({ "codeLens createFlag": { document } });
+  log("CodeLens", { createFlag: document.uri });
 
   const relevantDiagnostics = getActiveDiagnostics(document.uri).filter(
     ({ data }) => {
@@ -21,7 +21,7 @@ const createFlag: CodeLensAnalyzer = async ({
     }
   );
 
-  log({ relevantDiagnostics });
+  log("CodeLens", { relevantDiagnostics });
 
   return relevantDiagnostics.map((diagnostic) => {
     const { range } = diagnostic;

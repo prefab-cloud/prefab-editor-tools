@@ -3,21 +3,19 @@ import { post } from "../apiClient";
 import extractKey from "./extractKey";
 import {
   variantsForFeatureFlag,
-  getOverride,
-  prefabUserId,
-  valueOf,
+  overrides,
+  valueOfToString,
 } from "../prefabClient";
 
 const overrideVariant: ExecutableCommand = {
   command: "prefab.overrideVariant",
   execute: async (args: ExecutableCommandExecuteArgs) => {
-    const { connection, log, settings, params } = args;
-    log({ overrideVariant: params });
+    const { connection, log, settings, params, refresh } = args;
+    log("Command", { overrideVariant: params });
 
     const key = extractKey(params.arguments);
 
-    const userId = await prefabUserId();
-    const override = getOverride(key, userId);
+    const override = overrides[key];
 
     // get the flag from prefab and get all the variants
     const variants = await variantsForFeatureFlag(key);
@@ -27,12 +25,12 @@ const overrideVariant: ExecutableCommand = {
         return JSON.stringify(variant) !== JSON.stringify(override);
       })
       .map((variant) => {
-        return { title: valueOf(variant).toString() };
+        return { title: valueOfToString(variant) };
       });
 
     const removeCopy = override ? `*Remove override*` : undefined;
 
-    if (override) {
+    if (removeCopy) {
       options.push({ title: removeCopy });
     }
 
@@ -43,20 +41,18 @@ const overrideVariant: ExecutableCommand = {
 
     if (removeCopy && result?.title === removeCopy) {
       // TODO: Unset override
-      log("Should remove override");
+      log("Command", "Should remove override");
     } else {
       const variant = result
-        ? variants.find(
-            (variant) => valueOf(variant).toString() === result.title
-          )
+        ? variants.find((variant) => valueOfToString(variant) === result.title)
         : null;
 
       if (!variant) {
-        log("No variant selected");
+        log("Command", "No variant selected");
         return;
       }
 
-      log({ selectedVariant: variant });
+      log("Command", { selectedVariant: variant });
 
       const request = await post({
         requestPath: "/api/v1/config/assign-variant",
@@ -76,7 +72,7 @@ const overrideVariant: ExecutableCommand = {
       }
     }
 
-    // TODO: show current override (if any)
+    refresh();
   },
 };
 

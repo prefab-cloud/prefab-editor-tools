@@ -2,34 +2,30 @@ import {
   CompletionItemKind,
   CompletionParams,
 } from "vscode-languageserver/node";
-import { TextDocument } from "vscode-languageserver-textdocument";
-import type { CompletionTypeValue } from "../types";
-import { SDK } from "../sdks/detection";
+import type { AnnotatedDocument, CompletionTypeValue, Logger } from "../types";
 
 const onCompletion = async ({
   document,
   log,
   params,
   keysForCompletionType,
-  sdk,
 }: {
-  document: TextDocument;
-  log: (message: string | object) => void;
+  document: AnnotatedDocument;
+  log: Logger;
   keysForCompletionType: (
     type: CompletionTypeValue | null
   ) => Promise<string[]>;
-  sdk: SDK;
   params: CompletionParams;
 }) => {
-  log({ onCompletion: params });
+  log("Completion", { onCompletion: params });
 
-  const completionType = sdk.completionType(document, params.position);
+  const completionType = document.completionType(params.position);
 
-  log({ completionType });
+  log("Completion", { completionType });
 
   const configKeys = await keysForCompletionType(completionType);
 
-  log({ configKeys });
+  log("Completion", { configKeys });
 
   return configKeys.map((name) => {
     return {

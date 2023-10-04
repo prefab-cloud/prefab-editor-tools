@@ -15,15 +15,17 @@ type Result = {
 export const runAllDiagnostics = async (
   args: DiagnosticAnalyzerArgs
 ): Promise<Result> => {
+  const { document } = args;
+
   const allDiagnostics = await Promise.all(
     diagnostics.map((diagnostic) => diagnostic(args))
   );
 
   const flatDiagnostics = allDiagnostics.flat();
 
-  const diagnosticsWas = activeDiagnostics[args.document.uri] || [];
+  const diagnosticsWas = activeDiagnostics[document.uri] || [];
 
-  activeDiagnostics[args.document.uri] = flatDiagnostics;
+  activeDiagnostics[document.uri] = flatDiagnostics;
 
   return {
     diagnostics: flatDiagnostics,

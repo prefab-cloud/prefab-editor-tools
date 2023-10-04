@@ -47,14 +47,14 @@ const updateSettings = (
 
   if (settings.apiKey !== newSettings.apiKey) {
     if (newSettings.apiKey) {
-      log("Initializing internal Prefab client");
+      log("Settings", "Initializing internal Prefab client");
       // TODO: respond to updates on Prefab's internal settings (SSE)
       prefabInit({
         apiKey: newSettings.apiKey,
         apiUrl: newSettings.apiUrl,
         log,
         onUpdate: () => {
-          log("Internal Prefab client updated");
+          log("Settings", "Internal Prefab client updated");
           refresh();
         },
       });

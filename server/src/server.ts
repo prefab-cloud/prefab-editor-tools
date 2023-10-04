@@ -4,6 +4,7 @@ import {
   ProposedFeatures,
   TextDocumentSyncKind,
   InitializeResult,
+  InlayHintRequest,
   DocumentDiagnosticRequest,
   DocumentDiagnosticParams,
 } from "vscode-languageserver/node";
@@ -11,23 +12,21 @@ import {
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 import onCompletion from "./requests/onCompletion";
-import { detectSDK, SDK } from "./sdks/detection";
 import { getActiveDiagnostics, runAllDiagnostics } from "./diagnostics";
 
 import { commands, commandLookup } from "./commands";
 import { runAllCodeLens } from "./codeLens";
+import { runAllInlayHints } from "./inlayHints";
 
 import { debounceHeadTail } from "./utils/debounce";
 
-import {
-  settings,
-  getSettings as rawGetSettings,
-  updateSettings,
-} from "./settings";
+import { getSettings, settings, updateSettings } from "./settings";
 
 import { prefabPromise, keysForCompletionType } from "./prefabClient";
 
-import { type Logger } from "./types";
+import type { Logger } from "./types";
+
+import { annotateDocument, getAnnotatedDocument } from "./documentAnnotations";
 
 // Create a connection for the server, using Node's IPC as a
 // transport (overridden with `--stdio` flag).
@@ -37,29 +36,27 @@ const connection = createConnection(ProposedFeatures.all);
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-const log: Logger = (message) => {
+const log: Logger = (scope, message) => {
+  let stringMessage: string;
+
   if (typeof message === "string") {
-    connection.console.info(message);
+    stringMessage = message;
   } else {
     if (message instanceof Map) {
-      connection.console.info(JSON.stringify(Object.fromEntries(message)));
+      stringMessage = JSON.stringify(Object.fromEntries(message));
     } else {
-      connection.console.info(JSON.stringify(message));
+      stringMessage = JSON.stringify(message);
     }
   }
+
+  connection.console.info(`[${scope}]: ${stringMessage}`);
 };
 
-let refreshDiagnostics = async () => {};
 let canRefreshCodeLens = false;
-
-let refresh = async () => {
-  await refreshDiagnostics();
-};
-
-const getSettings = async () => await rawGetSettings(connection, log, refresh);
+let canRefreshInlayHints = false;
 
 connection.onInitialize((params) => {
-  log({ onInitialize: params });
+  log("Lifecyle", { onInitialize: params });
 
   const result: InitializeResult = {
     capabilities: {
@@ -74,10 +71,18 @@ connection.onInitialize((params) => {
     },
   };
 
+  if (params.capabilities.textDocument?.inlayHint) {
+    result.capabilities.inlayHintProvider = true;
+
+    if (params.capabilities.workspace?.inlayHint?.refreshSupport) {
+      canRefreshInlayHints = true;
+    }
+  }
+
   canRefreshCodeLens =
     params.capabilities.workspace?.codeLens?.refreshSupport ?? false;
 
-  log(`onInitialize returning ${JSON.stringify(result)}`);
+  log("Lifecyle", `onInitialize returning ${JSON.stringify(result)}`);
 
   return result;
 });
@@ -87,40 +92,26 @@ connection.onDidChangeConfiguration((change) => {
 });
 
 const ready = async () => {
-  await getSettings();
-
-  if (!prefabPromise) {
-    return false;
-  }
+  await getSettings(connection, log, refresh);
 
   await prefabPromise;
-  return true;
 };
 
-type DocumentWithSDK = {
-  document: TextDocument;
-  sdk: SDK;
-};
-
-const getDocumentAndSDK = async (
-  uriOrDocument: string | TextDocument
-): Promise<DocumentWithSDK> => {
-  const isReady = await ready();
-
+const getDocument = (uriOrDocument: string | TextDocument): TextDocument => {
   const document =
     typeof uriOrDocument === "string"
       ? documents.get(uriOrDocument)
       : uriOrDocument;
 
-  if (document && isReady) {
-    return { document, sdk: detectSDK(document) };
-  } else {
+  if (!document) {
     throw new Error(
       `Could not find the document for ${JSON.stringify(
         uriOrDocument
       )} provided.`
     );
   }
+
+  return document;
 };
 
 connection.onExecuteCommand(async (params) => {
@@ -134,25 +125,25 @@ connection.onExecuteCommand(async (params) => {
     );
   }
 
-  const documentWithSDK = await getDocumentAndSDK(params.arguments[0]);
+  const document = getAnnotatedDocument(getDocument(params.arguments[0]));
 
   commandLookup[params.command].execute({
-    ...(documentWithSDK ?? {}),
+    document,
     params,
     connection,
     settings,
     log,
-    refreshDiagnostics,
+    refresh,
   });
 
   return null;
 });
 
 connection.onCompletion(async (params) => {
-  const documentWithSDK = await getDocumentAndSDK(params.textDocument.uri);
+  const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
 
   return onCompletion({
-    ...documentWithSDK,
+    document,
     params,
     keysForCompletionType,
     log,
@@ -160,42 +151,47 @@ connection.onCompletion(async (params) => {
 });
 
 connection.onCodeLens(async (params) => {
-  const documentWithSDK = await getDocumentAndSDK(params.textDocument.uri);
+  const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
 
   return runAllCodeLens({
     log,
     getActiveDiagnostics,
-    ...documentWithSDK,
+    document,
   });
 });
 
 connection.onRequest(
   DocumentDiagnosticRequest.method,
   async (params: DocumentDiagnosticParams) => {
-    log({ [DocumentDiagnosticRequest.method]: params });
-    const documentWithSDK = await getDocumentAndSDK(params.textDocument.uri);
+    const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
 
-    const { diagnostics } = await runAllDiagnostics({
-      log,
-      ...documentWithSDK,
-    });
+    const { diagnostics } = await runAllDiagnostics({ log, document });
 
     return { items: diagnostics };
   }
 );
 
-const diagnosticDebounces: Record<string, () => void> = {};
+connection.onRequest(InlayHintRequest.method, async (params) => {
+  const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
+
+  const inlayHints = await runAllInlayHints({ log, document });
+
+  return inlayHints;
+});
+
+const updateDebounces: Record<string, () => void> = {};
 
 const DEBOUNCE_TIME = 1000;
 
-const debouncedRefreshDiagnostics = async (uri: string) => {
-  if (!diagnosticDebounces[uri]) {
-    const documentWithSDK = await getDocumentAndSDK(uri);
+// TODO: do we even need to debounce this anymore?
+const debouncedUpdate = async (uri: string) => {
+  if (!updateDebounces[uri]) {
+    updateDebounces[uri] = debounceHeadTail(async () => {
+      const document = getAnnotatedDocument(getDocument(uri));
 
-    diagnosticDebounces[uri] = debounceHeadTail(async () => {
       const { diagnostics, changed } = await runAllDiagnostics({
         log,
-        ...documentWithSDK,
+        document,
       });
 
       connection.sendDiagnostics({
@@ -206,21 +202,39 @@ const debouncedRefreshDiagnostics = async (uri: string) => {
       if (changed && canRefreshCodeLens) {
         connection.sendRequest("workspace/codeLens/refresh");
       }
+
+      // This isn't happening at the right time
+      if (canRefreshInlayHints) {
+        connection.sendRequest("workspace/inlayHint/refresh");
+      }
     }, DEBOUNCE_TIME);
   }
 
-  diagnosticDebounces[uri]();
+  updateDebounces[uri]();
 };
 
-documents.onDidChangeContent(async (change) => {
-  debouncedRefreshDiagnostics(change.document.uri);
+documents.onDidOpen(async (change) => {
+  await ready();
+
+  annotateDocument(getDocument(change.document));
+
+  debouncedUpdate(change.document.uri);
 });
 
-refreshDiagnostics = async () => {
-  log("Refreshing diagnostics");
+documents.onDidChangeContent(async (change) => {
+  await ready();
+
+  annotateDocument(getDocument(change.document));
+
+  debouncedUpdate(change.document.uri);
+});
+
+const refresh = async () => {
+  log("Lifecyle", "Refreshing");
 
   documents.all().forEach(async (doc) => {
-    debouncedRefreshDiagnostics(doc.uri);
+    annotateDocument(getDocument(doc));
+    debouncedUpdate(doc.uri);
   });
 };
 

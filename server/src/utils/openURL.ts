@@ -3,7 +3,7 @@ import type { Logger } from "../types";
 import * as childProcess from "child_process";
 
 const openURL = ({ url, log }: { url: string; log: Logger }) => {
-  log(`Prefab: Opening ${url}`);
+  log("Utility", `Prefab: Opening ${url}`);
 
   if (process.platform === "darwin") {
     return childProcess.exec(`open ${url}`);

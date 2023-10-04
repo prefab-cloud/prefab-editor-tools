@@ -1,33 +1,22 @@
 import {
   DiagnosticDataKind,
   DiagnosticAnalyzer,
-  Logger,
+  DiagnosticAnalyzerArgs,
   MethodType,
 } from "../types";
 import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefabClient";
 
 import { Diagnostic, DiagnosticSeverity } from "vscode-languageserver/node";
 
-import { TextDocument } from "vscode-languageserver-textdocument";
-
-import { SDK } from "../sdks/detection";
-
 const missingKeys: DiagnosticAnalyzer = async ({
   document,
   filterForMissingKeys,
-  sdk,
   log,
   exclude,
-}: {
-  document: TextDocument;
-  filterForMissingKeys?: typeof defaultFilterForMissingKeys;
-  sdk: SDK;
-  log: Logger;
-  exclude?: string[];
-}) => {
+}: DiagnosticAnalyzerArgs) => {
   const missingKeyMethods = await (
     filterForMissingKeys ?? defaultFilterForMissingKeys
-  )(sdk.detectMethods(document), log);
+  )(document.methodLocations);
 
   const filteredMissingKeyMethods = missingKeyMethods.filter((method) => {
     if (exclude?.includes(method.key)) {
@@ -37,7 +26,7 @@ const missingKeys: DiagnosticAnalyzer = async ({
     return true;
   });
 
-  log({ filteredMissingKeyMethods });
+  log("Diagnostic", { filteredMissingKeyMethods });
 
   const diagnostics: Diagnostic[] = filteredMissingKeyMethods.map((method) => {
     const diagnostic: Diagnostic = {

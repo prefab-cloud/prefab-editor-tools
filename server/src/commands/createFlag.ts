@@ -13,9 +13,8 @@ const createBooleanFlag = async ({
   settings,
   key,
   log,
-  sdk,
   document,
-  refreshDiagnostics,
+  refresh,
 }: ExecutableCommandExecuteArgs & { key: string }) => {
   const projectEnv = getProjectEnvFromApiKey(settings.apiKey);
 
@@ -41,11 +40,10 @@ const createBooleanFlag = async ({
     return;
   }
 
-  log(`Prefab: Created boolean flag ${payload.key}`);
+  log("Command", `Prefab: Created boolean flag ${payload.key}`);
 
   const { diagnostics } = await runAllDiagnostics({
     log,
-    sdk,
     document,
     exclude: [key],
   });
@@ -55,9 +53,9 @@ const createBooleanFlag = async ({
     diagnostics,
   });
 
-  refreshDiagnostics();
+  refresh();
 
-  log({ uri: document.uri, updatedDiagnostics: diagnostics });
+  log("Command", { uri: document.uri, updatedDiagnostics: diagnostics });
 };
 
 const customFlag = ({
@@ -81,7 +79,7 @@ const createFlag: ExecutableCommand = {
   execute: async (args: ExecutableCommandExecuteArgs) => {
     const { connection, params, settings, log } = args;
 
-    log({ createFlag: params, settings });
+    log("Command", { createFlag: params, settings });
 
     const key = extractKey(params.arguments);
 
