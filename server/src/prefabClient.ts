@@ -23,6 +23,8 @@ type ConfigValue = Exclude<
   undefined
 >;
 
+type ConfigValueValue = string | number | boolean | string[];
+
 const getAllConfigs = (): PrefabConfig[] => {
   const configs: PrefabConfig[] = [];
 
@@ -107,11 +109,13 @@ export const allKeys = async () => {
 };
 
 export const valueOf = (
-  value: Record<string, any>
+  value: Record<string, ConfigValueValue>
 ): Exclude<ReturnType<typeof prefab.get>, undefined> =>
   value[Object.keys(value)[0]];
 
-export const valueOfToString = (value: Record<string, any>): string => {
+export const valueOfToString = (
+  value: Record<string, ConfigValueValue>
+): string => {
   const v = valueOf(value);
 
   if (typeof v === "string") {

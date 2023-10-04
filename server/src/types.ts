@@ -25,7 +25,7 @@ export type LogScope =
   | "Settings"
   | "Utility";
 
-export type Logger = (scope: LogScope, message: any) => void;
+export type Logger = (scope: LogScope, message: unknown) => void;
 
 export type Documents = TextDocuments<TextDocument>;
 
