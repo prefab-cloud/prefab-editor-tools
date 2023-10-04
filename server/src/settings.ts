@@ -21,7 +21,7 @@ const warnAboutMissingApiKey = (connection: Connection) => {
 
 let settings: Settings = {};
 
-const SUPPORTED_FILES = [".env", ".envrc"];
+const SUPPORTED_FILES = [".env", ".envrc", ".env.local"];
 
 const getSettings = async (
   connection: Connection,
@@ -42,7 +42,7 @@ const getSettings = async (
           fs.readFileSync(envFile, "utf8")
             .split("\n")
             .forEach((line) => {
-              if (line.startsWith("PREFAB_API_KEY=")) {
+              if (/^(EXPORT )?PREFAB_API_KEY=/.test(line)) {
                 apiKey = line.split("PREFAB_API_KEY=")[1];
 
                 log("Settings", `Pulled API key from ${file} file ${envFile}`);
