@@ -6,15 +6,26 @@ import {
   Range,
   TextDocuments,
   LSPAny,
+  InlayHint,
 } from "vscode-languageserver/node";
 
-import { TextDocument } from "vscode-languageserver-textdocument";
+import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import { filterForMissingKeys as defaultFilterForMissingKeys } from "./prefabClient";
 
-import { SDK } from "./sdks/detection";
+export type LogScope =
+  | "ApiClient"
+  | "CodeLens"
+  | "Command"
+  | "Completion"
+  | "Diagnostic"
+  | "InlayHint"
+  | "Lifecyle"
+  | "PrefabClient"
+  | "Settings"
+  | "Utility";
 
-export type Logger = (message: any) => void;
+export type Logger = (scope: LogScope, message: any) => void;
 
 export type Documents = TextDocuments<TextDocument>;
 
@@ -56,12 +67,11 @@ export interface Settings {
 
 export type ExecutableCommandExecuteArgs = {
   connection: Connection;
-  document: TextDocument;
-  sdk: SDK;
+  document: AnnotatedDocument;
   params: ExecuteCommandParams;
   settings: Settings;
   log: Logger;
-  refreshDiagnostics: () => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 export type ExecutableCommand = {
@@ -70,11 +80,10 @@ export type ExecutableCommand = {
   execute: ({
     connection,
     document,
-    sdk,
     params,
     settings,
     log,
-    refreshDiagnostics,
+    refresh,
   }: ExecutableCommandExecuteArgs) => Promise<LSPAny>;
 };
 
@@ -83,8 +92,7 @@ export const DiagnosticDataKind = {
 };
 
 export type DiagnosticAnalyzerArgs = {
-  document: TextDocument;
-  sdk: SDK;
+  document: AnnotatedDocument;
   log: Logger;
   exclude?: string[];
   filterForMissingKeys?: typeof defaultFilterForMissingKeys;
@@ -95,8 +103,7 @@ export type DiagnosticAnalyzer = (
 ) => Promise<Diagnostic[]>;
 
 export type CodeLensAnalyzerArgs = {
-  document: TextDocument;
-  sdk: SDK;
+  document: AnnotatedDocument;
   log: Logger;
   getActiveDiagnostics: (uri: string) => Diagnostic[];
 };
@@ -104,3 +111,22 @@ export type CodeLensAnalyzerArgs = {
 export type CodeLensAnalyzer = (
   args: CodeLensAnalyzerArgs
 ) => Promise<CodeLens[]>;
+
+export type InlayHintAnalyzerArgs = {
+  document: AnnotatedDocument;
+  log: Logger;
+};
+
+export type InlayHintAnalyzer = (
+  args: InlayHintAnalyzerArgs
+) => Promise<InlayHint[]>;
+
+export type DocumentAnnotations = {
+  methodLocations: MethodLocation[];
+};
+
+export type AnnotatedDocument = {
+  uri: string;
+  completionType: (position: Position) => CompletionTypeValue | null;
+  methodLocations: MethodLocation[];
+};

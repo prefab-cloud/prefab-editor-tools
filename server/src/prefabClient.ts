@@ -1,4 +1,4 @@
-import { Prefab, type Contexts } from "@prefab-cloud/prefab-cloud-node";
+import { Prefab } from "@prefab-cloud/prefab-cloud-node";
 import fetch from "node-fetch";
 import {
   CompletionType,
@@ -11,13 +11,19 @@ import {
 import { apiUrlOrDefault } from "./settings";
 
 export let prefab: Prefab;
-export let prefabPromise: Promise<void>;
+export let prefabPromise: Promise<void> = new Promise(() => {});
+export let userId: string;
+export let overrides: Record<string, ConfigValue> = {};
+export let overrideKeys: string[] = [];
 
 type PrefabConfig = Exclude<ReturnType<typeof prefab.raw>, undefined>;
 
-const getAllConfigs = async (): Promise<PrefabConfig[]> => {
-  await prefabPromise;
+type ConfigValue = Exclude<
+  PrefabConfig["rows"][0]["values"][0]["value"],
+  undefined
+>;
 
+const getAllConfigs = (): PrefabConfig[] => {
   const configs: PrefabConfig[] = [];
 
   prefab.keys().map((key) => {
@@ -48,7 +54,9 @@ export const keysForCompletionType = async (
     return [];
   }
 
-  const configs = await getAllConfigs();
+  await prefabPromise;
+
+  const configs = getAllConfigs();
 
   switch (completionType) {
     case CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS:
@@ -81,14 +89,11 @@ export const keysForCompletionType = async (
   }
 };
 
-export const filterForMissingKeys = async (
-  methods: MethodLocation[],
-  log: Logger
-) => {
-  const configs = await getAllConfigs();
-  const keys = configs.map((config) => config.key);
+export const filterForMissingKeys = async (methods: MethodLocation[]) => {
+  await prefabPromise;
 
-  log({ keys });
+  const configs = getAllConfigs();
+  const keys = configs.map((config) => config.key);
 
   return methods.filter((method) => {
     return !keys.includes(method.key);
@@ -101,57 +106,20 @@ export const allKeys = async () => {
   return prefab.keys();
 };
 
-const defaultContext = async (): Promise<Contexts> => {
-  await prefabPromise;
-
-  const context = prefab.defaultContext();
-
-  if (!context) {
-    throw new Error("No default context found");
-  }
-
-  return context;
-};
-
-export const prefabUserId = async (): Promise<string> => {
-  const context = await defaultContext();
-
-  const userId = context.get("prefab")?.get("user-id");
-
-  if (!userId) {
-    throw new Error("No user ID found");
-  }
-
-  return userId as string;
-};
-
-export const getOverride = (key: string, userId: string) => {
-  const config = prefab.raw(key);
-
-  if (!config) {
-    return undefined;
-  }
-
-  for (const row of config.rows) {
-    const override = row.values.find((value) => {
-      return value.criteria.some((criterion) => {
-        return (
-          criterion.propertyName === "prefab.user-id" &&
-          criterion.valueToMatch?.stringList?.values.includes(userId)
-        );
-      });
-    });
-
-    if (override) {
-      return override.value;
-    }
-  }
-
-  return undefined;
-};
-
-export const valueOf = (value: Record<string, any>) =>
+export const valueOf = (
+  value: Record<string, any>
+): Exclude<ReturnType<typeof prefab.get>, undefined> =>
   value[Object.keys(value)[0]];
+
+export const valueOfToString = (value: Record<string, any>): string => {
+  const v = valueOf(value);
+
+  if (typeof v === "string") {
+    return v;
+  }
+
+  return JSON.stringify(v);
+};
 
 export const variantsForFeatureFlag = async (key: string) => {
   await prefabPromise;
@@ -165,6 +133,46 @@ export const variantsForFeatureFlag = async (key: string) => {
   return config.allowableValues;
 };
 
+const internalOnUpdate = () => {
+  const context = prefab.defaultContext();
+
+  if (!context) {
+    throw new Error("No default context found.");
+  }
+
+  userId = context.get("prefab")?.get("user-id") as string;
+
+  if (!userId) {
+    throw new Error("No user ID found.");
+  }
+
+  const newOverrides: typeof overrides = {};
+
+  getAllConfigs().forEach((config) => {
+    let override: ConfigValue | undefined;
+
+    for (const row of config.rows) {
+      for (const value of row.values) {
+        for (const criterion of value.criteria) {
+          if (
+            criterion.propertyName === "prefab.user-id" &&
+            criterion.valueToMatch?.stringList?.values.includes(userId)
+          ) {
+            override = value.value;
+          }
+        }
+      }
+    }
+
+    if (override) {
+      newOverrides[config.key] = override;
+    }
+  });
+
+  overrides = newOverrides;
+  overrideKeys = Object.keys(overrides);
+};
+
 export const prefabInit = ({
   apiKey,
   apiUrl,
@@ -176,20 +184,23 @@ export const prefabInit = ({
   log: Logger;
   onUpdate: () => void;
 }) => {
+  log("PrefabClient", "Initializing Prefab client");
+
   prefab = new Prefab({
     apiKey,
     apiUrl: apiUrlOrDefault({ apiUrl }),
     enableSSE: true,
     defaultLogLevel: "warn",
     fetch,
-    onUpdate,
+    onUpdate: () => {
+      log("PrefabClient", "Prefab client updated");
+      internalOnUpdate();
+      log("PrefabClient", { overrides });
+      onUpdate();
+    },
   });
 
   prefabPromise = prefab.init();
-
-  prefabPromise.then(() => {
-    log("Internal Prefab client initialized");
-  });
 };
 
 type ProjectEnvId = {

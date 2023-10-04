@@ -5,8 +5,8 @@ import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 
 const refreshDiagnostics: ExecutableCommand = {
   command: "prefab.refreshDiagnostics",
-  execute: async ({ refreshDiagnostics }: ExecutableCommandExecuteArgs) => {
-    await refreshDiagnostics();
+  execute: async ({ refresh }: ExecutableCommandExecuteArgs) => {
+    await refresh();
   },
 };
 

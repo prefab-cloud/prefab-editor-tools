@@ -1,6 +1,5 @@
 import { expect, it, describe } from "bun:test";
-import { MethodLocation } from "../types";
-import { SDK } from "../sdks/detection";
+import { AnnotatedDocument, MethodLocation } from "../types";
 
 import { log, mkDocument } from "../testHelpers";
 import missingKeys from "./missingKeys";
@@ -29,20 +28,15 @@ describe("missingKeys", () => {
       });
     };
 
-    const document = mkDocument({
+    const document: AnnotatedDocument = {
       uri,
-      text: missingFlagsAndConfigText,
-      languageId: "ruby",
-    });
-
-    const sdk = {
-      detectMethods: () => JSON.parse(cannedResponse),
+      completionType: () => null,
+      methodLocations: JSON.parse(cannedResponse),
     };
 
     const results = await missingKeys({
       document,
       filterForMissingKeys,
-      sdk: sdk as unknown as SDK,
       log,
     });
 
@@ -160,20 +154,15 @@ describe("missingKeys", () => {
       });
     };
 
-    const document = mkDocument({
+    const document: AnnotatedDocument = {
       uri,
-      text: "",
-      languageId: "ruby",
-    });
-
-    const sdk = {
-      detectMethods: () => [],
+      completionType: () => null,
+      methodLocations: [],
     };
 
     const results = await missingKeys({
       document,
       filterForMissingKeys,
-      sdk: sdk as unknown as SDK,
       log,
     });
 
@@ -188,20 +177,15 @@ describe("missingKeys", () => {
       });
     };
 
-    const document = mkDocument({
+    const document: AnnotatedDocument = {
       uri,
-      text: missingFlagsAndConfigText,
-      languageId: "ruby",
-    });
-
-    const sdk = {
-      detectMethods: () => JSON.parse(cannedResponse),
+      completionType: () => null,
+      methodLocations: JSON.parse(cannedResponse),
     };
 
     const results = await missingKeys({
       document,
       filterForMissingKeys,
-      sdk: sdk as unknown as SDK,
       log,
     });
 
@@ -216,7 +200,6 @@ describe("missingKeys", () => {
     const resultsWithExclusion = await missingKeys({
       document,
       filterForMissingKeys,
-      sdk: sdk as unknown as SDK,
       log,
       exclude: ["everyone.is.pro"],
     });

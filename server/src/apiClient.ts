@@ -29,7 +29,7 @@ const post = async ({
 
   const uri = path.join(apiUrlOrDefault(settings), requestPath);
 
-  log({ POST: { uri, payload } });
+  log("ApiClient", { POST: { uri, payload } });
 
   return fetch(uri, {
     method: "POST",
