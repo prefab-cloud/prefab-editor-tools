@@ -1,16 +1,11 @@
 import { expect, it, describe } from "bun:test";
 import { AnnotatedDocument, MethodLocation } from "../types";
 
-import { log, mkDocument } from "../testHelpers";
+import { log } from "../testHelpers";
 import missingKeys from "./missingKeys";
 
 import * as fs from "fs";
 import * as path from "path";
-
-const missingFlagsAndConfigText = fs.readFileSync(
-  path.join(__dirname, "../fixtures/user.rb.txt"),
-  "utf-8"
-);
 
 const cannedResponse = fs.readFileSync(
   path.join(__dirname, "../fixtures/user.rb.parsed.json"),

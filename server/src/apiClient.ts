@@ -10,7 +10,7 @@ const post = async ({
 }: {
   settings: Settings;
   requestPath: string;
-  payload: any;
+  payload: unknown;
   log: Logger;
 }) => {
   if (!settings.apiKey) {

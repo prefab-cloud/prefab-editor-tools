@@ -1,4 +1,4 @@
-export const debounceHeadTail = <F extends (...args: any[]) => void>(
+export const debounceHeadTail = <F extends (...args: unknown[]) => void>(
   func: F,
   delay: number
 ) => {

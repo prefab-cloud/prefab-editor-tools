@@ -3,7 +3,7 @@ import { DiagnosticAnalyzerArgs } from "../types";
 
 import missingKeys from "./missingKeys";
 
-let activeDiagnostics: Record<string, Diagnostic[]> = {};
+const activeDiagnostics: Record<string, Diagnostic[]> = {};
 
 export const diagnostics = [missingKeys];
 
