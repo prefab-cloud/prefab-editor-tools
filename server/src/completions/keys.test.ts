@@ -1,12 +1,14 @@
 import { expect, it, describe } from "bun:test";
 import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
 import { CompletionType, type CompletionTypeValue } from "../types";
-import onCompletion from "./onCompletion";
+import keys from "./keys";
 import { log } from "../testHelpers";
 
 const uri = "file:///some/path/test.txt";
 
-const keysForCompletionType = async (type: CompletionTypeValue | null) => {
+const providedKeysForCompletionType = async (
+  type: CompletionTypeValue | null
+) => {
   switch (type) {
     case CompletionType.BOOLEAN_FEATURE_FLAGS:
       return ["flag1", "flag2"];
@@ -17,15 +19,12 @@ const keysForCompletionType = async (type: CompletionTypeValue | null) => {
   }
 };
 
-describe("onCompletion", () => {
+describe("keys", () => {
   it("can return flag keys", async () => {
     const completionType = (): CompletionTypeValue | null =>
       CompletionType.BOOLEAN_FEATURE_FLAGS;
 
-    const params = {
-      textDocument: { uri },
-      position: { line: 3, character: 20 },
-    } as HoverParams;
+    const position = { line: 3, character: 20 };
 
     const document = {
       uri: "file:///some/path/test.txt",
@@ -33,10 +32,10 @@ describe("onCompletion", () => {
       methodLocations: [],
     };
 
-    const results = await onCompletion({
-      params,
+    const results = await keys({
+      position,
       document,
-      keysForCompletionType,
+      providedKeysForCompletionType,
       log,
     });
 
@@ -58,10 +57,7 @@ describe("onCompletion", () => {
     const completionType = (): CompletionTypeValue | null =>
       CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS;
 
-    const params = {
-      textDocument: { uri },
-      position: { line: 7, character: 18 },
-    } as HoverParams;
+    const position = { line: 7, character: 18 };
 
     const document = {
       uri: "file:///some/path/test.txt",
@@ -69,10 +65,10 @@ describe("onCompletion", () => {
       methodLocations: [],
     };
 
-    const results = await onCompletion({
-      params,
+    const results = await keys({
+      position,
       document,
-      keysForCompletionType,
+      providedKeysForCompletionType,
       log,
     });
 
@@ -98,10 +94,7 @@ describe("onCompletion", () => {
   it("returns an empty array if there's no identifiable FF or Config method", async () => {
     const completionType = () => null;
 
-    const params = {
-      textDocument: { uri },
-      position: { line: 1, character: 10 },
-    } as HoverParams;
+    const position = { line: 1, character: 10 };
 
     const document = {
       uri: "file:///some/path/test.txt",
@@ -109,10 +102,10 @@ describe("onCompletion", () => {
       methodLocations: [],
     };
 
-    const results = await onCompletion({
-      params,
+    const results = await keys({
+      position,
       document,
-      keysForCompletionType,
+      providedKeysForCompletionType,
       log,
     });
 

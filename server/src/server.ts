@@ -11,18 +11,18 @@ import {
 
 import { TextDocument } from "vscode-languageserver-textdocument";
 
-import onCompletion from "./requests/onCompletion";
 import { getActiveDiagnostics, runAllDiagnostics } from "./diagnostics";
 
 import { commands, commandLookup } from "./commands";
 import { runAllCodeLens } from "./codeLens";
 import { runAllInlayHints } from "./inlayHints";
+import { runAllCompletions } from "./completions";
 
 import { debounceHeadTail } from "./utils/debounce";
 
 import { getSettings, settings, updateSettings } from "./settings";
 
-import { prefabPromise, keysForCompletionType } from "./prefabClient";
+import { prefabPromise } from "./prefabClient";
 
 import type { Logger } from "./types";
 
@@ -142,10 +142,9 @@ connection.onExecuteCommand(async (params) => {
 connection.onCompletion(async (params) => {
   const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
 
-  return onCompletion({
+  return runAllCompletions({
     document,
-    params,
-    keysForCompletionType,
+    position: params.position,
     log,
   });
 });

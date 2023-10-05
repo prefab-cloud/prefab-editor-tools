@@ -3,6 +3,7 @@ import {
   Connection,
   Diagnostic,
   ExecuteCommandParams,
+  CompletionItem,
   Range,
   TextDocuments,
   LSPAny,
@@ -120,6 +121,16 @@ export type InlayHintAnalyzerArgs = {
 export type InlayHintAnalyzer = (
   args: InlayHintAnalyzerArgs
 ) => Promise<InlayHint[]>;
+
+export type CompletionAnalyzerArgs = {
+  document: AnnotatedDocument;
+  position: Position;
+  log: Logger;
+};
+
+export type CompletionAnalyzer = (
+  args: CompletionAnalyzerArgs
+) => Promise<CompletionItem[]>;
 
 export type DocumentAnnotations = {
   methodLocations: MethodLocation[];
