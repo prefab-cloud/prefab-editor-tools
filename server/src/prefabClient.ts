@@ -108,18 +108,34 @@ export const allKeys = async () => {
   return prefab.keys();
 };
 
-export const valueOf = (
-  value: Record<string, ConfigValueValue>
-): Exclude<ReturnType<typeof prefab.get>, undefined> =>
-  value[Object.keys(value)[0]];
+export const valueOf = (value: ConfigValue): ReturnType<typeof prefab.get> => {
+  switch (Object.keys(value)[0]) {
+    case "string":
+      return value.string;
+    case "stringList":
+      return value.stringList?.values;
+    case "int":
+      return value.int?.toInt();
+    case "bool":
+      return value.bool;
+    case "double":
+      return value.double;
+    case "logLevel":
+      return value.logLevel;
+    default:
+      throw new Error(`Unexpected value ${JSON.stringify(value)}`);
+  }
+};
 
-export const valueOfToString = (
-  value: Record<string, ConfigValueValue>
-): string => {
+export const valueOfToString = (value: ConfigValue): string => {
   const v = valueOf(value);
 
   if (typeof v === "string") {
     return v;
+  }
+
+  if (Array.isArray(v)) {
+    return v.join(", ");
   }
 
   return JSON.stringify(v);
