@@ -2,9 +2,7 @@ import { expect, it, describe } from "bun:test";
 import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
 import { CompletionType, type CompletionTypeValue } from "../types";
 import keys from "./keys";
-import { log } from "../testHelpers";
-
-const uri = "file:///some/path/test.txt";
+import { log, mkAnnotatedDocument } from "../testHelpers";
 
 const providedKeysForCompletionType = async (
   type: CompletionTypeValue | null
@@ -26,11 +24,7 @@ describe("keys", () => {
 
     const position = { line: 3, character: 20 };
 
-    const document = {
-      uri: "file:///some/path/test.txt",
-      completionType,
-      methodLocations: [],
-    };
+    const document = mkAnnotatedDocument({ completionType });
 
     const results = await keys({
       position,
@@ -59,11 +53,9 @@ describe("keys", () => {
 
     const position = { line: 7, character: 18 };
 
-    const document = {
-      uri: "file:///some/path/test.txt",
+    const document = mkAnnotatedDocument({
       completionType,
-      methodLocations: [],
-    };
+    });
 
     const results = await keys({
       position,
@@ -92,15 +84,9 @@ describe("keys", () => {
   });
 
   it("returns an empty array if there's no identifiable FF or Config method", async () => {
-    const completionType = () => null;
-
     const position = { line: 1, character: 10 };
 
-    const document = {
-      uri: "file:///some/path/test.txt",
-      completionType,
-      methodLocations: [],
-    };
+    const document = mkAnnotatedDocument({ completionType: () => null });
 
     const results = await keys({
       position,

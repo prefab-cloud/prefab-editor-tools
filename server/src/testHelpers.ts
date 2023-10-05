@@ -1,5 +1,8 @@
-import { Documents } from "./types";
+import { AnnotatedDocument, Documents } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
+import { get } from "./apiClient";
+
+const defaultUriForTests = "file:///some/path/defaultUriForTests";
 
 type NewDoc = {
   uri: string;
@@ -8,29 +11,38 @@ type NewDoc = {
   version?: number;
 };
 
+export const mkAnnotatedDocument = (
+  args: Partial<AnnotatedDocument>
+): AnnotatedDocument => {
+  return {
+    uri: args.uri ?? defaultUriForTests,
+    methodLocations: args.methodLocations ?? [],
+    completionType: args.completionType ?? (() => null),
+  };
+};
+
 export const mkDocument = (doc: Partial<NewDoc>): TextDocument => {
   return TextDocument.create(
-    doc.uri ?? "file:///some/path",
+    doc.uri ?? defaultUriForTests,
     doc.languageId ?? "some-language",
     doc.version ?? 1,
     doc.text ?? "some text"
   );
 };
 
-export const mkDocumentStore = (newDocs: NewDoc[]): Documents => {
-  const innerStore = new Map<string, TextDocument>();
-
-  newDocs.forEach((doc) => {
-    const document = mkDocument(doc);
-
-    innerStore.set(doc.uri, document);
-  });
-
-  return {
-    get: (uri) => {
-      return innerStore.get(uri);
-    },
-  } as Documents;
-};
-
 export const log = () => {};
+
+export const mockedGet = ({
+  json,
+  status,
+}: {
+  json: unknown;
+  status?: number;
+}): typeof get => {
+  return async (): ReturnType<typeof get> => {
+    return {
+      status: status ?? 200,
+      json: async () => json,
+    } as unknown as ReturnType<typeof get>;
+  };
+};

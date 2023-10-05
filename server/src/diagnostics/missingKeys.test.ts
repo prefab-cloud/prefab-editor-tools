@@ -1,7 +1,7 @@
 import { expect, it, describe } from "bun:test";
-import { AnnotatedDocument, MethodLocation } from "../types";
+import { MethodLocation } from "../types";
 
-import { log } from "../testHelpers";
+import { log, mkAnnotatedDocument } from "../testHelpers";
 import missingKeys from "./missingKeys";
 
 import * as fs from "fs";
@@ -23,11 +23,9 @@ describe("missingKeys", () => {
       });
     };
 
-    const document: AnnotatedDocument = {
-      uri,
-      completionType: () => null,
+    const document = mkAnnotatedDocument({
       methodLocations: JSON.parse(cannedResponse),
-    };
+    });
 
     const results = await missingKeys({
       document,
@@ -149,11 +147,7 @@ describe("missingKeys", () => {
       });
     };
 
-    const document: AnnotatedDocument = {
-      uri,
-      completionType: () => null,
-      methodLocations: [],
-    };
+    const document = mkAnnotatedDocument({ methodLocations: [] });
 
     const results = await missingKeys({
       document,
@@ -172,11 +166,9 @@ describe("missingKeys", () => {
       });
     };
 
-    const document: AnnotatedDocument = {
-      uri,
-      completionType: () => null,
+    const document = mkAnnotatedDocument({
       methodLocations: JSON.parse(cannedResponse),
-    };
+    });
 
     const results = await missingKeys({
       document,

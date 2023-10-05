@@ -1,13 +1,14 @@
 import {
   CodeLens,
+  CompletionItem,
   Connection,
   Diagnostic,
   ExecuteCommandParams,
-  CompletionItem,
+  Hover,
+  InlayHint,
+  LSPAny,
   Range,
   TextDocuments,
-  LSPAny,
-  InlayHint,
 } from "vscode-languageserver/node";
 
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
@@ -20,6 +21,7 @@ export type LogScope =
   | "Command"
   | "Completion"
   | "Diagnostic"
+  | "Hover"
   | "InlayHint"
   | "Lifecyle"
   | "PrefabClient"
@@ -131,6 +133,15 @@ export type CompletionAnalyzerArgs = {
 export type CompletionAnalyzer = (
   args: CompletionAnalyzerArgs
 ) => Promise<CompletionItem[]>;
+
+export type HoverAnalyzerArgs = {
+  document: AnnotatedDocument;
+  position: Position;
+  log: Logger;
+  settings: Settings;
+};
+
+export type HoverAnalyzer = (args: HoverAnalyzerArgs) => Promise<Hover | null>;
 
 export type DocumentAnnotations = {
   methodLocations: MethodLocation[];
