@@ -40,8 +40,27 @@ const overrideVariant: ExecutableCommand = {
     );
 
     if (removeCopy && result?.title === removeCopy) {
-      // TODO: Unset override
-      log("Command", "Should remove override");
+      log("Command", "Remove variant ");
+
+      const request = await post({
+        requestPath: "/api/v1/config/remove-variant",
+        settings,
+        payload: {
+          configKey: key,
+          variant: override,
+        },
+        log,
+      });
+
+      if (request.status !== 200) {
+        const json = await request.json();
+        connection.console.error(
+          `Prefab: Failed to override variant: ${
+            request.status
+          } | ${JSON.stringify(json, null, 2)}`
+        );
+        return;
+      }
     } else {
       const variant = result
         ? variants.find((variant) => valueOfToString(variant) === result.title)
