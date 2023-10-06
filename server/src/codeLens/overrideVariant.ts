@@ -16,6 +16,8 @@ const overrideVariant: CodeLensAnalyzer = async ({
     );
   });
 
+  log("CodeLens", { overrideVariant: methods });
+
   return methods.map((method) => {
     const { range } = method;
 
