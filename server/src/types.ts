@@ -143,7 +143,7 @@ export type HoverAnalyzerArgs = {
   settings: Settings;
 };
 
-export type HoverAnalyzer = (args: HoverAnalyzerArgs) => Promise<Hover>;
+export type HoverAnalyzer = (args: HoverAnalyzerArgs) => Promise<Hover | null>;
 
 export type DocumentAnnotations = {
   methodLocations: MethodLocation[];
