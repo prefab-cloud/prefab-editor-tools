@@ -1,6 +1,6 @@
 import { CompletionItemKind } from "vscode-languageserver/node";
 
-import type { CompletionAnalyzer, CompletionAnalyzerArgs } from "../types";
+import type { CompletionAnalyzerArgs } from "../types";
 
 import { keysForCompletionType } from "../prefabClient";
 

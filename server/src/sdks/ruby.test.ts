@@ -3,6 +3,8 @@ import { Position } from "vscode-languageserver/node";
 import { mkDocument } from "../testHelpers";
 import { CompletionType, MethodType, MethodLocation } from "../types";
 import RubySDK from "./ruby";
+import * as fs from "fs";
+import * as path from "path";
 
 type ExampleStringAndPosition = [string, Position];
 
@@ -28,18 +30,15 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get ''", { line: 0, character: 12 }],
 ];
 
-import * as fs from "fs";
-import * as path from "path";
-
 const missingFlagsAndConfigText = fs.readFileSync(
-  path.join(__dirname, "../fixtures/user.rb.txt"),
+  path.join(__dirname, "../fixtures/ruby.rb.txt"),
   "utf-8"
 );
 
 const writeStub = (data: object) => {
   const string = JSON.stringify(data, null, 2);
 
-  const stubPath = path.join(__dirname, "../fixtures/user.rb.parsed.json");
+  const stubPath = path.join(__dirname, "../fixtures/ruby.rb.parsed.json");
 
   if (fs.readFileSync(stubPath, "utf-8") !== string) {
     fs.writeFileSync(stubPath, string);

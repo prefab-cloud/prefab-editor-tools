@@ -1,6 +1,5 @@
 import { expect, it, describe } from "bun:test";
 import { log, mkAnnotatedDocument, mockedGet } from "../testHelpers";
-import { get } from "../apiClient";
 import { MethodType } from "../types";
 
 import evaluations from "./evaluations";
@@ -82,12 +81,12 @@ describe("evaluations", () => {
 
     expect(result).toStrictEqual({
       contents:
-        "69156 evaluations over last 24 hours\n\nEnvironment 136: 34494\n- redis://internal-redis.example.com:6379: 22429\n- redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111: 12065\n\nEnvironment 137: 34662\n- redis://internal-redis.example.com:6379: 17434\n- redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111: 17228",
+        "69,156 evaluations over the last 24 hours\n\nEnvironment 136: 34,494\n- 65% - redis://internal-redis.example.com:6379\n- 35% - redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111\n\nEnvironment 137: 34,662\n- 50% - redis://internal-redis.example.com:6379\n- 50% - redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
       range: {
         start: position,
         end: {
           line: position.line,
-          character: position.character + 10,
+          character: position.character + 20,
         },
       },
     });

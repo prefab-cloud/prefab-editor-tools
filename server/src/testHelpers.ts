@@ -1,4 +1,4 @@
-import { AnnotatedDocument, Documents } from "./types";
+import { AnnotatedDocument } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { get } from "./apiClient";
 

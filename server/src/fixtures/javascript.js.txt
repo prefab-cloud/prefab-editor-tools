@@ -1,0 +1,14 @@
+const ff = prefab.isEnabled("api.enabled");
+
+// ff is a boolean
+
+if (prefab.isEnabled( "turbo") || prefab.isEnabled("all.new.features")) {
+  / ...
+}
+
+prefab.get("test") && prefab.get(
+        "test2"
+
+        );
+
+const m = prefab.get("test");

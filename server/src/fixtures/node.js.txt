@@ -1,0 +1,28 @@
+import { Prefab } from "@prefab-cloud/prefab-cloud-node";
+
+if (!process.env.PREFAB_API_KEY) {
+  throw new Error("PREFAB_API_KEY is not set");
+}
+
+const prefab = new Prefab({
+  apiKey: process.env.PREFAB_API_KEY,
+  enableSSE: true,
+  defaultLogLevel: "warn",
+});
+
+await prefab.init();
+
+const ff = prefab.isFeatureEnabled("api.enabled");
+
+// ff is a boolean
+
+if (prefab.isFeatureEnabled( "turbo") || prefab.isFeatureEnabled("all.new.features")) {
+  / ...
+}
+
+prefab.get("test") && prefab.get(
+        "test2"
+
+        );
+
+const m = prefab.get("test");

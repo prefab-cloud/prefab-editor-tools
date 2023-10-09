@@ -1,7 +1,9 @@
 import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
 import { mkDocument } from "../testHelpers";
-import { CompletionType, MethodType } from "../types";
+import { CompletionType, MethodLocation, MethodType } from "../types";
+import * as fs from "fs";
+import * as path from "path";
 
 import ReactSDK, { RELEVANT_FILETYPES } from "./react";
 
@@ -29,6 +31,11 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get(`", { line: 3, character: 12 }],
   ["prefab.get(``)", { line: 3, character: 12 }],
 ];
+
+const missingFlagsAndConfigText = fs.readFileSync(
+  path.join(__dirname, "../fixtures/react.js.txt"),
+  "utf-8"
+);
 
 describe("ReactSDK", () => {
   describe("isApplicable", () => {
@@ -187,6 +194,171 @@ describe("ReactSDK", () => {
         };
 
         expect(ReactSDK.completionType(document, newPosition)).toBeNull();
+      });
+    });
+  });
+
+  describe("detectMethods", () => {
+    it("returns all methods in a document", () => {
+      const document = mkDocument({
+        text: missingFlagsAndConfigText,
+      });
+
+      const methods = ReactSDK.detectMethods(document);
+
+      const expected: MethodLocation[] = [
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 13,
+              character: 14,
+            },
+            end: {
+              line: 13,
+              character: 29,
+            },
+          },
+          key: "new-logo",
+          keyRange: {
+            start: {
+              line: 13,
+              character: 26,
+            },
+            end: {
+              line: 15,
+              character: 0,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 17,
+              character: 2,
+            },
+            end: {
+              line: 17,
+              character: 20,
+            },
+          },
+          key: "api.enabled",
+          keyRange: {
+            start: {
+              line: 17,
+              character: 14,
+            },
+            end: {
+              line: 19,
+              character: 0,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 3,
+              character: 6,
+            },
+            end: {
+              line: 3,
+              character: 27,
+            },
+          },
+          key: "new-logo",
+          keyRange: {
+            start: {
+              line: 3,
+              character: 23,
+            },
+            end: {
+              line: 4,
+              character: 0,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 15,
+              character: 13,
+            },
+            end: {
+              line: 15,
+              character: 34,
+            },
+          },
+          key: "new-logo",
+          keyRange: {
+            start: {
+              line: 15,
+              character: 30,
+            },
+            end: {
+              line: 15,
+              character: 38,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 15,
+              character: 38,
+            },
+            end: {
+              line: 15,
+              character: 60,
+            },
+          },
+          key: "new-logo2",
+          keyRange: {
+            start: {
+              line: 15,
+              character: 55,
+            },
+            end: {
+              line: 15,
+              character: 64,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 15,
+              character: 64,
+            },
+            end: {
+              line: 15,
+              character: 86,
+            },
+          },
+          key: "new-logo3",
+          keyRange: {
+            start: {
+              line: 15,
+              character: 81,
+            },
+            end: {
+              line: 17,
+              character: 1,
+            },
+          },
+        },
+      ];
+
+      console.log(JSON.stringify(methods, null, 2));
+
+      expect(methods.length).toEqual(expected.length);
+
+      methods.forEach((method, index) => {
+        expect(method).toStrictEqual(expected[index]);
       });
     });
   });

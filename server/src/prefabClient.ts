@@ -23,8 +23,6 @@ type ConfigValue = Exclude<
   undefined
 >;
 
-type ConfigValueValue = string | number | boolean | string[];
-
 const getAllConfigs = (): PrefabConfig[] => {
   const configs: PrefabConfig[] = [];
 
