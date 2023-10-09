@@ -1,9 +1,15 @@
+import * as fs from "fs";
+import * as path from "path";
+import { URL } from "url";
 import type { Logger, Settings } from "./types";
 import fetch from "node-fetch";
-import * as path from "path";
 import { apiUrlOrDefault } from "./settings";
 
-const uriAndHeaders = ({
+const version: string = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")
+)["version"];
+
+export const uriAndHeaders = ({
   settings,
   requestPath,
 }: {
@@ -20,13 +26,13 @@ const uriAndHeaders = ({
     "Content-Type": "application/json",
     Accept: "application/json",
     Authorization: `Basic ${token}`,
-    // TODO: add version here
-    "X-PrefabCloud-Client-Version": `prefab-lsp`,
+    "X-PrefabCloud-Client-Version": `prefab-lsp-${version}`,
   };
 
-  const uri = path.join(apiUrlOrDefault(settings), requestPath);
+  const uri = new URL(apiUrlOrDefault(settings));
+  uri.pathname = requestPath;
 
-  return { uri, headers };
+  return { uri: uri.toString(), headers };
 };
 
 type Request = {
