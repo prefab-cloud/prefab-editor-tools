@@ -3,6 +3,7 @@ import type { HoverAnalyzerArgs } from "../types";
 import pluralize from "../utils/pluralize";
 import { get } from "../apiClient";
 import { methodAtPosition } from "../documentAnnotations";
+import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefabClient";
 
 type EvaluationStats = {
   key: string;
@@ -24,6 +25,7 @@ type EvaluationStats = {
 
 type Dependencies = {
   providedGet?: typeof get;
+  filterForMissingKeys?: typeof defaultFilterForMissingKeys;
 };
 
 const percent = (value: number) => {
@@ -36,6 +38,7 @@ const evaluations = async ({
   position,
   settings,
   providedGet,
+  filterForMissingKeys,
 }: HoverAnalyzerArgs & Dependencies) => {
   log("Hover", { uri: document.uri, position });
 
@@ -43,6 +46,15 @@ const evaluations = async ({
 
   if (!method) {
     log("Hover", "No method found at position");
+    return null;
+  }
+
+  const missingKeyMethods = await (
+    filterForMissingKeys ?? defaultFilterForMissingKeys
+  )([method]);
+
+  if (missingKeyMethods.length > 0) {
+    log("Hover", "Key does not exist");
     return null;
   }
 
@@ -65,6 +77,7 @@ const evaluations = async ({
   log("Hover", { json });
 
   if (!json.environments) {
+    log("Hover", `No environment evaluations found for ${method.key}`);
     return null;
   }
 

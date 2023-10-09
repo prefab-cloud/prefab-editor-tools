@@ -1,4 +1,4 @@
-import { AnnotatedDocument } from "./types";
+import { AnnotatedDocument, Logger } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { get } from "./apiClient";
 
@@ -30,7 +30,17 @@ export const mkDocument = (doc: Partial<NewDoc>): TextDocument => {
   );
 };
 
-export const log = () => {};
+let loggedItems: Record<string, unknown>[] = [];
+export const log: Logger = (scope, message) => {
+  loggedItems.push({ scope, message });
+};
+export const clearLog = () => {
+  loggedItems = [];
+};
+
+export const getLoggedItems = () => {
+  return loggedItems;
+};
 
 export const mockedGet = ({
   json,
@@ -45,4 +55,8 @@ export const mockedGet = ({
       json: async () => json,
     } as unknown as ReturnType<typeof get>;
   };
+};
+
+export const lastItem = (array: unknown[]) => {
+  return array[array.length - 1];
 };
