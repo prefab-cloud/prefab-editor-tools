@@ -1,11 +1,71 @@
-import { expect, it, describe } from "bun:test";
-import { log, mkAnnotatedDocument, mockedGet } from "../testHelpers";
-import { MethodType } from "../types";
+import { beforeEach, expect, it, describe } from "bun:test";
+import {
+  clearLog,
+  log,
+  getLoggedItems,
+  lastItem,
+  mkAnnotatedDocument,
+  mockedGet,
+} from "../testHelpers";
+import { MethodLocation, MethodType } from "../types";
 
 import evaluations from "./evaluations";
 
+const mockResponse = {
+  json: {
+    key: "redis.connection-string",
+    start: 1696354310632,
+    end: 1696440710632,
+    total: 69156,
+    environments: {
+      "136": {
+        total: 34494,
+        counts: [
+          {
+            configValue: {
+              string: "redis://internal-redis.example.com:6379",
+            },
+            count: 22429,
+          },
+          {
+            configValue: {
+              string:
+                "redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
+            },
+            count: 12065,
+          },
+        ],
+      },
+      "137": {
+        total: 34662,
+        counts: [
+          {
+            configValue: {
+              string: "redis://internal-redis.example.com:6379",
+            },
+            count: 17434,
+          },
+          {
+            configValue: {
+              string:
+                "redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
+            },
+            count: 17228,
+          },
+        ],
+      },
+    },
+  },
+};
+
 describe("evaluations", () => {
+  beforeEach(() => {
+    clearLog();
+  });
+
   it("fetches an evaluation from the server", async () => {
+    const filterForMissingKeys = async () => [];
+
     const document = mkAnnotatedDocument({
       completionType: () => null,
       methodLocations: [
@@ -31,52 +91,8 @@ describe("evaluations", () => {
       document,
       position,
       log,
-      providedGet: mockedGet({
-        json: {
-          key: "redis.connection-string",
-          start: 1696354310632,
-          end: 1696440710632,
-          total: 69156,
-          environments: {
-            "136": {
-              total: 34494,
-              counts: [
-                {
-                  configValue: {
-                    string: "redis://internal-redis.example.com:6379",
-                  },
-                  count: 22429,
-                },
-                {
-                  configValue: {
-                    string:
-                      "redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
-                  },
-                  count: 12065,
-                },
-              ],
-            },
-            "137": {
-              total: 34662,
-              counts: [
-                {
-                  configValue: {
-                    string: "redis://internal-redis.example.com:6379",
-                  },
-                  count: 17434,
-                },
-                {
-                  configValue: {
-                    string:
-                      "redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
-                  },
-                  count: 17228,
-                },
-              ],
-            },
-          },
-        },
-      }),
+      filterForMissingKeys,
+      providedGet: mockedGet(mockResponse),
     });
 
     expect(result).toStrictEqual({
@@ -89,6 +105,46 @@ describe("evaluations", () => {
           character: position.character + 20,
         },
       },
+    });
+  });
+
+  it("won't show hover if the key does not exist", async () => {
+    const filterForMissingKeys = async (locations: MethodLocation[]) =>
+      locations;
+
+    const document = mkAnnotatedDocument({
+      completionType: () => null,
+      methodLocations: [
+        {
+          key: "redis.connection-string",
+          type: MethodType.GET,
+          range: {
+            start: { line: 3, character: 20 },
+            end: { line: 3, character: 40 },
+          },
+          keyRange: {
+            start: { line: 3, character: 20 },
+            end: { line: 3, character: 40 },
+          },
+        },
+      ],
+    });
+
+    const position = { line: 3, character: 20 };
+
+    const result = await evaluations({
+      settings: {},
+      document,
+      position,
+      log,
+      filterForMissingKeys,
+      providedGet: mockedGet(mockResponse),
+    });
+
+    expect(result).toBeNull();
+    expect(lastItem(getLoggedItems())).toStrictEqual({
+      message: "Key does not exist",
+      scope: "Hover",
     });
   });
 });
