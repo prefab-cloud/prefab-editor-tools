@@ -8,11 +8,9 @@ import * as fs from "fs";
 import * as path from "path";
 
 const cannedResponse = fs.readFileSync(
-  path.join(__dirname, "../fixtures/user.rb.parsed.json"),
+  path.join(__dirname, "../fixtures/ruby.rb.parsed.json"),
   "utf-8"
 );
-
-const uri = "file:///Users/you/project/app/models/user.rb";
 
 describe("missingKeys", () => {
   it("returns missing config/flag diagnostics for a document", async () => {

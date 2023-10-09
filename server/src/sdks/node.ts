@@ -7,12 +7,33 @@ import {
   MethodLocation,
 } from "../types";
 import { type SDK } from "./detection";
-import { currentLine } from "../documentHelpers";
+import {
+  detectMethod,
+  detectMethods,
+  type DetectMethodsRegex,
+  type DetectMethodRegex,
+} from "./common";
+
+const IMPORT_STATEMENT = "@prefab-cloud/prefab-cloud-node";
 
 export const RELEVANT_FILETYPES = ["javascript", "typescript"];
 
 const DOCUMENT_METHOD_REGEX =
   /document\.(getElementById|querySelector|querySelectorAll)/;
+
+const DETECT_METHOD_REGEXES: DetectMethodRegex = {
+  IS_ENABLED: /prefab\.isFeatureEnabled\(["`']$/,
+  GET: /prefab\.get\(["`']$/,
+};
+
+const ENABLED_REGEX =
+  /prefab\.isFeatureEnabled\(\s*["']([^'\n]+?)\s*["']\s*\)/gs;
+const GET_REGEX = /prefab\.get\(?\s*["']([^'\n]+?)["']\)?\s*/gs;
+
+const METHOD_REGEXES: DetectMethodsRegex = {
+  IS_ENABLED: [ENABLED_REGEX, 17],
+  GET: [GET_REGEX, 12],
+};
 
 // Note: this is naive
 export const doesNotLookLikeBrowserJS = (document: TextDocument): boolean => {
@@ -31,7 +52,8 @@ const JavascriptSDK: SDK = {
   isApplicable: (document: TextDocument) => {
     return (
       RELEVANT_FILETYPES.includes(document.languageId) &&
-      doesNotLookLikeBrowserJS(document)
+      (document.getText().includes(IMPORT_STATEMENT) ||
+        doesNotLookLikeBrowserJS(document))
     );
   },
 
@@ -39,32 +61,17 @@ const JavascriptSDK: SDK = {
     document: TextDocument,
     position: Position
   ): MethodTypeValue | null => {
-    const line = currentLine(document, position);
-
-    if (!line) {
-      return null;
-    }
-
     const text = document.getText();
 
-    if (!text.includes("@prefab-cloud/prefab-cloud-node")) {
+    if (!text.includes(IMPORT_STATEMENT)) {
       return null;
     }
 
-    if (/prefab\.isFeatureEnabled\(["`']$/.test(line)) {
-      return MethodType.IS_ENABLED;
-    }
-
-    if (/prefab\.get\(["`']$/.test(line)) {
-      return MethodType.GET;
-    }
-
-    return null;
+    return detectMethod(document, position, DETECT_METHOD_REGEXES);
   },
 
-  detectMethods: (): MethodLocation[] => {
-    // TODO:
-    return [];
+  detectMethods: (document): MethodLocation[] => {
+    return detectMethods(document, METHOD_REGEXES);
   },
 
   completionType: (

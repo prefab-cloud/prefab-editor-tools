@@ -1,7 +1,9 @@
 import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
 import { mkDocument } from "../testHelpers";
-import { CompletionType, MethodType } from "../types";
+import { CompletionType, MethodLocation, MethodType } from "../types";
+import * as fs from "fs";
+import * as path from "path";
 
 import JavascriptSDK, { RELEVANT_FILETYPES } from "./javascript";
 
@@ -24,6 +26,11 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get(`", { line: 0, character: 12 }],
   ["prefab.get(``)", { line: 0, character: 12 }],
 ];
+
+const missingFlagsAndConfigText = fs.readFileSync(
+  path.join(__dirname, "../fixtures/javascript.js.txt"),
+  "utf-8"
+);
 
 describe("JavascriptSDK", () => {
   describe("isApplicable", () => {
@@ -135,6 +142,169 @@ describe("JavascriptSDK", () => {
         };
 
         expect(JavascriptSDK.completionType(document, newPosition)).toBeNull();
+      });
+    });
+  });
+
+  describe("detectMethods", () => {
+    it("returns all methods in a document", () => {
+      const document = mkDocument({
+        text: missingFlagsAndConfigText,
+      });
+
+      const methods = JavascriptSDK.detectMethods(document);
+
+      const expected: MethodLocation[] = [
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 8,
+              character: 0,
+            },
+            end: {
+              line: 8,
+              character: 19,
+            },
+          },
+          key: "test",
+          keyRange: {
+            start: {
+              line: 8,
+              character: 12,
+            },
+            end: {
+              line: 8,
+              character: 16,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 8,
+              character: 22,
+            },
+            end: {
+              line: 11,
+              character: 8,
+            },
+          },
+          key: "test2",
+          keyRange: {
+            start: {
+              line: 9,
+              character: 0,
+            },
+            end: {
+              line: 9,
+              character: 5,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 13,
+              character: 10,
+            },
+            end: {
+              line: 13,
+              character: 28,
+            },
+          },
+          key: "test",
+          keyRange: {
+            start: {
+              line: 13,
+              character: 22,
+            },
+            end: {
+              line: 13,
+              character: 26,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 0,
+              character: 11,
+            },
+            end: {
+              line: 0,
+              character: 42,
+            },
+          },
+          key: "api.enabled",
+          keyRange: {
+            start: {
+              line: 0,
+              character: 28,
+            },
+            end: {
+              line: 0,
+              character: 39,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 4,
+              character: 4,
+            },
+            end: {
+              line: 4,
+              character: 30,
+            },
+          },
+          key: "turbo",
+          keyRange: {
+            start: {
+              line: 4,
+              character: 21,
+            },
+            end: {
+              line: 4,
+              character: 26,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 4,
+              character: 34,
+            },
+            end: {
+              line: 4,
+              character: 70,
+            },
+          },
+          key: "all.new.features",
+          keyRange: {
+            start: {
+              line: 4,
+              character: 51,
+            },
+            end: {
+              line: 4,
+              character: 67,
+            },
+          },
+        },
+      ];
+
+      expect(methods.length).toEqual(expected.length);
+
+      methods.forEach((method, index) => {
+        expect(method).toStrictEqual(expected[index]);
       });
     });
   });

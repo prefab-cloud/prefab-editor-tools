@@ -61,6 +61,8 @@ export const MethodType = {
   IS_ENABLED: "IS_ENABLED",
 };
 
+export type MethodTypeKeys = keyof typeof MethodType;
+
 export type MethodTypeValue = (typeof MethodType)[keyof typeof MethodType];
 
 export interface Settings {

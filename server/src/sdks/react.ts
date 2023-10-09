@@ -7,9 +7,27 @@ import {
   MethodLocation,
 } from "../types";
 import { type SDK } from "./detection";
-import { currentLine } from "../documentHelpers";
+import {
+  detectMethod,
+  detectMethods,
+  type DetectMethodsRegex,
+  type DetectMethodRegex,
+} from "./common";
 
 export const RELEVANT_FILETYPES = ["javascriptreact", "typescriptreact"];
+
+const DETECT_METHOD_REGEXES: DetectMethodRegex = {
+  IS_ENABLED: /isEnabled\(["`']$/,
+  GET: /get\(["`']$/,
+};
+
+const ENABLED_REGEX = /isEnabled\(\s*["']([^'\n]+?)\s*["']\s*\)/gs;
+const GET_REGEX = /get\(?\s*["']([^'\n]+?)["']\)?\s*/gs;
+
+const METHOD_REGEXES: DetectMethodsRegex = {
+  IS_ENABLED: [ENABLED_REGEX, 17],
+  GET: [GET_REGEX, 12],
+};
 
 const ReactSDK: SDK = {
   name: "react",
@@ -22,32 +40,23 @@ const ReactSDK: SDK = {
     document: TextDocument,
     position: Position
   ): MethodTypeValue | null => {
-    const line = currentLine(document, position);
-
-    if (!line) {
-      return null;
-    }
-
     const text = document.getText();
 
     if (!text.includes("usePrefab(")) {
       return null;
     }
 
-    if (/isEnabled\(["`']$/.test(line)) {
-      return MethodType.IS_ENABLED;
-    }
-
-    if (/get\(["`']$/.test(line)) {
-      return MethodType.GET;
-    }
-
-    return null;
+    return detectMethod(document, position, DETECT_METHOD_REGEXES);
   },
 
-  detectMethods: (): MethodLocation[] => {
-    // TODO:
-    return [];
+  detectMethods: (document): MethodLocation[] => {
+    const text = document.getText();
+
+    if (!text.includes("usePrefab(")) {
+      return [];
+    }
+
+    return detectMethods(document, METHOD_REGEXES);
   },
 
   completionType: (

@@ -1,5 +1,5 @@
 import { expect, it, describe } from "bun:test";
-import { CompletionItemKind, HoverParams } from "vscode-languageserver/node";
+import { CompletionItemKind } from "vscode-languageserver/node";
 import { CompletionType, type CompletionTypeValue } from "../types";
 import keys from "./keys";
 import { log, mkAnnotatedDocument } from "../testHelpers";

@@ -1,0 +1,19 @@
+const Test = () => {
+  const { isEnabled } = usePrefab();
+
+  if (isEnabled("new-logo")) {
+    return <img src={newLogo} className="App-logo" alt="logo" />;
+  }
+
+  return <img src={logo} className="App-logo" alt="logo" />;
+};
+
+const Test2 = () => {
+  const { isEnabled , get} = usePrefab();
+
+  const foo= (get("new-logo")) ;
+
+  const ok = isEnabled("new-logo") || isEnabled("new-logo2") || isEnabled("new-logo3");
+
+  get("api.enabled");
+};
