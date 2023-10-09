@@ -12,6 +12,7 @@ type EvaluationStats = {
   total: number;
   environments: {
     [envId: string]: {
+      name: string;
       total: number;
       counts: Array<{
         configValue: {
@@ -90,8 +91,14 @@ const evaluations = async ({
     "",
   ];
 
-  Object.entries(json.environments).forEach(([envId, env]) => {
-    contents.push(`Environment ${envId}: ${env.total.toLocaleString()}`);
+  // Sort environments by most to least number of evaluations
+  const sortedKeys = Object.keys(json.environments)
+    .sort((a, b) => json.environments[a].total - json.environments[b].total)
+    .reverse();
+
+  sortedKeys.forEach((envId) => {
+    const env = json.environments[envId];
+    contents.push(`${env.name}: ${env.total.toLocaleString()}`);
 
     // TODO: add zeros for missing values
     const counts: string[] = [];

@@ -19,6 +19,7 @@ const mockResponse = {
     total: 69156,
     environments: {
       "136": {
+        name: "Staging",
         total: 34494,
         counts: [
           {
@@ -37,6 +38,7 @@ const mockResponse = {
         ],
       },
       "137": {
+        name: "Production",
         total: 34662,
         counts: [
           {
@@ -97,7 +99,7 @@ describe("evaluations", () => {
 
     expect(result).toStrictEqual({
       contents:
-        "69,156 evaluations over the last 24 hours\n\nEnvironment 136: 34,494\n- 65% - redis://internal-redis.example.com:6379\n- 35% - redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111\n\nEnvironment 137: 34,662\n- 50% - redis://internal-redis.example.com:6379\n- 50% - redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
+        "69,156 evaluations over the last 24 hours\n\nProduction: 34,662\n- 50% - redis://internal-redis.example.com:6379\n- 50% - redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111\n\nStaging: 34,494\n- 65% - redis://internal-redis.example.com:6379\n- 35% - redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
       range: {
         start: position,
         end: {
