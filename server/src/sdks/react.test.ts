@@ -353,8 +353,6 @@ describe("ReactSDK", () => {
         },
       ];
 
-      console.log(JSON.stringify(methods, null, 2));
-
       expect(methods.length).toEqual(expected.length);
 
       methods.forEach((method, index) => {
