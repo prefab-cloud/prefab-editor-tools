@@ -4,7 +4,7 @@ import { expect, it, describe } from "bun:test";
 import { uriAndHeaders } from "./apiClient";
 
 const version: string = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")
+  fs.readFileSync(path.join(__dirname, "../../package.json"), "utf-8")
 )["version"];
 
 describe("apiClient", () => {

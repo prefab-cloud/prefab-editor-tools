@@ -6,7 +6,7 @@ import fetch from "node-fetch";
 import { apiUrlOrDefault } from "./settings";
 
 const version: string = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")
+  fs.readFileSync(path.join(__dirname, "../../package.json"), "utf-8")
 )["version"];
 
 export const uriAndHeaders = ({
