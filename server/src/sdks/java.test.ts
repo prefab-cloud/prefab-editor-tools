@@ -156,54 +156,6 @@ describe("JavaSDK", () => {
           type: "GET",
           range: {
             start: {
-              line: 62,
-              character: 28,
-            },
-            end: {
-              line: 62,
-              character: 55,
-            },
-          },
-          key: "the.feature",
-          keyRange: {
-            start: {
-              line: 62,
-              character: 42,
-            },
-            end: {
-              line: 62,
-              character: 53,
-            },
-          },
-        },
-        {
-          type: "GET",
-          range: {
-            start: {
-              line: 66,
-              character: 28,
-            },
-            end: {
-              line: 67,
-              character: 19,
-            },
-          },
-          key: "the.feature",
-          keyRange: {
-            start: {
-              line: 67,
-              character: 7,
-            },
-            end: {
-              line: 67,
-              character: 18,
-            },
-          },
-        },
-        {
-          type: "IS_ENABLED",
-          range: {
-            start: {
               line: 20,
               character: 34,
             },
@@ -225,7 +177,7 @@ describe("JavaSDK", () => {
           },
         },
         {
-          type: "IS_ENABLED",
+          type: "GET",
           range: {
             start: {
               line: 49,
@@ -249,7 +201,7 @@ describe("JavaSDK", () => {
           },
         },
         {
-          type: "IS_ENABLED",
+          type: "GET",
           range: {
             start: {
               line: 53,
@@ -273,7 +225,7 @@ describe("JavaSDK", () => {
           },
         },
         {
-          type: "IS_ENABLED",
+          type: "GET",
           range: {
             start: {
               line: 73,
@@ -297,7 +249,7 @@ describe("JavaSDK", () => {
           },
         },
         {
-          type: "IS_ENABLED",
+          type: "GET",
           range: {
             start: {
               line: 77,
@@ -320,8 +272,55 @@ describe("JavaSDK", () => {
             },
           },
         },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 62,
+              character: 28,
+            },
+            end: {
+              line: 62,
+              character: 55,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 62,
+              character: 42,
+            },
+            end: {
+              line: 62,
+              character: 53,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 66,
+              character: 28,
+            },
+            end: {
+              line: 67,
+              character: 19,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 67,
+              character: 7,
+            },
+            end: {
+              line: 67,
+              character: 18,
+            },
+          },
+        },
       ];
-
       expect(methods.length).toEqual(expected.length);
 
       methods.forEach((method, index) => {
