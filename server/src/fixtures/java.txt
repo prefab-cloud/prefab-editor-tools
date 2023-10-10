@@ -1,0 +1,83 @@
+import cloud.prefab.client.ConfigClient;
+import cloud.prefab.client.FeatureFlagClient;
+import cloud.prefab.client.config.ConfigValueUtils;
+import cloud.prefab.client.value.Value;
+import cloud.prefab.context.PrefabContext;
+import cloud.prefab.domain.Prefab;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+public class Test {
+
+  private final ConfigClient configClient;
+  private final FeatureFlagClient featureFlagClient;
+  private final Value<String> someConfig;
+
+  Test(ConfigClient configClient, FeatureFlagClient featureFlagClient) {
+    this.configClient = configClient;
+    this.featureFlagClient = featureFlagClient;
+
+    this.someConfig = configClient.liveString("some.config");
+  }
+
+  // here are some LiveValue shenanigans
+  // they're tricky because there's no _obvious_ reference to the config client
+  // the type is `cloud.prefab.client.value.Value` though
+  String getSomeConfig() {
+    return someConfig.get();
+  }
+
+  Optional<String> getSomeConfigMaybe() {
+    return someConfig.getMaybe();
+  }
+
+  String getSomeConfigWithFallback(String fallback) {
+    return someConfig.orElse(fallback);
+  }
+
+  String getSomeConfigWithFallbackSupplier(Supplier<String> stringSupplier) {
+    return someConfig.orElseGet(stringSupplier);
+  }
+
+  String getSomeConfigWithFallbackSupplierVerboseSyntax(Supplier<String> stringSupplier) {
+    return someConfig.orElseGet(() -> stringSupplier.get());
+  }
+
+  // now regular config clients
+
+  Optional<Prefab.ConfigValue> getSomeConfigValue() {
+    return configClient.get("some.other.config");
+  }
+
+  Optional<Prefab.ConfigValue> getSomeConfigValueWithAContext() {
+    return configClient.get(
+      "some.other.config",
+      PrefabContext.fromMap("prefab", Map.of("key", ConfigValueUtils.from("cool")))
+    );
+  }
+
+  // now feature flag client - FFclient's chief difference is the `featureIsOn` method that returns a boolean
+
+  boolean featureIsOn() {
+    return featureFlagClient.featureIsOn("the.feature");
+  }
+
+  boolean featureIsOnWithContext() {
+    return featureFlagClient.featureIsOn(
+      "the.feature",
+      PrefabContext.fromMap("prefab", Map.of("key", ConfigValueUtils.from("cool")))
+    );
+  }
+
+  Optional<Prefab.ConfigValue> featureValue() {
+    return featureFlagClient.get("the.feature");
+  }
+
+  Optional<Prefab.ConfigValue> featureValueWithContext() {
+    return featureFlagClient.get(
+      "the.feature",
+      PrefabContext.fromMap("prefab", Map.of("key", ConfigValueUtils.from("cool")))
+    );
+  }
+}

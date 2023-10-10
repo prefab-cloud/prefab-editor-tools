@@ -1,16 +1,10 @@
 import { expect, it, describe } from "bun:test";
 import { MethodLocation } from "../types";
 
-import { log, mkAnnotatedDocument } from "../testHelpers";
+import { log, mkAnnotatedDocument, readFileSync } from "../testHelpers";
 import missingKeys from "./missingKeys";
 
-import * as fs from "fs";
-import * as path from "path";
-
-const cannedResponse = fs.readFileSync(
-  path.join(__dirname, "../fixtures/ruby.rb.parsed.json"),
-  "utf-8"
-);
+const cannedResponse = readFileSync("fixtures/ruby.rb.parsed.json");
 
 describe("missingKeys", () => {
   it("returns missing config/flag diagnostics for a document", async () => {

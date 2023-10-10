@@ -1,7 +1,7 @@
 import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
-import { mkDocument } from "../testHelpers";
-import { CompletionType, MethodType } from "../types";
+import { mkDocument, readFileSync } from "../testHelpers";
+import { CompletionType, MethodLocation, MethodType } from "../types";
 import JavaSDK from "./java";
 
 type ExampleStringAndPosition = [string, Position];
@@ -18,7 +18,19 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   [".get('", { line: 0, character: 6 }],
   ['.get("")', { line: 0, character: 6 }],
   [".get('')", { line: 0, character: 6 }],
+  [".liveString('", { line: 0, character: 13 }],
+  [".liveString('')", { line: 0, character: 13 }],
+  [".liveStringList('", { line: 0, character: 17 }],
+  [".liveStringList('')", { line: 0, character: 17 }],
+  [".liveBoolean('", { line: 0, character: 14 }],
+  [".liveBoolean('')", { line: 0, character: 14 }],
+  [".liveLong('", { line: 0, character: 11 }],
+  [".liveLong('')", { line: 0, character: 11 }],
+  [".liveDouble('", { line: 0, character: 13 }],
+  [".liveDouble('')", { line: 0, character: 13 }],
 ];
+
+const missingFlagsAndConfigText = readFileSync("fixtures/java.txt");
 
 describe("JavaSDK", () => {
   describe("isApplicable", () => {
@@ -50,8 +62,8 @@ describe("JavaSDK", () => {
       });
     });
 
-    it("can identify a Config call", () => {
-      CONFIG_EXAMPLES.forEach(([text, position]) => {
+    CONFIG_EXAMPLES.forEach(([text, position]) => {
+      it(`can identify a Config call for ${text}`, () => {
         const document = mkDocument({ text });
 
         expect(JavaSDK.detectMethod(document, position)).toEqual(
@@ -127,6 +139,193 @@ describe("JavaSDK", () => {
         };
 
         expect(JavaSDK.completionType(document, newPosition)).toBeNull();
+      });
+    });
+  });
+
+  describe("detectMethods", () => {
+    it("returns all methods in a document", () => {
+      const document = mkDocument({
+        text: missingFlagsAndConfigText,
+      });
+
+      const methods = JavaSDK.detectMethods(document);
+
+      const expected: MethodLocation[] = [
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 20,
+              character: 34,
+            },
+            end: {
+              line: 20,
+              character: 60,
+            },
+          },
+          key: "some.config",
+          keyRange: {
+            start: {
+              line: 20,
+              character: 46,
+            },
+            end: {
+              line: 20,
+              character: 57,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 49,
+              character: 23,
+            },
+            end: {
+              line: 49,
+              character: 48,
+            },
+          },
+          key: "some.other.config",
+          keyRange: {
+            start: {
+              line: 49,
+              character: 35,
+            },
+            end: {
+              line: 50,
+              character: 2,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 53,
+              character: 23,
+            },
+            end: {
+              line: 54,
+              character: 25,
+            },
+          },
+          key: "some.other.config",
+          keyRange: {
+            start: {
+              line: 54,
+              character: 6,
+            },
+            end: {
+              line: 54,
+              character: 23,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 73,
+              character: 28,
+            },
+            end: {
+              line: 73,
+              character: 47,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 73,
+              character: 40,
+            },
+            end: {
+              line: 74,
+              character: 2,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 77,
+              character: 28,
+            },
+            end: {
+              line: 78,
+              character: 19,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 78,
+              character: 6,
+            },
+            end: {
+              line: 78,
+              character: 17,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 62,
+              character: 28,
+            },
+            end: {
+              line: 62,
+              character: 55,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 62,
+              character: 45,
+            },
+            end: {
+              line: 62,
+              character: 56,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 66,
+              character: 28,
+            },
+            end: {
+              line: 67,
+              character: 19,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 67,
+              character: 3,
+            },
+            end: {
+              line: 67,
+              character: 14,
+            },
+          },
+        },
+      ];
+
+      expect(methods.length).toEqual(expected.length);
+
+      methods.forEach((method, index) => {
+        expect(method).toStrictEqual(expected[index]);
       });
     });
   });
