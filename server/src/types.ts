@@ -23,7 +23,7 @@ export type LogScope =
   | "Diagnostic"
   | "Hover"
   | "InlayHint"
-  | "Lifecyle"
+  | "Lifecycle"
   | "PrefabClient"
   | "Settings"
   | "Utility";

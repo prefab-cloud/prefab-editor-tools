@@ -149,4 +149,70 @@ describe("evaluations", () => {
       scope: "Hover",
     });
   });
+
+  it("works for int input", async () => {
+    const filterForMissingKeys = async () => [];
+
+    const document = mkAnnotatedDocument({
+      completionType: () => null,
+      methodLocations: [
+        {
+          key: "james.test1",
+          type: MethodType.GET,
+          range: {
+            start: { line: 3, character: 20 },
+            end: { line: 3, character: 40 },
+          },
+          keyRange: {
+            start: { line: 3, character: 20 },
+            end: { line: 3, character: 40 },
+          },
+        },
+      ],
+    });
+
+    const position = { line: 3, character: 20 };
+
+    const result = await evaluations({
+      settings: {},
+      document,
+      position,
+      log,
+      filterForMissingKeys,
+      providedGet: mockedGet({
+        json: {
+          key: "james.test1",
+          start: 1696887708021,
+          end: 1696974108021,
+          total: 3,
+          environments: {
+            "108": {
+              name: "Production",
+              total: 3,
+              counts: [
+                {
+                  configValue: {
+                    int: 1,
+                  },
+                  count: 3,
+                },
+              ],
+            },
+          },
+        },
+      }),
+    });
+
+    expect(result).toStrictEqual({
+      contents:
+        "3 evaluations over the last 24 hours\n\nProduction: 3\n- 100% - 1",
+      range: {
+        start: position,
+        end: {
+          line: position.line,
+          character: position.character + 20,
+        },
+      },
+    });
+  });
 });

@@ -57,7 +57,7 @@ let canRefreshCodeLens = false;
 let canRefreshInlayHints = false;
 
 connection.onInitialize((params) => {
-  log("Lifecyle", { onInitialize: params });
+  log("Lifecycle", { onInitialize: params });
 
   const result: InitializeResult = {
     capabilities: {
@@ -84,7 +84,7 @@ connection.onInitialize((params) => {
   canRefreshCodeLens =
     params.capabilities.workspace?.codeLens?.refreshSupport ?? false;
 
-  log("Lifecyle", `onInitialize returning ${JSON.stringify(result)}`);
+  log("Lifecycle", `onInitialize returning ${JSON.stringify(result)}`);
 
   return result;
 });
@@ -245,7 +245,7 @@ documents.onDidChangeContent(async (change) => {
 });
 
 const refresh = async () => {
-  log("Lifecyle", "Refreshing");
+  log("Lifecycle", "Refreshing");
 
   documents.all().forEach(async (doc) => {
     annotateDocument(getDocument(doc));
