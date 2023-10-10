@@ -26,13 +26,9 @@ const DETECT_METHOD_REGEXES: DetectMethodRegex = {
   GET: /prefab\.get\(["`']$/,
 };
 
-const ENABLED_REGEX =
-  /prefab\.isFeatureEnabled\(\s*["']([^'\n]+?)\s*["']\s*\)/gs;
-const GET_REGEX = /prefab\.get\(?\s*["']([^'\n]+?)["']\)?\s*/gs;
-
 const METHOD_REGEXES: DetectMethodsRegex = {
-  IS_ENABLED: [ENABLED_REGEX, 17],
-  GET: [GET_REGEX, 12],
+  IS_ENABLED: /prefab\.isFeatureEnabled\(\s*["']([^'\n]+?)\s*["']\s*\)/gs,
+  GET: /prefab\.get\(?\s*["']([^'\n]+?)["']\)?\s*/gs,
 };
 
 // Note: this is naive

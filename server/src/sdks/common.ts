@@ -12,7 +12,7 @@ export type DetectMethodRegex = {
 };
 
 export type DetectMethodsRegex = {
-  [key in keyof typeof MethodType]: [RegExp, number];
+  [key in keyof typeof MethodType]: RegExp;
 };
 
 const METHOD_KEYS: MethodTypeKeys[] = [
@@ -51,7 +51,7 @@ export const detectMethods = (
   const text = document.getText();
 
   METHOD_KEYS.forEach((methodType) => {
-    const [regex, offset] = regexes[methodType];
+    const regex = regexes[methodType];
 
     for (const match of text.matchAll(regex)) {
       if (!match.index) {
@@ -59,6 +59,11 @@ export const detectMethods = (
       }
 
       const key = match[1];
+
+      // NOTE: This has potential to be wrong if the key conflicts with the
+      // method, but that feels acceptable since it would only affect the
+      // positioning of the diagnostic
+      const offset = match[0].indexOf(key);
 
       const keyRange = {
         start: document.positionAt(match.index + offset),
