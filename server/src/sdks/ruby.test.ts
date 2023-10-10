@@ -163,7 +163,7 @@ describe("RubySDK", () => {
 
       const expected: MethodLocation[] = [
         {
-          type: MethodType.GET,
+          type: "GET",
           range: {
             start: {
               line: 20,
@@ -186,9 +186,8 @@ describe("RubySDK", () => {
             },
           },
         },
-
         {
-          type: MethodType.GET,
+          type: "GET",
           range: {
             start: {
               line: 20,
@@ -236,7 +235,7 @@ describe("RubySDK", () => {
           },
         },
         {
-          type: MethodType.IS_ENABLED,
+          type: "IS_ENABLED",
           range: {
             start: {
               line: 2,
@@ -251,63 +250,61 @@ describe("RubySDK", () => {
           keyRange: {
             start: {
               line: 3,
-              character: 0,
+              character: 7,
             },
             end: {
               line: 3,
-              character: 15,
+              character: 22,
             },
           },
         },
-
         {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 12,
+              character: 4,
+            },
+            end: {
+              line: 13,
+              character: 2,
+            },
+          },
           key: "api.enabled",
           keyRange: {
-            end: {
-              character: 32,
-              line: 12,
-            },
             start: {
+              line: 12,
               character: 21,
-              line: 12,
             },
-          },
-          range: {
             end: {
-              character: 2,
-              line: 13,
-            },
-            start: {
-              character: 4,
               line: 12,
+              character: 32,
             },
           },
-          type: "IS_ENABLED",
         },
-
         {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 16,
+              character: 4,
+            },
+            end: {
+              line: 16,
+              character: 34,
+            },
+          },
           key: "hat.enabled",
           keyRange: {
-            end: {
-              character: 32,
-              line: 16,
-            },
             start: {
+              line: 16,
               character: 21,
-              line: 16,
             },
-          },
-          range: {
             end: {
-              character: 34,
               line: 16,
-            },
-            start: {
-              character: 4,
-              line: 16,
+              character: 32,
             },
           },
-          type: "IS_ENABLED",
         },
       ];
 

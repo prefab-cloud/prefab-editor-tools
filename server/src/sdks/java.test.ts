@@ -156,126 +156,6 @@ describe("JavaSDK", () => {
           type: "GET",
           range: {
             start: {
-              line: 20,
-              character: 34,
-            },
-            end: {
-              line: 20,
-              character: 60,
-            },
-          },
-          key: "some.config",
-          keyRange: {
-            start: {
-              line: 20,
-              character: 46,
-            },
-            end: {
-              line: 20,
-              character: 57,
-            },
-          },
-        },
-        {
-          type: "GET",
-          range: {
-            start: {
-              line: 49,
-              character: 23,
-            },
-            end: {
-              line: 49,
-              character: 48,
-            },
-          },
-          key: "some.other.config",
-          keyRange: {
-            start: {
-              line: 49,
-              character: 35,
-            },
-            end: {
-              line: 50,
-              character: 2,
-            },
-          },
-        },
-        {
-          type: "GET",
-          range: {
-            start: {
-              line: 53,
-              character: 23,
-            },
-            end: {
-              line: 54,
-              character: 25,
-            },
-          },
-          key: "some.other.config",
-          keyRange: {
-            start: {
-              line: 54,
-              character: 6,
-            },
-            end: {
-              line: 54,
-              character: 23,
-            },
-          },
-        },
-        {
-          type: "GET",
-          range: {
-            start: {
-              line: 73,
-              character: 28,
-            },
-            end: {
-              line: 73,
-              character: 47,
-            },
-          },
-          key: "the.feature",
-          keyRange: {
-            start: {
-              line: 73,
-              character: 40,
-            },
-            end: {
-              line: 74,
-              character: 2,
-            },
-          },
-        },
-        {
-          type: "GET",
-          range: {
-            start: {
-              line: 77,
-              character: 28,
-            },
-            end: {
-              line: 78,
-              character: 19,
-            },
-          },
-          key: "the.feature",
-          keyRange: {
-            start: {
-              line: 78,
-              character: 6,
-            },
-            end: {
-              line: 78,
-              character: 17,
-            },
-          },
-        },
-        {
-          type: "IS_ENABLED",
-          range: {
-            start: {
               line: 62,
               character: 28,
             },
@@ -288,16 +168,16 @@ describe("JavaSDK", () => {
           keyRange: {
             start: {
               line: 62,
-              character: 45,
+              character: 42,
             },
             end: {
               line: 62,
-              character: 56,
+              character: 53,
             },
           },
         },
         {
-          type: "IS_ENABLED",
+          type: "GET",
           range: {
             start: {
               line: 66,
@@ -312,11 +192,131 @@ describe("JavaSDK", () => {
           keyRange: {
             start: {
               line: 67,
-              character: 3,
+              character: 7,
             },
             end: {
               line: 67,
-              character: 14,
+              character: 18,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 20,
+              character: 34,
+            },
+            end: {
+              line: 20,
+              character: 60,
+            },
+          },
+          key: "some.config",
+          keyRange: {
+            start: {
+              line: 20,
+              character: 47,
+            },
+            end: {
+              line: 20,
+              character: 58,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 49,
+              character: 23,
+            },
+            end: {
+              line: 49,
+              character: 48,
+            },
+          },
+          key: "some.other.config",
+          keyRange: {
+            start: {
+              line: 49,
+              character: 29,
+            },
+            end: {
+              line: 49,
+              character: 46,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 53,
+              character: 23,
+            },
+            end: {
+              line: 54,
+              character: 25,
+            },
+          },
+          key: "some.other.config",
+          keyRange: {
+            start: {
+              line: 54,
+              character: 7,
+            },
+            end: {
+              line: 54,
+              character: 24,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 73,
+              character: 28,
+            },
+            end: {
+              line: 73,
+              character: 47,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 73,
+              character: 34,
+            },
+            end: {
+              line: 73,
+              character: 45,
+            },
+          },
+        },
+        {
+          type: "IS_ENABLED",
+          range: {
+            start: {
+              line: 77,
+              character: 28,
+            },
+            end: {
+              line: 78,
+              character: 19,
+            },
+          },
+          key: "the.feature",
+          keyRange: {
+            start: {
+              line: 78,
+              character: 7,
+            },
+            end: {
+              line: 78,
+              character: 18,
             },
           },
         },

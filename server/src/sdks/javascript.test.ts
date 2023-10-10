@@ -190,11 +190,11 @@ describe("JavascriptSDK", () => {
           keyRange: {
             start: {
               line: 9,
-              character: 0,
+              character: 9,
             },
             end: {
               line: 9,
-              character: 5,
+              character: 14,
             },
           },
         },
@@ -238,11 +238,11 @@ describe("JavascriptSDK", () => {
           keyRange: {
             start: {
               line: 0,
-              character: 28,
+              character: 29,
             },
             end: {
               line: 0,
-              character: 39,
+              character: 40,
             },
           },
         },
@@ -262,11 +262,11 @@ describe("JavascriptSDK", () => {
           keyRange: {
             start: {
               line: 4,
-              character: 21,
+              character: 23,
             },
             end: {
               line: 4,
-              character: 26,
+              character: 28,
             },
           },
         },
@@ -286,11 +286,11 @@ describe("JavascriptSDK", () => {
           keyRange: {
             start: {
               line: 4,
-              character: 51,
+              character: 52,
             },
             end: {
               line: 4,
-              character: 67,
+              character: 68,
             },
           },
         },

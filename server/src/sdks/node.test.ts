@@ -305,11 +305,11 @@ describe("NodeSDK", () => {
           keyRange: {
             start: {
               line: 23,
-              character: 0,
+              character: 9,
             },
             end: {
               line: 23,
-              character: 5,
+              character: 14,
             },
           },
         },
@@ -353,11 +353,11 @@ describe("NodeSDK", () => {
           keyRange: {
             start: {
               line: 14,
-              character: 28,
+              character: 36,
             },
             end: {
               line: 14,
-              character: 39,
+              character: 47,
             },
           },
         },
@@ -377,11 +377,11 @@ describe("NodeSDK", () => {
           keyRange: {
             start: {
               line: 18,
-              character: 21,
+              character: 30,
             },
             end: {
               line: 18,
-              character: 26,
+              character: 35,
             },
           },
         },
@@ -401,11 +401,11 @@ describe("NodeSDK", () => {
           keyRange: {
             start: {
               line: 18,
-              character: 58,
+              character: 66,
             },
             end: {
               line: 18,
-              character: 74,
+              character: 82,
             },
           },
         },

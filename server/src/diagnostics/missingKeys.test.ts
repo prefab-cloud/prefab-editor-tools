@@ -27,51 +27,45 @@ describe("missingKeys", () => {
 
     const expected = [
       {
-        message: "`api-rate-limit-per-user` is not defined.",
-        data: {
-          key: "api-rate-limit-per-user",
-          kind: "missingKey",
-          type: "GET",
-        },
+        severity: 1,
         range: {
-          end: {
-            character: 39,
-            line: 20,
-          },
           start: {
+            line: 20,
             character: 16,
-            line: 20,
           },
-        },
-        severity: 1,
-      },
-      {
-        message: "`api-rate-limit-window` is not defined.",
-        data: {
-          key: "api-rate-limit-window",
-          kind: "missingKey",
-          type: "GET",
-        },
-        range: {
           end: {
-            character: 96,
             line: 20,
-          },
-          start: {
-            character: 75,
-            line: 20,
+            character: 39,
           },
         },
-        severity: 1,
-      },
-      {
-        message: "`some.value` is not defined.",
-        severity: 1,
         data: {
-          key: "some.value",
           kind: "missingKey",
+          key: "api-rate-limit-per-user",
           type: "GET",
         },
+        message: "`api-rate-limit-per-user` is not defined.",
+      },
+      {
+        severity: 1,
+        range: {
+          start: {
+            line: 20,
+            character: 75,
+          },
+          end: {
+            line: 20,
+            character: 96,
+          },
+        },
+        data: {
+          kind: "missingKey",
+          key: "api-rate-limit-window",
+          type: "GET",
+        },
+        message: "`api-rate-limit-window` is not defined.",
+      },
+      {
+        severity: 1,
         range: {
           start: {
             line: 28,
@@ -82,45 +76,51 @@ describe("missingKeys", () => {
             character: 30,
           },
         },
+        data: {
+          kind: "missingKey",
+          key: "some.value",
+          type: "GET",
+        },
+        message: "`some.value` is not defined.",
       },
       {
+        severity: 2,
+        range: {
+          start: {
+            line: 3,
+            character: 7,
+          },
+          end: {
+            line: 3,
+            character: 22,
+          },
+        },
+        data: {
+          kind: "missingKey",
+          key: "everyone.is.pro",
+          type: "IS_ENABLED",
+        },
         message:
           "`everyone.is.pro` is not defined. This will always return false.",
-        data: {
-          key: "everyone.is.pro",
-          kind: "missingKey",
-          type: "IS_ENABLED",
-        },
-        range: {
-          end: {
-            character: 15,
-            line: 3,
-          },
-          start: {
-            character: 0,
-            line: 3,
-          },
-        },
-        severity: 2,
       },
       {
-        message: "`hat.enabled` is not defined. This will always return false.",
+        severity: 2,
+        range: {
+          start: {
+            line: 16,
+            character: 21,
+          },
+          end: {
+            line: 16,
+            character: 32,
+          },
+        },
         data: {
-          key: "hat.enabled",
           kind: "missingKey",
+          key: "hat.enabled",
           type: "IS_ENABLED",
         },
-        range: {
-          end: {
-            character: 32,
-            line: 16,
-          },
-          start: {
-            character: 21,
-            line: 16,
-          },
-        },
-        severity: 2,
+        message: "`hat.enabled` is not defined. This will always return false.",
       },
     ];
 

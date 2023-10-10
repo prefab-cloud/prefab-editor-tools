@@ -218,11 +218,11 @@ describe("ReactSDK", () => {
           keyRange: {
             start: {
               line: 13,
-              character: 26,
+              character: 19,
             },
             end: {
-              line: 15,
-              character: 0,
+              line: 13,
+              character: 27,
             },
           },
         },
@@ -242,11 +242,11 @@ describe("ReactSDK", () => {
           keyRange: {
             start: {
               line: 17,
-              character: 14,
+              character: 7,
             },
             end: {
-              line: 19,
-              character: 0,
+              line: 17,
+              character: 18,
             },
           },
         },
@@ -266,11 +266,11 @@ describe("ReactSDK", () => {
           keyRange: {
             start: {
               line: 3,
-              character: 23,
+              character: 17,
             },
             end: {
-              line: 4,
-              character: 0,
+              line: 3,
+              character: 25,
             },
           },
         },
@@ -290,11 +290,11 @@ describe("ReactSDK", () => {
           keyRange: {
             start: {
               line: 15,
-              character: 30,
+              character: 24,
             },
             end: {
               line: 15,
-              character: 38,
+              character: 32,
             },
           },
         },
@@ -314,11 +314,11 @@ describe("ReactSDK", () => {
           keyRange: {
             start: {
               line: 15,
-              character: 55,
+              character: 49,
             },
             end: {
               line: 15,
-              character: 64,
+              character: 58,
             },
           },
         },
@@ -338,11 +338,11 @@ describe("ReactSDK", () => {
           keyRange: {
             start: {
               line: 15,
-              character: 81,
+              character: 75,
             },
             end: {
-              line: 17,
-              character: 1,
+              line: 15,
+              character: 84,
             },
           },
         },
