@@ -1,5 +1,5 @@
 {
-  "name": "prefab-language-server",
+  "name": "prefab-editor-tools",
   "displayName": "Prefab",
   "description": "Tooling for Prefab Config, Feature flags, and Log Levels",
   "author": "Jeffrey Chupp",
