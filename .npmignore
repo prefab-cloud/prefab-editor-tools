@@ -1,0 +1,12 @@
+client/src/
+server/src/
+server/node_modules/
+client/node_modules/
+*.tgz
+*.vsix
+tsconfig.json
+tsconfig.tsbuildinfo
+.projections.json
+.eslintrc.cjs
+.vscodeignore
+.vscode/

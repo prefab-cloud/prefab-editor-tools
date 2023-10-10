@@ -199,7 +199,6 @@ const updateDebounces: Record<string, () => void> = {};
 
 const DEBOUNCE_TIME = 1000;
 
-// TODO: do we even need to debounce this anymore?
 const debouncedUpdate = async (uri: string) => {
   if (!updateDebounces[uri]) {
     updateDebounces[uri] = debounceHeadTail(async () => {
