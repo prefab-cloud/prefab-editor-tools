@@ -92,6 +92,11 @@ export type ExecutableCommand = {
   }: ExecutableCommandExecuteArgs) => Promise<LSPAny>;
 };
 
+// We always want to require source
+export type DiagnosticWithSource = Diagnostic & {
+  source: string;
+};
+
 export const DiagnosticDataKind = {
   missingKey: "missingKey",
 };
@@ -105,12 +110,12 @@ export type DiagnosticAnalyzerArgs = {
 
 export type DiagnosticAnalyzer = (
   args: DiagnosticAnalyzerArgs
-) => Promise<Diagnostic[]>;
+) => Promise<DiagnosticWithSource[]>;
 
 export type CodeLensAnalyzerArgs = {
   document: AnnotatedDocument;
   log: Logger;
-  getActiveDiagnostics: (uri: string) => Diagnostic[];
+  getActiveDiagnostics: (uri: string) => DiagnosticWithSource[];
 };
 
 export type CodeLensAnalyzer = (
