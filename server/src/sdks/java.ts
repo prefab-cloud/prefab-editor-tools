@@ -17,9 +17,8 @@ import {
 // TODO: The `.get` regex is going to be most likely to collide with something non-Prefab. We could improve this by looking backwards for something config-like.
 
 const METHOD_REGEXES: DetectMethodsRegex = {
-  IS_ENABLED:
-    /\.(?:get|liveString|liveStringList|liveBoolean|liveLong|liveDouble)\(?\s*["']([^'\n]+?)["']\)?\s*/gs,
-  GET: /\.featureIsOn\(\s*["']([^'\n]+?)["']\)?\s*/gs,
+  IS_ENABLED: /\.featureIsOn\(\s*["']([^'\n]+?)["']\)?\s*/gs,
+  GET: /\.(?:get|liveString|liveStringList|liveBoolean|liveLong|liveDouble)\(?\s*["']([^'\n]+?)["']\)?\s*/gs,
 };
 
 const DETECT_METHOD_REGEXES: DetectMethodRegex = {
