@@ -1,9 +1,7 @@
 import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
-import { mkDocument } from "../testHelpers";
+import { mkDocument, readFileSync } from "../testHelpers";
 import { CompletionType, MethodLocation, MethodType } from "../types";
-import * as fs from "fs";
-import * as path from "path";
 
 import ReactSDK, { RELEVANT_FILETYPES } from "./react";
 
@@ -32,10 +30,7 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get(``)", { line: 3, character: 12 }],
 ];
 
-const missingFlagsAndConfigText = fs.readFileSync(
-  path.join(__dirname, "../fixtures/react.js.txt"),
-  "utf-8"
-);
+const missingFlagsAndConfigText = readFileSync("fixtures/react.js.txt");
 
 describe("ReactSDK", () => {
   describe("isApplicable", () => {

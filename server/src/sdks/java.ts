@@ -7,7 +7,28 @@ import {
   MethodLocation,
 } from "../types";
 import { type SDK } from "./detection";
-import { currentLine } from "../documentHelpers";
+import {
+  detectMethod,
+  detectMethods,
+  type DetectMethodsRegex,
+  type DetectMethodRegex,
+} from "./common";
+
+// TODO: The `.get` regex is going to be most likely to collide with something non-Prefab. We could improve this by looking backwards for something config-like.
+
+const ENABLED_REGEX = /\.featureIsOn\(\s*["']([^'\n]+?)["']\)?\s*/gs;
+const GET_REGEX =
+  /\.(?:get|liveString|liveStringList|liveBoolean|liveLong|liveDouble)\(?\s*["']([^'\n]+?)["']\)?\s*/gs;
+
+const METHOD_REGEXES: DetectMethodsRegex = {
+  IS_ENABLED: [ENABLED_REGEX, 17],
+  GET: [GET_REGEX, 12],
+};
+
+const DETECT_METHOD_REGEXES: DetectMethodRegex = {
+  IS_ENABLED: /\.featureIsOn\(["']$/,
+  GET: /\.(?:get|liveString|liveStringList|liveBoolean|liveLong|liveDouble)\(["']$/,
+};
 
 const JavaSDK: SDK = {
   name: "java",
@@ -20,26 +41,11 @@ const JavaSDK: SDK = {
     document: TextDocument,
     position: Position
   ): MethodTypeValue | null => {
-    const line = currentLine(document, position);
-
-    if (!line) {
-      return null;
-    }
-
-    if (/\.featureIsOn\(["']$/.test(line)) {
-      return MethodType.IS_ENABLED;
-    }
-
-    if (/\.get\(["']$/.test(line)) {
-      return MethodType.GET;
-    }
-
-    return null;
+    return detectMethod(document, position, DETECT_METHOD_REGEXES);
   },
 
-  detectMethods: (): MethodLocation[] => {
-    // TODO:
-    return [];
+  detectMethods: (document): MethodLocation[] => {
+    return detectMethods(document, METHOD_REGEXES);
   },
 
   completionType: (

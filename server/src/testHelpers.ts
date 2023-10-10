@@ -1,6 +1,12 @@
+import * as fs from "fs";
+import * as path from "path";
 import { AnnotatedDocument, Logger } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { get } from "./apiClient";
+
+export const readFileSync = (relativePath: string) => {
+  return fs.readFileSync(path.join(__dirname, relativePath), "utf-8");
+};
 
 const defaultUriForTests = "file:///some/path/defaultUriForTests";
 

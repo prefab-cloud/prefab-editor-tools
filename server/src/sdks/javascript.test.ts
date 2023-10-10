@@ -1,9 +1,7 @@
 import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
-import { mkDocument } from "../testHelpers";
+import { mkDocument, readFileSync } from "../testHelpers";
 import { CompletionType, MethodLocation, MethodType } from "../types";
-import * as fs from "fs";
-import * as path from "path";
 
 import JavascriptSDK, { RELEVANT_FILETYPES } from "./javascript";
 
@@ -27,10 +25,7 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get(``)", { line: 0, character: 12 }],
 ];
 
-const missingFlagsAndConfigText = fs.readFileSync(
-  path.join(__dirname, "../fixtures/javascript.js.txt"),
-  "utf-8"
-);
+const missingFlagsAndConfigText = readFileSync("fixtures/javascript.js.txt");
 
 describe("JavascriptSDK", () => {
   describe("isApplicable", () => {
