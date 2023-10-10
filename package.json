@@ -1,5 +1,6 @@
 {
-  "name": "Prefab",
+  "name": "prefab-language-server",
+  "displayName": "Prefab",
   "description": "Tooling for Prefab Config, Feature flags, and Log Levels",
   "author": "Jeffrey Chupp",
   "publisher": "Prefab",
@@ -14,6 +15,13 @@
     "onLanguage"
   ],
   "main": "./client/out/extension",
+  "bin": {
+    "prefab-ls": "./server/out/cli"
+  },
+  "repository": {
+    "type": "git",
+    "url": "REPLACE_ME"
+  },
   "contributes": {
     "configuration": {
       "type": "object",
@@ -29,13 +37,12 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "esbuild ./client/src/extension.ts --minify --bundle --outfile=client/out/extension.js --external:vscode --format=cjs --platform=node && esbuild ./server/src/server.ts --minify --bundle --outfile=server/out/server.js --external:vscode --format=cjs --platform=node",
+    "compile": "esbuild ./client/src/extension.ts --minify --bundle --outfile=client/out/extension.js --external:vscode --format=cjs --platform=node && esbuild ./server/src/server.ts --minify --bundle --outfile=server/out/server.js --external:vscode --format=cjs --platform=node && echo '#! /usr/bin/env node' > server/out/cli && cat server/out/server.js >> server/out/cli",
     "lint": "npx eslint . --ext .ts",
     "watch": "tsc -b -w",
     "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
     "tsc-server": "cd server && tsc --watch --noEmit",
-    "test": "bun test",
-    "test-parsers": "cd server && jest"
+    "test": "bun test"
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
