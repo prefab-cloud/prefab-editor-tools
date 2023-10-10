@@ -1,5 +1,6 @@
 import { expect, it, describe } from "bun:test";
 import { MethodLocation } from "../types";
+import { DIAGNOSTIC_SOURCE } from "../constants";
 
 import { log, mkAnnotatedDocument, readFileSync } from "../testHelpers";
 import missingKeys from "./missingKeys";
@@ -27,6 +28,7 @@ describe("missingKeys", () => {
 
     const expected = [
       {
+        source: DIAGNOSTIC_SOURCE,
         severity: 1,
         range: {
           start: {
@@ -46,6 +48,7 @@ describe("missingKeys", () => {
         message: "`api-rate-limit-per-user` is not defined.",
       },
       {
+        source: DIAGNOSTIC_SOURCE,
         severity: 1,
         range: {
           start: {
@@ -65,6 +68,7 @@ describe("missingKeys", () => {
         message: "`api-rate-limit-window` is not defined.",
       },
       {
+        source: DIAGNOSTIC_SOURCE,
         severity: 1,
         range: {
           start: {
@@ -84,6 +88,7 @@ describe("missingKeys", () => {
         message: "`some.value` is not defined.",
       },
       {
+        source: DIAGNOSTIC_SOURCE,
         severity: 2,
         range: {
           start: {
@@ -104,6 +109,7 @@ describe("missingKeys", () => {
           "`everyone.is.pro` is not defined. This will always return false.",
       },
       {
+        source: DIAGNOSTIC_SOURCE,
         severity: 2,
         range: {
           start: {

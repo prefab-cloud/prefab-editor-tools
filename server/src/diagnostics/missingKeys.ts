@@ -1,12 +1,15 @@
 import {
-  DiagnosticDataKind,
   DiagnosticAnalyzer,
   DiagnosticAnalyzerArgs,
+  DiagnosticDataKind,
+  DiagnosticWithSource,
   MethodType,
 } from "../types";
 import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefabClient";
 
-import { Diagnostic, DiagnosticSeverity } from "vscode-languageserver/node";
+import { DIAGNOSTIC_SOURCE } from "../constants";
+
+import { DiagnosticSeverity } from "vscode-languageserver/node";
 
 const missingKeys: DiagnosticAnalyzer = async ({
   document,
@@ -28,29 +31,32 @@ const missingKeys: DiagnosticAnalyzer = async ({
 
   log("Diagnostic", { filteredMissingKeyMethods });
 
-  const diagnostics: Diagnostic[] = filteredMissingKeyMethods.map((method) => {
-    const diagnostic: Diagnostic = {
-      severity:
-        method.type === MethodType.GET
-          ? DiagnosticSeverity.Error
-          : DiagnosticSeverity.Warning,
-      range: {
-        start: method.keyRange.start,
-        end: method.keyRange.end,
-      },
-      data: {
-        kind: DiagnosticDataKind.missingKey,
-        key: method.key,
-        type: method.type,
-      },
-      message:
-        method.type === MethodType.GET
-          ? `\`${method.key}\` is not defined.`
-          : `\`${method.key}\` is not defined. This will always return false.`,
-    };
+  const diagnostics: DiagnosticWithSource[] = filteredMissingKeyMethods.map(
+    (method) => {
+      const diagnostic: DiagnosticWithSource = {
+        source: DIAGNOSTIC_SOURCE,
+        severity:
+          method.type === MethodType.GET
+            ? DiagnosticSeverity.Error
+            : DiagnosticSeverity.Warning,
+        range: {
+          start: method.keyRange.start,
+          end: method.keyRange.end,
+        },
+        data: {
+          kind: DiagnosticDataKind.missingKey,
+          key: method.key,
+          type: method.type,
+        },
+        message:
+          method.type === MethodType.GET
+            ? `\`${method.key}\` is not defined.`
+            : `\`${method.key}\` is not defined. This will always return false.`,
+      };
 
-    return diagnostic;
-  });
+      return diagnostic;
+    }
+  );
 
   return diagnostics;
 };

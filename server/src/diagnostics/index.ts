@@ -1,14 +1,13 @@
-import { Diagnostic } from "vscode-languageserver/node";
-import { DiagnosticAnalyzerArgs } from "../types";
+import { DiagnosticAnalyzerArgs, DiagnosticWithSource } from "../types";
 
 import missingKeys from "./missingKeys";
 
-const activeDiagnostics: Record<string, Diagnostic[]> = {};
+const activeDiagnostics: Record<string, DiagnosticWithSource[]> = {};
 
 export const diagnostics = [missingKeys];
 
 type Result = {
-  diagnostics: Diagnostic[];
+  diagnostics: DiagnosticWithSource[];
   changed: boolean;
 };
 
@@ -33,6 +32,6 @@ export const runAllDiagnostics = async (
   };
 };
 
-export const getActiveDiagnostics = (uri: string): Diagnostic[] => {
+export const getActiveDiagnostics = (uri: string): DiagnosticWithSource[] => {
   return activeDiagnostics[uri] || [];
 };
