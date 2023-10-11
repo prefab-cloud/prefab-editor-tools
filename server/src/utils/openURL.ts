@@ -5,15 +5,18 @@ import * as childProcess from "child_process";
 const openURL = ({ url, log }: { url: string; log: Logger }) => {
   log("Utility", `Prefab: Opening ${url}`);
 
-  if (process.platform === "darwin") {
-    return childProcess.exec(`open ${url}`);
-  }
+  switch (process.platform) {
+    case "darwin":
+      childProcess.exec(`open ${url}`);
+      break;
 
-  if (process.platform === "win32") {
-    return childProcess.exec(`start ${url}`);
-  }
+    case "win32":
+      childProcess.exec(`start ${url}`);
+      break;
 
-  return childProcess.exec(`xdg-open ${url}`);
+    default:
+      childProcess.exec(`xdg-open ${url}`);
+  }
 };
 
 export default openURL;

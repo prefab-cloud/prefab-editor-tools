@@ -7,7 +7,7 @@ import {
   valueOfToString,
 } from "../prefabClient";
 
-const overrideVariant: ExecutableCommand = {
+const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
   command: "prefab.overrideVariant",
   execute: async (args: ExecutableCommandExecuteArgs) => {
     const { connection, log, settings, params, refresh } = args;

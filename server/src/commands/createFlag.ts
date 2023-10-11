@@ -1,26 +1,46 @@
 import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
-import { post } from "../apiClient";
-import { runAllDiagnostics } from "../diagnostics";
-import { getProjectEnvFromApiKey } from "../prefabClient";
+import { post as defaultPost } from "../apiClient";
 import extractKey from "./extractKey";
+
+type Dependencies = {
+  post?: typeof defaultPost;
+};
 
 const createBooleanFlag = async ({
   connection,
   settings,
   key,
   log,
-  document,
   refresh,
-}: ExecutableCommandExecuteArgs & { key: string }) => {
-  const projectEnv = getProjectEnvFromApiKey(settings.apiKey);
-
-  const payload = {
+  post,
+}: ExecutableCommandExecuteArgs & {
+  key: string;
+  post: typeof defaultPost;
+}) => {
+  const recipePaylod = {
     key,
-    configType: "FEATURE_FLAG",
-    projectId: projectEnv.projectId,
-    rows: [{ projectEnvId: projectEnv.id, values: [] }],
-    allowableValues: [{ bool: true }, { bool: false }],
+    defaultValue: false,
   };
+
+  const recipeRequest = await post({
+    settings,
+    requestPath: "/api/v1/config-recipes/feature-flag/boolean",
+    payload: recipePaylod,
+    log,
+  });
+
+  if (recipeRequest.status !== 200) {
+    const error = await recipeRequest.text();
+
+    connection.console.error(
+      `Prefab: Failed to create boolean flag recipe: ${recipeRequest.status} | ${error}`
+    );
+    return;
+  }
+
+  const payload = (await recipeRequest.json()) as Record<string, unknown>;
+
+  log("Command", { payload });
 
   const request = await post({
     settings,
@@ -30,34 +50,27 @@ const createBooleanFlag = async ({
   });
 
   if (request.status !== 200) {
+    const error = await request.text();
+
     connection.console.error(
-      `Prefab: Failed to create boolean flag: ${request.status}`
+      `Prefab: Failed to create boolean flag: ${request.status} | ${error}`
     );
     return;
   }
 
-  log("Command", `Prefab: Created boolean flag ${payload.key}`);
-
-  const { diagnostics } = await runAllDiagnostics({
-    log,
-    document,
-    exclude: [key],
-  });
-
-  await connection.sendDiagnostics({
-    uri: document.uri,
-    diagnostics,
-  });
+  log("Command", `Prefab: Created boolean flag ${key}`);
 
   refresh();
-
-  log("Command", { uri: document.uri, updatedDiagnostics: diagnostics });
 };
 
-const createFlag: ExecutableCommand = {
+type Args = ExecutableCommandExecuteArgs & Dependencies;
+
+const createFlag: ExecutableCommand<Args> = {
   command: "prefab.createFlag",
-  execute: async (args: ExecutableCommandExecuteArgs) => {
+  execute: async (args: Args) => {
     const { params, settings, log } = args;
+
+    const post = args.post ?? defaultPost;
 
     log("Command", { createFlag: params, settings });
 
@@ -65,6 +78,7 @@ const createFlag: ExecutableCommand = {
 
     return await createBooleanFlag({
       ...args,
+      post,
       key,
     });
   },

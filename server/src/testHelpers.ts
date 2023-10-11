@@ -2,7 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { AnnotatedDocument, Logger } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { get } from "./apiClient";
+import { mock } from "bun:test";
+import { Response as FetchResponse } from "node-fetch";
 
 export const readFileSync = (relativePath: string) => {
   return fs.readFileSync(path.join(__dirname, relativePath), "utf-8");
@@ -48,19 +49,28 @@ export const getLoggedItems = () => {
   return loggedItems;
 };
 
-export const mockedGet = ({
-  json,
-  status,
-}: {
-  json: unknown;
-  status?: number;
-}): typeof get => {
-  return async (): ReturnType<typeof get> => {
+type Response = {
+  status: number;
+  json: Record<string, unknown>;
+};
+
+export const mockRequest = (requestOrRequests: Response | Response[]) => {
+  const requests = Array.isArray(requestOrRequests)
+    ? requestOrRequests
+    : [requestOrRequests];
+
+  return mock(async (): Promise<FetchResponse> => {
+    const request = requests.shift();
+
+    if (!request) {
+      throw new Error("No more requests");
+    }
+
     return {
-      status: status ?? 200,
-      json: async () => json,
-    } as unknown as ReturnType<typeof get>;
-  };
+      status: request.status ?? 200,
+      json: async () => request.json,
+    } as unknown as FetchResponse;
+  });
 };
 
 export const lastItem = (array: unknown[]) => {
@@ -68,6 +78,7 @@ export const lastItem = (array: unknown[]) => {
 };
 
 export const cannedEvaluationResponse = {
+  status: 200,
   json: {
     key: "redis.connection-string",
     start: 1696354310632,

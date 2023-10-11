@@ -3,7 +3,7 @@
 
 import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 
-const refreshDiagnostics: ExecutableCommand = {
+const refreshDiagnostics: ExecutableCommand<ExecutableCommandExecuteArgs> = {
   command: "prefab.refreshDiagnostics",
   execute: async ({ refresh }: ExecutableCommandExecuteArgs) => {
     await refresh();

@@ -20,6 +20,8 @@ const position = { line: 3, character: 20 };
 
 describe("link", () => {
   it("can link to a config", async () => {
+    const filterForMissingKeys = async () => [];
+
     const document = mkAnnotatedDocument({
       methodLocations: [
         {
@@ -36,6 +38,7 @@ describe("link", () => {
       position,
       log,
       settings: { apiKey: "123-P3-E5-SDK-..." },
+      filterForMissingKeys,
     });
 
     expect(result).toStrictEqual({
@@ -46,6 +49,8 @@ describe("link", () => {
   });
 
   it("can link to a flag", async () => {
+    const filterForMissingKeys = async () => [];
+
     const document = mkAnnotatedDocument({
       methodLocations: [
         {
@@ -62,6 +67,7 @@ describe("link", () => {
       position,
       log,
       settings: { apiKey: "123-P3-E5-SDK-..." },
+      filterForMissingKeys,
     });
 
     expect(result).toStrictEqual({

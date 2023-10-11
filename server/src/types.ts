@@ -79,7 +79,7 @@ export type ExecutableCommandExecuteArgs = {
   refresh: () => Promise<void>;
 };
 
-export type ExecutableCommand = {
+export type ExecutableCommand<T extends ExecutableCommandExecuteArgs> = {
   command: string;
 
   execute: ({
@@ -89,7 +89,7 @@ export type ExecutableCommand = {
     settings,
     log,
     refresh,
-  }: ExecutableCommandExecuteArgs) => Promise<LSPAny>;
+  }: T) => Promise<LSPAny>;
 };
 
 // We always want to require source
