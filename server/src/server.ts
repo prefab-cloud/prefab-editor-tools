@@ -19,8 +19,6 @@ import { runAllHovers } from "./hovers";
 import { runAllInlayHints } from "./inlayHints";
 import { runAllCompletions } from "./completions";
 
-import { debounceHeadTail } from "./utils/debounce";
-
 import { getSettings, settings, updateSettings } from "./settings";
 
 import { prefabPromise } from "./prefabClient";
@@ -247,40 +245,32 @@ connection.onRequest(InlayHintRequest.method, async (params) => {
 
 const updateDebounces: Record<string, () => void> = {};
 
-const DEBOUNCE_TIME = 1000;
+const update = async (uri: string) => {
+  const document = getAnnotatedDocument(uri);
 
-const debouncedUpdate = async (uri: string) => {
-  if (!updateDebounces[uri]) {
-    updateDebounces[uri] = debounceHeadTail(async () => {
-      const document = getAnnotatedDocument(uri);
-
-      if (!document) {
-        log("Lifecycle", `debouncedUpdate: document not found ${uri}`);
-        return null;
-      }
-
-      const { diagnostics, changed } = await runAllDiagnostics({
-        log,
-        document,
-      });
-
-      connection.sendDiagnostics({
-        uri,
-        diagnostics,
-      });
-
-      if (changed && canRefreshCodeLens) {
-        connection.sendRequest("workspace/codeLens/refresh");
-      }
-
-      // This isn't happening at the right time
-      if (canRefreshInlayHints) {
-        connection.sendRequest("workspace/inlayHint/refresh");
-      }
-    }, DEBOUNCE_TIME);
+  if (!document) {
+    log("Lifecycle", `debouncedUpdate: document not found ${uri}`);
+    return null;
   }
 
-  updateDebounces[uri]();
+  const { diagnostics, changed } = await runAllDiagnostics({
+    log,
+    document,
+  });
+
+  connection.sendDiagnostics({
+    uri,
+    diagnostics,
+  });
+
+  if (changed && canRefreshCodeLens) {
+    connection.sendRequest("workspace/codeLens/refresh");
+  }
+
+  // This isn't happening at the right time
+  if (canRefreshInlayHints) {
+    connection.sendRequest("workspace/inlayHint/refresh");
+  }
 };
 
 const annotateDocument = (document: TextDocument | undefined) => {
@@ -296,7 +286,7 @@ documents.onDidOpen(async (change) => {
 
   annotateDocument(getDocument(change.document));
 
-  debouncedUpdate(change.document.uri);
+  update(change.document.uri);
 });
 
 documents.onDidChangeContent(async (change) => {
@@ -304,7 +294,7 @@ documents.onDidChangeContent(async (change) => {
 
   annotateDocument(getDocument(change.document));
 
-  debouncedUpdate(change.document.uri);
+  update(change.document.uri);
 });
 
 const refresh = async () => {
@@ -312,7 +302,7 @@ const refresh = async () => {
 
   documents.all().forEach(async (doc) => {
     annotateDocument(getDocument(doc));
-    debouncedUpdate(doc.uri);
+    update(doc.uri);
   });
 };
 
