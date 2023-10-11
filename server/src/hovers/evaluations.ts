@@ -3,7 +3,10 @@ import type { HoverAnalyzerArgs } from "../types";
 import pluralize from "../utils/pluralize";
 import { get } from "../apiClient";
 import { methodAtPosition } from "../documentAnnotations";
-import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefabClient";
+import {
+  filterForMissingKeys as defaultFilterForMissingKeys,
+  valueOfToString,
+} from "../prefabClient";
 
 type EvaluationStats = {
   key: string;
@@ -73,7 +76,7 @@ const evaluations = async ({
     return null;
   }
 
-  const json: EvaluationStats = await request.json();
+  const json = (await request.json()) as EvaluationStats;
 
   log("Hover", { json });
 
@@ -105,7 +108,9 @@ const evaluations = async ({
 
     env.counts.forEach((count) => {
       counts.push(
-        `- ${percent(count.count / env.total)} - ${count.configValue.string}`
+        `- ${percent(count.count / env.total)} - ${valueOfToString(
+          count.configValue
+        )}`
       );
     });
 

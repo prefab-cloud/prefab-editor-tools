@@ -113,7 +113,7 @@ export const valueOf = (value: ConfigValue): ReturnType<typeof prefab.get> => {
     case "stringList":
       return value.stringList?.values;
     case "int":
-      return value.int?.toInt();
+      return value.int?.toString();
     case "bool":
       return value.bool;
     case "double":

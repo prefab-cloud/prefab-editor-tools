@@ -32,7 +32,7 @@ const getSettings = async (
 
   let apiKey: string | undefined = undefined;
 
-  log("Lifecyle", { getSettings: { workspaceFolders } });
+  log("Lifecycle", { getSettings: { workspaceFolders } });
 
   workspaceFolders?.forEach((folder) => {
     SUPPORTED_FILES.forEach((file) => {
