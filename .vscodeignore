@@ -5,6 +5,7 @@ client/package-lock.json
 client/tsconfig.json
 server/node_modules
 server/src
+server/out/cli
 server/package.json
 server/package-lock.json
 server/tsconfig.json
