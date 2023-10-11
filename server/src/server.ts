@@ -27,7 +27,10 @@ import { prefabPromise } from "./prefabClient";
 
 import type { Logger } from "./types";
 
-import { annotateDocument, getAnnotatedDocument } from "./documentAnnotations";
+import {
+  annotateDocument as annotateDoc,
+  getAnnotatedDocument as getAnnotatedDoc,
+} from "./documentAnnotations";
 
 // Create a connection for the server, using Node's IPC as a
 // transport (overridden with `--stdio` flag).
@@ -99,21 +102,22 @@ const ready = async () => {
   await prefabPromise;
 };
 
-const getDocument = (uriOrDocument: string | TextDocument): TextDocument => {
-  const document =
-    typeof uriOrDocument === "string"
-      ? documents.get(uriOrDocument)
-      : uriOrDocument;
+const getDocument = (
+  uriOrDocument: string | TextDocument
+): TextDocument | undefined => {
+  return typeof uriOrDocument === "string"
+    ? documents.get(uriOrDocument)
+    : uriOrDocument;
+};
+
+const getAnnotatedDocument = (uriOrDocument: string | TextDocument) => {
+  const document = getDocument(uriOrDocument);
 
   if (!document) {
-    throw new Error(
-      `Could not find the document for ${JSON.stringify(
-        uriOrDocument
-      )} provided.`
-    );
+    return undefined;
   }
 
-  return document;
+  return getAnnotatedDoc(document);
 };
 
 connection.onExecuteCommand(async (params) => {
@@ -127,7 +131,15 @@ connection.onExecuteCommand(async (params) => {
     );
   }
 
-  const document = getAnnotatedDocument(getDocument(params.arguments[0]));
+  const document = getAnnotatedDocument(params.arguments[0]);
+
+  if (!document) {
+    log(
+      "Lifecycle",
+      `executeCommand: document not found ${params.arguments[0]}`
+    );
+    return null;
+  }
 
   commandLookup[params.command].execute({
     document,
@@ -142,7 +154,15 @@ connection.onExecuteCommand(async (params) => {
 });
 
 connection.onCompletion(async (params) => {
-  const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
+  const document = getAnnotatedDocument(params.textDocument.uri);
+
+  if (!document) {
+    log(
+      "Lifecycle",
+      `onCompletion: document not found ${params.textDocument.uri}`
+    );
+    return null;
+  }
 
   return runAllCompletions({
     document,
@@ -152,7 +172,15 @@ connection.onCompletion(async (params) => {
 });
 
 connection.onCodeLens(async (params) => {
-  const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
+  const document = getAnnotatedDocument(params.textDocument.uri);
+
+  if (!document) {
+    log(
+      "Lifecycle",
+      `onCodeLens: document not found ${params.textDocument.uri}`
+    );
+    return null;
+  }
 
   return runAllCodeLens({
     log,
@@ -164,7 +192,15 @@ connection.onCodeLens(async (params) => {
 connection.onRequest(
   DocumentDiagnosticRequest.method,
   async (params: DocumentDiagnosticParams) => {
-    const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
+    const document = getAnnotatedDocument(params.textDocument.uri);
+
+    if (!document) {
+      log(
+        "Lifecycle",
+        `DocumentDiagnosticRequest: document not found ${params.textDocument.uri}`
+      );
+      return null;
+    }
 
     const { diagnostics } = await runAllDiagnostics({ log, document });
 
@@ -175,7 +211,13 @@ connection.onRequest(
 connection.onHover(async (params) => {
   await ready();
 
-  const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
+  const document = getAnnotatedDocument(params.textDocument.uri);
+
+  if (!document) {
+    log("Lifecycle", `onHover: document not found ${params.textDocument.uri}`);
+
+    return null;
+  }
 
   const hover = await runAllHovers({
     settings,
@@ -188,7 +230,15 @@ connection.onHover(async (params) => {
 });
 
 connection.onRequest(InlayHintRequest.method, async (params) => {
-  const document = getAnnotatedDocument(getDocument(params.textDocument.uri));
+  const document = getAnnotatedDocument(params.textDocument.uri);
+
+  if (!document) {
+    log(
+      "Lifecycle",
+      `InlayHintRequest: document not found ${params.textdocument.uri}`
+    );
+    return null;
+  }
 
   const inlayHints = await runAllInlayHints({ log, document });
 
@@ -202,7 +252,12 @@ const DEBOUNCE_TIME = 1000;
 const debouncedUpdate = async (uri: string) => {
   if (!updateDebounces[uri]) {
     updateDebounces[uri] = debounceHeadTail(async () => {
-      const document = getAnnotatedDocument(getDocument(uri));
+      const document = getAnnotatedDocument(uri);
+
+      if (!document) {
+        log("Lifecycle", `debouncedUpdate: document not found ${uri}`);
+        return null;
+      }
 
       const { diagnostics, changed } = await runAllDiagnostics({
         log,
@@ -226,6 +281,14 @@ const debouncedUpdate = async (uri: string) => {
   }
 
   updateDebounces[uri]();
+};
+
+const annotateDocument = (document: TextDocument | undefined) => {
+  if (!document) {
+    return;
+  }
+
+  annotateDoc(document);
 };
 
 documents.onDidOpen(async (change) => {
