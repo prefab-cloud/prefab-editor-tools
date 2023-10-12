@@ -29,7 +29,6 @@ type EvaluationStats = {
 
 type Dependencies = {
   providedGet?: typeof get;
-  filterForMissingKeys?: typeof defaultFilterForMissingKeys;
 };
 
 const percent = (value: number) => {
@@ -44,7 +43,7 @@ const evaluations = async ({
   providedGet,
   filterForMissingKeys,
 }: HoverAnalyzerArgs & Dependencies) => {
-  log("Hover", { uri: document.uri, position });
+  log("Hover", { evaluations: { uri: document.uri, position } });
 
   const method = methodAtPosition(document, position);
 

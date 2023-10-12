@@ -66,3 +66,52 @@ export const mockedGet = ({
 export const lastItem = (array: unknown[]) => {
   return array[array.length - 1];
 };
+
+export const cannedEvaluationResponse = {
+  json: {
+    key: "redis.connection-string",
+    start: 1696354310632,
+    end: 1696440710632,
+    total: 69156,
+    environments: {
+      "136": {
+        name: "Staging",
+        total: 34494,
+        counts: [
+          {
+            configValue: {
+              string: "redis://internal-redis.example.com:6379",
+            },
+            count: 22429,
+          },
+          {
+            configValue: {
+              string:
+                "redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
+            },
+            count: 12065,
+          },
+        ],
+      },
+      "137": {
+        name: "Production",
+        total: 34662,
+        counts: [
+          {
+            configValue: {
+              string: "redis://internal-redis.example.com:6379",
+            },
+            count: 17434,
+          },
+          {
+            configValue: {
+              string:
+                "redis://redis-11111.c1.us-central1-2.gce.cloud.redislabs.com:11111",
+            },
+            count: 17228,
+          },
+        ],
+      },
+    },
+  },
+};
