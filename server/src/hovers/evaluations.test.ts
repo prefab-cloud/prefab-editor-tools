@@ -5,7 +5,7 @@ import {
   getLoggedItems,
   lastItem,
   mkAnnotatedDocument,
-  mockedGet,
+  mockRequest,
   cannedEvaluationResponse,
 } from "../testHelpers";
 import { MethodLocation, MethodType } from "../types";
@@ -44,13 +44,17 @@ describe("evaluations", () => {
       ],
     });
 
+    const providedGet = mockRequest(cannedEvaluationResponse);
+
+    const settings = {};
+
     const result = await evaluations({
-      settings: {},
+      settings,
       document,
       position,
       log,
       filterForMissingKeys,
-      providedGet: mockedGet(cannedEvaluationResponse),
+      providedGet,
     });
 
     expect(result).toStrictEqual({
@@ -64,6 +68,15 @@ describe("evaluations", () => {
         },
       },
     });
+
+    expect(providedGet).toHaveBeenCalledTimes(1);
+    expect(providedGet.mock.calls[0]).toStrictEqual([
+      {
+        log,
+        requestPath: "/api/v1/evaluation-stats/redis.connection-string",
+        settings,
+      },
+    ]);
   });
 
   it("won't show hover if the key does not exist", async () => {
@@ -88,7 +101,7 @@ describe("evaluations", () => {
       position,
       log,
       filterForMissingKeys,
-      providedGet: mockedGet(cannedEvaluationResponse),
+      providedGet: mockRequest(cannedEvaluationResponse),
     });
 
     expect(result).toBeNull();
@@ -119,7 +132,8 @@ describe("evaluations", () => {
       position,
       log,
       filterForMissingKeys,
-      providedGet: mockedGet({
+      providedGet: mockRequest({
+        status: 200,
         json: {
           key: "james.test1",
           start: 1696887708021,

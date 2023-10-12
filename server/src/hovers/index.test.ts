@@ -3,7 +3,7 @@ import { expect, it, describe } from "bun:test";
 import {
   log,
   mkAnnotatedDocument,
-  mockedGet,
+  mockRequest,
   cannedEvaluationResponse,
 } from "../testHelpers";
 import { MethodType } from "../types";
@@ -44,7 +44,7 @@ describe("runAllHovers", () => {
       position,
       log,
       filterForMissingKeys,
-      providedGet: mockedGet(cannedEvaluationResponse),
+      providedGet: mockRequest(cannedEvaluationResponse),
     });
 
     expect(result).toStrictEqual({
