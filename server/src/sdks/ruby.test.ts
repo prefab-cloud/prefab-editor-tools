@@ -52,7 +52,15 @@ describe("RubySDK", () => {
       expect(RubySDK.isApplicable(document)).toBe(true);
     });
 
-    it("is not applicable if the languageId is not ruby", () => {
+    it("is applicable if the languageId is eruby", () => {
+      const document = mkDocument({
+        languageId: "eruby",
+      });
+
+      expect(RubySDK.isApplicable(document)).toBe(true);
+    });
+
+    it("is not applicable if the languageId is not ruby or eruby", () => {
       const document = mkDocument({
         languageId: "not-ruby",
       });
