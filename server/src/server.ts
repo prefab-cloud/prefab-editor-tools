@@ -243,8 +243,6 @@ connection.onRequest(InlayHintRequest.method, async (params) => {
   return inlayHints;
 });
 
-const updateDebounces: Record<string, () => void> = {};
-
 const update = async (uri: string) => {
   const document = getAnnotatedDocument(uri);
 

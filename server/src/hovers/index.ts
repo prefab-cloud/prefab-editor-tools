@@ -1,13 +1,20 @@
 import { Hover } from "vscode-languageserver/node";
 
 import type { HoverAnalyzer, HoverAnalyzerArgs } from "../types";
+import { get } from "../apiClient";
 
 import evaluations from "./evaluations";
+import linkTitle from "./linkTitle";
 
-const hovers: HoverAnalyzer[] = [evaluations];
+// This order matters since it determines how content is concatenated
+const hovers: HoverAnalyzer[] = [linkTitle, evaluations];
+
+type Dependencies = {
+  providedGet?: typeof get;
+};
 
 export const runAllHovers = async (
-  args: HoverAnalyzerArgs
+  args: HoverAnalyzerArgs & Dependencies
 ): Promise<Hover | null> => {
   const allHovers = await Promise.all(hovers.map((hover) => hover(args)));
 
@@ -21,7 +28,9 @@ export const runAllHovers = async (
     return null;
   }
 
-  const hoverContent = filteredHovers.map((hover) => hover.contents).join("\n");
+  const hoverContent = filteredHovers
+    .map((hover) => hover.contents)
+    .join("\n\n");
 
   return {
     contents: hoverContent,

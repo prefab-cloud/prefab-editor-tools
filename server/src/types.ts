@@ -146,6 +146,7 @@ export type HoverAnalyzerArgs = {
   position: Position;
   log: Logger;
   settings: Settings;
+  filterForMissingKeys?: typeof defaultFilterForMissingKeys;
 };
 
 export type HoverAnalyzer = (args: HoverAnalyzerArgs) => Promise<Hover | null>;
