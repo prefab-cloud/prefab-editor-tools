@@ -1,12 +1,8 @@
-import openURL from "../utils/openURL";
 import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 import { post } from "../apiClient";
 import { runAllDiagnostics } from "../diagnostics";
 import { getProjectEnvFromApiKey } from "../prefabClient";
 import extractKey from "./extractKey";
-
-const BOOL_DEFAULT = "Create boolean flag";
-const CUSTOM_FLAG = "Create flag with custom variants";
 
 const createBooleanFlag = async ({
   connection,
@@ -58,52 +54,19 @@ const createBooleanFlag = async ({
   log("Command", { uri: document.uri, updatedDiagnostics: diagnostics });
 };
 
-const customFlag = ({
-  key,
-  settings,
-  log,
-}: ExecutableCommandExecuteArgs & { key: string }) => {
-  const projectEnv = getProjectEnvFromApiKey(settings.apiKey);
-
-  openURL({
-    url: `https://app.prefab.cloud/account/projects/${
-      projectEnv.projectId
-    }/flags/new?key=${encodeURIComponent(key)}`,
-
-    log,
-  });
-};
-
 const createFlag: ExecutableCommand = {
   command: "prefab.createFlag",
   execute: async (args: ExecutableCommandExecuteArgs) => {
-    const { connection, params, settings, log } = args;
+    const { params, settings, log } = args;
 
     log("Command", { createFlag: params, settings });
 
     const key = extractKey(params.arguments);
 
-    const result = await connection.window.showInformationMessage(
-      `Create ${key} flag`,
-      { title: BOOL_DEFAULT },
-      { title: CUSTOM_FLAG }
-    );
-
-    if (result?.title === BOOL_DEFAULT) {
-      return await createBooleanFlag({
-        ...args,
-        key,
-      });
-    }
-
-    if (result?.title === CUSTOM_FLAG) {
-      return customFlag({
-        ...args,
-        key,
-      });
-    }
-
-    return null;
+    return await createBooleanFlag({
+      ...args,
+      key,
+    });
   },
 };
 

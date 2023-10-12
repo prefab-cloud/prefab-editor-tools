@@ -29,7 +29,7 @@ const createFlag: CodeLensAnalyzer = async ({
     return {
       range,
       command: {
-        title: `Create ${diagnostic.data.key} flag`,
+        title: `Create boolean flag ${diagnostic.data.key}`,
         command: "prefab.createFlag",
         arguments: [document.uri, diagnostic.data.key],
       },
