@@ -22,6 +22,7 @@ export type SDK = {
     document: TextDocument,
     position: Position
   ) => CompletionTypeValue | null;
+  configGet?: (key: string) => string;
 };
 
 export const NullSDK: SDK = {

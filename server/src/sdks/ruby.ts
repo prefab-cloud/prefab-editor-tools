@@ -60,6 +60,10 @@ const RubySDK: SDK = {
         return null;
     }
   },
+
+  configGet: (key: string): string => {
+    return `$prefab.get("${key}")`;
+  },
 };
 
 export default RubySDK;

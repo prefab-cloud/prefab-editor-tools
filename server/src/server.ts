@@ -1,12 +1,12 @@
 import {
   createConnection,
-  TextDocuments,
-  ProposedFeatures,
-  TextDocumentSyncKind,
+  DocumentDiagnosticParams,
+  DocumentDiagnosticRequest,
   InitializeResult,
   InlayHintRequest,
-  DocumentDiagnosticRequest,
-  DocumentDiagnosticParams,
+  ProposedFeatures,
+  TextDocumentSyncKind,
+  TextDocuments,
 } from "vscode-languageserver/node";
 
 import { TextDocument } from "vscode-languageserver-textdocument";
@@ -18,12 +18,13 @@ import { runAllCodeLens } from "./codeLens";
 import { runAllHovers } from "./hovers";
 import { runAllInlayHints } from "./inlayHints";
 import { runAllCompletions } from "./completions";
+import { runAllCodeActions } from "./codeActions";
 
 import { getSettings, settings, updateSettings } from "./settings";
 
 import { prefabPromise } from "./prefabClient";
 
-import type { Logger } from "./types";
+import { type Logger, type PrefabInitializeParams } from "./types";
 
 import {
   annotateDocument as annotateDoc,
@@ -57,8 +58,23 @@ const log: Logger = (scope, message) => {
 let canRefreshCodeLens = false;
 let canRefreshInlayHints = false;
 
+let initializeParams: PrefabInitializeParams;
+
 connection.onInitialize((params) => {
   log("Lifecycle", { onInitialize: params });
+
+  initializeParams = {
+    capabilities: params.capabilities,
+    // NOTE: this is a bit of an abuse of the initializationOptions field
+    // but it's the only way to get the client to send us this information ATM.
+    // See https://github.com/microsoft/language-server-protocol/issues/642
+    customHandlers: params.initializationOptions?.customHandlers ?? [],
+  };
+
+  log(
+    "Lifecycle",
+    `Custom Handlers ${JSON.stringify(initializeParams.customHandlers)}`
+  );
 
   const result: InitializeResult = {
     capabilities: {
@@ -71,6 +87,7 @@ connection.onInitialize((params) => {
       },
       executeCommandProvider: { commands },
       hoverProvider: true,
+      codeActionProvider: true,
     },
   };
 
@@ -119,6 +136,8 @@ const getAnnotatedDocument = (uriOrDocument: string | TextDocument) => {
 };
 
 connection.onExecuteCommand(async (params) => {
+  log("Lifecycle", `onExecuteCommand: ${JSON.stringify(params)}`);
+
   if (!params.arguments || params.arguments.length < 1) {
     throw new Error("Prefab: executeCommand does not support arguments");
   }
@@ -165,6 +184,32 @@ connection.onCompletion(async (params) => {
   return runAllCompletions({
     document,
     position: params.position,
+    log,
+  });
+});
+
+connection.onCodeAction(async (params) => {
+  if (!settings.alpha) {
+    log("Lifecycle", `onCodeAction: alpha disabled`);
+    return null;
+  }
+
+  const document = getAnnotatedDocument(params.textDocument.uri);
+
+  if (!document) {
+    log(
+      "Lifecycle",
+      `onCodeAction: document not found ${params.textDocument.uri}`
+    );
+    return null;
+  }
+
+  log("Lifecycle", `onCodeAction: ${JSON.stringify(params)}`);
+
+  return runAllCodeActions({
+    document,
+    initializeParams,
+    params,
     log,
   });
 });
@@ -250,6 +295,8 @@ const update = async (uri: string) => {
     log("Lifecycle", `debouncedUpdate: document not found ${uri}`);
     return null;
   }
+
+  log("Lifecycle", `DEBUG SDK: ${uri} | sdk: ${document.sdk.name}`);
 
   const { diagnostics, changed } = await runAllDiagnostics({
     log,

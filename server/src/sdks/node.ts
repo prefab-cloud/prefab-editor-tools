@@ -83,6 +83,10 @@ const JavascriptSDK: SDK = {
         return null;
     }
   },
+
+  configGet: (key: string) => {
+    return `prefab.get("${key}")`;
+  },
 };
 
 export default JavascriptSDK;
