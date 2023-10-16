@@ -1,3 +1,5 @@
+import { CodeActionKind } from "vscode-languageserver/node";
+
 import {
   type CodeActionAnalyzer,
   type CodeActionAnalyzerArgs,
@@ -40,9 +42,10 @@ const extractString: CodeActionAnalyzer = async (
   if (identifiedString) {
     return [
       {
-        title: `Extract ${identifiedString.value} to a config`,
+        title: `Extract to config: ${identifiedString.value}`,
+        kind: CodeActionKind.RefactorExtract,
         command: {
-          title: `Extract ${identifiedString.value} to a config`,
+          title: `Extract to config: ${identifiedString.value}`,
           command: "prefab.extractConfig",
           arguments: [
             document.uri,

@@ -4,6 +4,7 @@ import {
   ClientCapabilities,
   CodeAction,
   CodeActionParams,
+  CodeActionKind
 } from "vscode-languageserver/node";
 import { log, mkAnnotatedDocument, mkDocument } from "../testHelpers";
 import extractString from "./extractString";
@@ -85,9 +86,10 @@ describe("extractString", () => {
     };
 
     const expected: CodeAction = {
-      title: `Extract "Hello there" to a config`,
+      title: `Extract to config: "Hello there"`,
+        kind: CodeActionKind.RefactorExtract,
       command: {
-        title: `Extract "Hello there" to a config`,
+        title: `Extract to config: "Hello there"`,
         command: "prefab.extractConfig",
         arguments: [
           matchingDocument.uri,
