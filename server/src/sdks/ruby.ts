@@ -28,7 +28,12 @@ const RubySDK: SDK = {
   name: "ruby",
 
   isApplicable: (document: TextDocument): boolean => {
-    return document.languageId === "ruby" || document.languageId === "eruby";
+    return (
+      document.languageId === "ruby" ||
+      document.languageId === "eruby" ||
+      document.languageId === "erb" ||
+      document.uri.endsWith(".erb")
+    );
   },
 
   detectMethod: (
