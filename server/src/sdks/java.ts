@@ -57,6 +57,10 @@ const JavaSDK: SDK = {
         return null;
     }
   },
+
+  configGet: (key: string): string => {
+    return `configClient.liveString("${key}").get()`;
+  },
 };
 
 export default JavaSDK;
