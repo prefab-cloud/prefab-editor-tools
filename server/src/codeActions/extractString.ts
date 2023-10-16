@@ -1,0 +1,60 @@
+import {
+  type CodeActionAnalyzer,
+  type CodeActionAnalyzerArgs,
+  CustomHandler,
+} from "../types";
+
+import { ensureSupportsCustomHandlers } from "./ensureSupportsCustomHandlers";
+
+import { stringAtPosition } from "../utils/stringAtPosition";
+
+const requiredCustomHandlers = [CustomHandler.getInput];
+
+const extractString: CodeActionAnalyzer = async (
+  args: CodeActionAnalyzerArgs
+) => {
+  const { initializeParams, document, params, log } = args;
+
+  if (!initializeParams.capabilities.workspace?.applyEdit) {
+    log("CodeActions", "Client does not support workspace/applyEdit");
+    return [];
+  }
+
+  if (
+    !ensureSupportsCustomHandlers(requiredCustomHandlers, initializeParams, log)
+  ) {
+    return [];
+  }
+
+  if (!document.sdk.configGet) {
+    return [];
+  }
+
+  log("CodeActions", { extractString: document.uri });
+
+  const identifiedString = stringAtPosition(
+    document.textDocument.getText(),
+    params.range.start
+  );
+
+  if (identifiedString) {
+    return [
+      {
+        title: `Extract ${identifiedString.value} to a config`,
+        command: {
+          title: `Extract ${identifiedString.value} to a config`,
+          command: "prefab.extractConfig",
+          arguments: [
+            document.uri,
+            identifiedString.value,
+            identifiedString.range,
+          ],
+        },
+      },
+    ];
+  }
+
+  return [];
+};
+
+export default extractString;

@@ -4,6 +4,7 @@ import { AnnotatedDocument, Logger } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { mock } from "bun:test";
 import { Response as FetchResponse } from "node-fetch";
+import { NullSDK } from "./sdks/detection";
 
 export const readFileSync = (relativePath: string) => {
   return fs.readFileSync(path.join(__dirname, relativePath), "utf-8");
@@ -23,8 +24,10 @@ export const mkAnnotatedDocument = (
 ): AnnotatedDocument => {
   return {
     uri: args.uri ?? defaultUriForTests,
+    textDocument: args.textDocument ?? mkDocument({}),
     methodLocations: args.methodLocations ?? [],
     completionType: args.completionType ?? (() => null),
+    sdk: args.sdk ?? NullSDK,
   };
 };
 
@@ -52,6 +55,7 @@ export const getLoggedItems = () => {
 type Response = {
   status: number;
   json: Record<string, unknown>;
+  statusText?: string;
 };
 
 export const mockRequest = (requestOrRequests: Response | Response[]) => {
@@ -68,6 +72,7 @@ export const mockRequest = (requestOrRequests: Response | Response[]) => {
 
     return {
       status: request.status ?? 200,
+      statusText: request.statusText ?? "OK",
       json: async () => request.json,
     } as unknown as FetchResponse;
   });

@@ -1,5 +1,8 @@
 import {
+  ClientCapabilities,
   CodeLens,
+  CodeActionParams,
+  CodeAction,
   CompletionItem,
   Connection,
   Diagnostic,
@@ -15,15 +18,31 @@ import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import { filterForMissingKeys as defaultFilterForMissingKeys } from "./prefabClient";
 
+import { SDK } from "./sdks/detection";
+
+export const CustomHandler = {
+  getInput: "$/prefab.getInput",
+};
+
+export type CustomHandlerValue =
+  (typeof CustomHandler)[keyof typeof CustomHandler];
+
+export type GetInputResponse = {
+  input: string;
+  params: ExecuteCommandParams;
+};
+
 export type LogScope =
   | "ApiClient"
   | "CodeLens"
+  | "CodeActions"
   | "Command"
   | "Completion"
   | "Diagnostic"
   | "Hover"
   | "InlayHint"
   | "Lifecycle"
+  | "Notification"
   | "PrefabClient"
   | "Settings"
   | "Utility";
@@ -68,6 +87,7 @@ export type MethodTypeValue = (typeof MethodType)[keyof typeof MethodType];
 export interface Settings {
   apiKey?: string;
   apiUrl?: string;
+  alpha?: boolean;
 }
 
 export type ExecutableCommandExecuteArgs = {
@@ -157,6 +177,24 @@ export type DocumentAnnotations = {
 
 export type AnnotatedDocument = {
   uri: string;
+  textDocument: TextDocument;
   completionType: (position: Position) => CompletionTypeValue | null;
   methodLocations: MethodLocation[];
+  sdk: SDK;
+};
+
+export type CodeActionAnalyzer = (
+  args: CodeActionAnalyzerArgs
+) => Promise<CodeAction[]>;
+
+export type CodeActionAnalyzerArgs = {
+  initializeParams: PrefabInitializeParams;
+  document: AnnotatedDocument;
+  params: CodeActionParams;
+  log: Logger;
+};
+
+export type PrefabInitializeParams = {
+  capabilities: ClientCapabilities;
+  customHandlers: CustomHandlerValue[];
 };

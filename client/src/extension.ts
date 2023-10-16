@@ -1,5 +1,5 @@
 import * as path from "path";
-import { workspace, ExtensionContext } from "vscode";
+import { workspace, window, ExtensionContext } from "vscode";
 
 import {
   LanguageClient,
@@ -30,9 +30,13 @@ export function activate(context: ExtensionContext) {
   const clientOptions: LanguageClientOptions = {
     // Register the server for all documents by default
     documentSelector: [{ scheme: "file", language: "*" }],
+    middleware: {},
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
+    },
+    initializationOptions: {
+      customHandlers: ["$/prefab.getInput"],
     },
   };
 
@@ -42,6 +46,20 @@ export function activate(context: ExtensionContext) {
     "Prefab",
     serverOptions,
     clientOptions
+  );
+
+  client.onRequest(
+    "$/prefab.getInput",
+    async ({ title }: { title: string }) => {
+      const input = await window.showInputBox({
+        prompt: title,
+        value: "",
+      });
+
+      return {
+        input,
+      };
+    }
   );
 
   // Start the client. This will also launch the server

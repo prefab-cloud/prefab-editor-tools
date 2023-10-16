@@ -69,6 +69,10 @@ const ReactSDK: SDK = {
         return null;
     }
   },
+
+  configGet: (key: string) => {
+    return `get("${key}")`;
+  },
 };
 
 export default ReactSDK;
