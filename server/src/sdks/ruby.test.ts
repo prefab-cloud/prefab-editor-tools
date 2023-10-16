@@ -60,7 +60,24 @@ describe("RubySDK", () => {
       expect(RubySDK.isApplicable(document)).toBe(true);
     });
 
-    it("is not applicable if the languageId is not ruby or eruby", () => {
+    it("is applicable if the languageId is erb", () => {
+      const document = mkDocument({
+        languageId: "erb",
+      });
+
+      expect(RubySDK.isApplicable(document)).toBe(true);
+    });
+
+    it("is applicable if file uri ends in .erb", () => {
+      const document = mkDocument({
+        uri: "file:///path/to/file.erb",
+        languageId: "not-obviously-relevant",
+      });
+
+      expect(RubySDK.isApplicable(document)).toBe(true);
+    });
+
+    it("is not applicable if the languageId is not ruby or eruby or erb", () => {
       const document = mkDocument({
         languageId: "not-ruby",
       });
