@@ -150,6 +150,9 @@ export const variantsForFeatureFlag = async (key: string) => {
   return config.allowableValues;
 };
 
+const DEFAULT_CONTEXT_USER_ID_NAMESPACE = "prefab-api-key";
+const DEFAULT_CONTEXT_USER_ID = "user-id";
+
 const internalOnUpdate = (log: Logger) => {
   const context = prefab.defaultContext();
 
@@ -158,7 +161,9 @@ const internalOnUpdate = (log: Logger) => {
     return;
   }
 
-  userId = context.get("prefab")?.get("user-id") as string;
+  userId = context
+    .get(DEFAULT_CONTEXT_USER_ID_NAMESPACE)
+    ?.get(DEFAULT_CONTEXT_USER_ID) as string;
 
   if (!userId) {
     log.error(
@@ -167,6 +172,7 @@ const internalOnUpdate = (log: Logger) => {
     );
     return;
   }
+
   const newOverrides: typeof overrides = {};
 
   getAllConfigs().forEach((config) => {
@@ -176,7 +182,8 @@ const internalOnUpdate = (log: Logger) => {
       for (const value of row.values) {
         for (const criterion of value.criteria) {
           if (
-            criterion.propertyName === "prefab.user-id" &&
+            criterion.propertyName ===
+              `${DEFAULT_CONTEXT_USER_ID_NAMESPACE}.${DEFAULT_CONTEXT_USER_ID}` &&
             criterion.valueToMatch?.stringList?.values.includes(userId)
           ) {
             override = value.value;
