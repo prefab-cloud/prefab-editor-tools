@@ -3,7 +3,6 @@ import * as path from "path";
 import { AnnotatedDocument, Logger } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { mock } from "bun:test";
-import { Response as FetchResponse } from "node-fetch";
 import { NullSDK } from "./sdks/detection";
 
 export const readFileSync = (relativePath: string) => {
@@ -41,9 +40,16 @@ export const mkDocument = (doc: Partial<NewDoc>): TextDocument => {
 };
 
 let loggedItems: Record<string, unknown>[] = [];
-export const log: Logger = (scope, message) => {
-  loggedItems.push({ scope, message });
+export const log: Logger = (scope, message, _?: unknown) => {
+  loggedItems.push({ scope, message, severity: "info" });
 };
+log.error = (scope, message) => {
+  loggedItems.push({ scope, message, severity: "error" });
+};
+log.warn = (scope, message) => {
+  loggedItems.push({ scope, message, severity: "warn" });
+};
+
 export const clearLog = () => {
   loggedItems = [];
 };
@@ -52,18 +58,20 @@ export const getLoggedItems = () => {
   return loggedItems;
 };
 
-type Response = {
+type SimpleResponse = {
   status: number;
   json: Record<string, unknown>;
   statusText?: string;
 };
 
-export const mockRequest = (requestOrRequests: Response | Response[]) => {
+export const mockRequest = (
+  requestOrRequests: SimpleResponse | SimpleResponse[]
+) => {
   const requests = Array.isArray(requestOrRequests)
     ? requestOrRequests
     : [requestOrRequests];
 
-  return mock(async (): Promise<FetchResponse> => {
+  return mock(async (): Promise<Response> => {
     const request = requests.shift();
 
     if (!request) {
@@ -74,7 +82,7 @@ export const mockRequest = (requestOrRequests: Response | Response[]) => {
       status: request.status ?? 200,
       statusText: request.statusText ?? "OK",
       json: async () => request.json,
-    } as unknown as FetchResponse;
+    } as unknown as Response;
   });
 };
 

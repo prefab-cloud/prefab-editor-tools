@@ -1,5 +1,4 @@
 import { Prefab } from "@prefab-cloud/prefab-cloud-node";
-import fetch from "node-fetch";
 import {
   CompletionType,
   ConfigType,
@@ -151,19 +150,23 @@ export const variantsForFeatureFlag = async (key: string) => {
   return config.allowableValues;
 };
 
-const internalOnUpdate = () => {
+const internalOnUpdate = (log: Logger) => {
   const context = prefab.defaultContext();
 
   if (!context) {
-    throw new Error("No default context found.");
+    log.error("PrefabClient", "No default context found.");
+    return;
   }
 
   userId = context.get("prefab")?.get("user-id") as string;
 
   if (!userId) {
-    throw new Error("No user ID found.");
+    log.error(
+      "PrefabClient",
+      "No user ID found. Overrides and other user-specific functionality will not be enabled."
+    );
+    return;
   }
-
   const newOverrides: typeof overrides = {};
 
   getAllConfigs().forEach((config) => {
@@ -212,7 +215,7 @@ export const prefabInit = ({
     fetch,
     onUpdate: () => {
       log("PrefabClient", "Prefab client updated");
-      internalOnUpdate();
+      internalOnUpdate(log);
       log("PrefabClient", { overrides });
       onUpdate();
     },

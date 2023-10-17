@@ -108,6 +108,7 @@ describe("evaluations", () => {
     expect(lastItem(getLoggedItems())).toStrictEqual({
       message: "Key does not exist",
       scope: "Hover",
+      severity: "info",
     });
   });
 

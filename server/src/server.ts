@@ -24,7 +24,9 @@ import { getSettings, settings, updateSettings } from "./settings";
 
 import { prefabPromise } from "./prefabClient";
 
-import { type Logger, type PrefabInitializeParams } from "./types";
+import { makeLogger } from "./logger";
+
+import { type PrefabInitializeParams } from "./types";
 
 import {
   annotateDocument as annotateDoc,
@@ -39,26 +41,12 @@ const connection = createConnection(ProposedFeatures.all);
 // Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-const log: Logger = (scope, message) => {
-  let stringMessage: string;
-
-  if (typeof message === "string") {
-    stringMessage = message;
-  } else {
-    if (message instanceof Map) {
-      stringMessage = JSON.stringify(Object.fromEntries(message));
-    } else {
-      stringMessage = JSON.stringify(message);
-    }
-  }
-
-  connection.console.info(`[${scope}]: ${stringMessage}`);
-};
-
 let canRefreshCodeLens = false;
 let canRefreshInlayHints = false;
 
 let initializeParams: PrefabInitializeParams;
+
+const log = makeLogger(connection);
 
 connection.onInitialize((params) => {
   log("Lifecycle", { onInitialize: params });
@@ -139,7 +127,7 @@ connection.onExecuteCommand(async (params) => {
   log("Lifecycle", `onExecuteCommand: ${JSON.stringify(params)}`);
 
   if (!params.arguments || params.arguments.length < 1) {
-    throw new Error("Prefab: executeCommand does not support arguments");
+    throw new Error("Prefab: executeCommand is missing arguments");
   }
 
   if (!params.arguments[0].startsWith("file://")) {

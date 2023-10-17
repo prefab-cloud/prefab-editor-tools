@@ -1,7 +1,6 @@
 import { expect, it, describe, mock } from "bun:test";
 
 import { type Connection } from "vscode-languageserver/node";
-import { Response as FetchResponse } from "node-fetch";
 import { CustomHandler } from "../types";
 import { mkAnnotatedDocument, mockRequest, log } from "../testHelpers";
 import RubySDK from "../sdks/ruby";
@@ -118,8 +117,8 @@ describe("extractConfig", () => {
   });
 
   it("cancels if the key conflicts", async () => {
-    const post = mock(async (): Promise<FetchResponse> => {
-      return {} as FetchResponse;
+    const post = mock(async (): Promise<Response> => {
+      return {} as Response;
     });
 
     const sendRequestMock = mock(() => {
