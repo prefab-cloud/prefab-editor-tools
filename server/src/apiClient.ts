@@ -2,7 +2,6 @@ import * as fs from "fs";
 import * as path from "path";
 import { URL } from "url";
 import type { Logger, Settings } from "./types";
-import fetch from "node-fetch";
 import { apiUrlOrDefault } from "./settings";
 
 const version: string = JSON.parse(

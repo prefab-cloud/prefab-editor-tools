@@ -47,7 +47,15 @@ export type LogScope =
   | "Settings"
   | "Utility";
 
-export type Logger = (scope: LogScope, message: unknown) => void;
+export interface Logger {
+  (
+    scope: LogScope,
+    message: unknown,
+    severity?: "info" | "error" | "warn"
+  ): void;
+  error: (scope: LogScope, message: unknown) => void;
+  warn: (scope: LogScope, message: unknown) => void;
+}
 
 export type Documents = TextDocuments<TextDocument>;
 
