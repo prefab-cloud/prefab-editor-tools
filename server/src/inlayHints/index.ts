@@ -3,7 +3,7 @@ import { InlayHintAnalyzer, InlayHintAnalyzerArgs } from "../types";
 
 import overrides from "./overrides";
 
-const ZERO_WIDTH_SPACE = "​";
+const ZERO_WIDTH_SPACE = String.fromCodePoint(8203);
 
 export const inlayHints: InlayHintAnalyzer[] = [overrides];
 
@@ -21,6 +21,6 @@ export const NULL_HINT: InlayHint = {
   label: ZERO_WIDTH_SPACE,
   position: {
     line: 0,
-    character: Number.MAX_SAFE_INTEGER,
+    character: 0,
   },
 };
