@@ -4,11 +4,11 @@ import {
   ClientCapabilities,
   CodeAction,
   CodeActionParams,
-  CodeActionKind
+  CodeActionKind,
 } from "vscode-languageserver/node";
 import { log, mkAnnotatedDocument, mkDocument } from "../testHelpers";
 import extractString from "./extractString";
-import { CustomHandler, type PrefabInitializeParams } from "../types";
+import { CustomHandler, type ClientContext } from "../types";
 import RubySDK from "../sdks/ruby";
 
 const range = {
@@ -24,14 +24,14 @@ const params: CodeActionParams = {
 
 const customHandlers = [CustomHandler.getInput];
 
-const initializeParams = {
+const clientContext = {
   capabilities: {
     workspace: {
       applyEdit: true,
     },
   } as unknown as ClientCapabilities,
   customHandlers,
-} as unknown as PrefabInitializeParams;
+} as unknown as ClientContext;
 
 const matchingDocument = mkAnnotatedDocument({
   sdk: RubySDK,
@@ -50,7 +50,7 @@ describe("extractString", () => {
     });
 
     const result = await extractString({
-      initializeParams,
+      clientContext,
       document,
       params,
       log,
@@ -61,7 +61,7 @@ describe("extractString", () => {
 
   it("returns [] if the SDK doesn't support configGet", async () => {
     const result = await extractString({
-      initializeParams,
+      clientContext,
       document: {
         ...matchingDocument,
         sdk: { ...RubySDK, configGet: undefined },
@@ -87,7 +87,7 @@ describe("extractString", () => {
 
     const expected: CodeAction = {
       title: `Extract to config: "Hello there"`,
-        kind: CodeActionKind.RefactorExtract,
+      kind: CodeActionKind.RefactorExtract,
       command: {
         title: `Extract to config: "Hello there"`,
         command: "prefab.extractConfig",
@@ -100,7 +100,7 @@ describe("extractString", () => {
     };
 
     const result = await extractString({
-      initializeParams,
+      clientContext,
       document: matchingDocument,
       params,
       log,
@@ -111,14 +111,14 @@ describe("extractString", () => {
 
   it("returns [] when workspace/applyEdit isn't supported", async () => {
     const result = await extractString({
-      initializeParams: {
+      clientContext: {
         capabilities: {
           workspace: {
             applyEdit: false,
           },
         },
         customHandlers,
-      } as unknown as PrefabInitializeParams,
+      } as unknown as ClientContext,
       document: matchingDocument,
       params,
       log,
@@ -129,14 +129,14 @@ describe("extractString", () => {
 
   it("returns [] when the custom handlers aren't all supported", async () => {
     const result = await extractString({
-      initializeParams: {
+      clientContext: {
         capabilities: {
           workspace: {
             applyEdit: true,
           },
         },
         customHandlers: [],
-      } as unknown as PrefabInitializeParams,
+      } as unknown as ClientContext,
       document: matchingDocument,
       params,
       log,

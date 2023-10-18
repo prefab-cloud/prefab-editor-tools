@@ -26,7 +26,7 @@ import { prefabPromise } from "./prefabClient";
 
 import { makeLogger } from "./logger";
 
-import { type PrefabInitializeParams } from "./types";
+import { type ClientContext } from "./types";
 
 import {
   annotateDocument as annotateDoc,
@@ -44,14 +44,14 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 let canRefreshCodeLens = false;
 let canRefreshInlayHints = false;
 
-let initializeParams: PrefabInitializeParams;
+let clientContext: ClientContext;
 
 const log = makeLogger(connection);
 
 connection.onInitialize((params) => {
   log("Lifecycle", { onInitialize: params });
 
-  initializeParams = {
+  clientContext = {
     capabilities: params.capabilities,
     // NOTE: this is a bit of an abuse of the initializationOptions field
     // but it's the only way to get the client to send us this information ATM.
@@ -61,7 +61,7 @@ connection.onInitialize((params) => {
 
   log(
     "Lifecycle",
-    `Custom Handlers ${JSON.stringify(initializeParams.customHandlers)}`
+    `Custom Handlers ${JSON.stringify(clientContext.customHandlers)}`
   );
 
   const result: InitializeResult = {
@@ -196,7 +196,7 @@ connection.onCodeAction(async (params) => {
 
   return runAllCodeActions({
     document,
-    initializeParams,
+    clientContext,
     params,
     log,
   });

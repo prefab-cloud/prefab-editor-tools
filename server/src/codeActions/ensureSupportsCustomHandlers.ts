@@ -1,16 +1,12 @@
-import type {
-  CustomHandlerValue,
-  Logger,
-  PrefabInitializeParams,
-} from "../types";
+import type { CustomHandlerValue, Logger, ClientContext } from "../types";
 
 export const ensureSupportsCustomHandlers = (
   requiredCustomHandlers: CustomHandlerValue[],
-  initializeParams: PrefabInitializeParams,
+  clientContext: ClientContext,
   log: Logger
 ) => {
   const unsupportedHandlers = requiredCustomHandlers.filter(
-    (handler) => !initializeParams.customHandlers.includes(handler)
+    (handler) => !clientContext.customHandlers.includes(handler)
   );
 
   if (unsupportedHandlers.length) {

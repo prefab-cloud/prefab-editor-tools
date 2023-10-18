@@ -15,15 +15,15 @@ const requiredCustomHandlers = [CustomHandler.getInput];
 const extractString: CodeActionAnalyzer = async (
   args: CodeActionAnalyzerArgs
 ) => {
-  const { initializeParams, document, params, log } = args;
+  const { clientContext, document, params, log } = args;
 
-  if (!initializeParams.capabilities.workspace?.applyEdit) {
+  if (!clientContext.capabilities.workspace?.applyEdit) {
     log("CodeActions", "Client does not support workspace/applyEdit");
     return [];
   }
 
   if (
-    !ensureSupportsCustomHandlers(requiredCustomHandlers, initializeParams, log)
+    !ensureSupportsCustomHandlers(requiredCustomHandlers, clientContext, log)
   ) {
     return [];
   }

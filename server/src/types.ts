@@ -196,13 +196,13 @@ export type CodeActionAnalyzer = (
 ) => Promise<CodeAction[]>;
 
 export type CodeActionAnalyzerArgs = {
-  initializeParams: PrefabInitializeParams;
+  clientContext: ClientContext;
   document: AnnotatedDocument;
   params: CodeActionParams;
   log: Logger;
 };
 
-export type PrefabInitializeParams = {
+export type ClientContext = {
   capabilities: ClientCapabilities;
   customHandlers: CustomHandlerValue[];
 };
