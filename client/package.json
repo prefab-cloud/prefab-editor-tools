@@ -3,7 +3,7 @@
   "description": "Tooling for Prefab Config, Feature flags, and Log Levels",
   "author": "Jeffrey Chupp",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "Prefab",
   "engines": {
     "vscode": "^1.75.0"
