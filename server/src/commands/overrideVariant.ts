@@ -1,10 +1,7 @@
 import { post } from "../apiClient";
-import {
-  overrides,
-  valueOfToString,
-  variantsForFeatureFlag,
-} from "../prefabClient";
+import { overrides, valueOfToString,variantsForFeatureFlag } from "../prefab";
 import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
+import { pickOption } from "../ui/pickOption";
 import extractKey from "./extractKey";
 
 const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
@@ -25,21 +22,23 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
         return JSON.stringify(variant) !== JSON.stringify(override);
       })
       .map((variant) => {
-        return { title: valueOfToString(variant) };
+        return valueOfToString(variant);
       });
 
     const removeCopy = override ? `*Remove override*` : undefined;
 
     if (removeCopy) {
-      options.push({ title: removeCopy });
+      options.push(removeCopy);
     }
 
-    const result = await connection.window.showInformationMessage(
-      `Override ${key} for your machine`,
-      ...options
-    );
+    const result = await pickOption({
+      connection,
+      clientContext,
+      title: `Override ${key} for your machine`,
+      options,
+    });
 
-    if (removeCopy && result?.title === removeCopy) {
+    if (removeCopy && result === removeCopy) {
       log("Command", "Remove variant ");
 
       const request = await post({
@@ -64,7 +63,7 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
       }
     } else {
       const variant = result
-        ? variants.find((variant) => valueOfToString(variant) === result.title)
+        ? variants.find((variant) => valueOfToString(variant) === result)
         : null;
 
       if (!variant) {

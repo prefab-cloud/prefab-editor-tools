@@ -1,4 +1,4 @@
-import { allKeys, overrides } from "../prefabClient";
+import { allKeys, overrides } from "../prefab";
 import { CodeLensAnalyzer, CodeLensAnalyzerArgs, MethodType } from "../types";
 
 const overrideVariant: CodeLensAnalyzer = async ({

@@ -15,11 +15,12 @@ import {
 } from "vscode-languageserver/node";
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
-import { filterForMissingKeys as defaultFilterForMissingKeys } from "./prefabClient";
+import { filterForMissingKeys as defaultFilterForMissingKeys } from "./prefab";
 import { SDK } from "./sdks/detection";
 
 export const CustomHandler = {
   getInput: "$/prefab.getInput",
+  pickOption: "$/prefab.pickOption",
 };
 
 export type CustomHandlerValue =
@@ -43,7 +44,8 @@ export type LogScope =
   | "Notification"
   | "PrefabClient"
   | "Settings"
-  | "Utility";
+  | "Utility"
+  | "UI";
 
 export interface Logger {
   (
@@ -100,10 +102,10 @@ export type ExecutableCommandExecuteArgs = {
   clientContext: ClientContext;
   connection: Connection;
   document: AnnotatedDocument;
-  params: ExecuteCommandParams;
-  settings: Settings;
   log: Logger;
+  params: ExecuteCommandParams;
   refresh: () => Promise<void>;
+  settings: Settings;
 };
 
 export type ExecutableCommand<T extends ExecutableCommandExecuteArgs> = {
@@ -140,8 +142,10 @@ export type DiagnosticAnalyzer = (
 ) => Promise<DiagnosticWithSource[]>;
 
 export type CodeLensAnalyzerArgs = {
+  clientContext: ClientContext;
   document: AnnotatedDocument;
   log: Logger;
+  settings: Settings;
   getActiveDiagnostics: (uri: string) => DiagnosticWithSource[];
 };
 
@@ -207,3 +211,48 @@ export type ClientContext = {
   customHandlers: CustomHandlerValue[];
   editorIdentifier: "vscode" | string;
 };
+
+export type UnRetryableError = {
+  retryable: false;
+  message: string;
+};
+
+export type RetryableError = {
+  retryable: true;
+  message: string;
+};
+
+export type RetryError = UnRetryableError | RetryableError;
+
+const createError = <T extends RetryError>(
+  retryableValue: T["retryable"],
+  message: string
+): T => {
+  return {
+    retryable: retryableValue,
+    message,
+  } as T;
+};
+
+export const unretryableError = (message: string): UnRetryableError =>
+  createError(false, message);
+export const retryableError = (message: string): RetryableError =>
+  createError(true, message);
+
+const isErrorOfType = (
+  error: unknown,
+  retryable: boolean
+): error is RetryError => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "retryable" in error &&
+    error.retryable === retryable
+  );
+};
+
+export const isUnretryableError = (error: unknown): error is UnRetryableError =>
+  isErrorOfType(error, false);
+
+export const isRetryableError = (error: unknown): error is RetryableError =>
+  isErrorOfType(error, true);

@@ -1,7 +1,7 @@
 import { DiagnosticSeverity } from "vscode-languageserver/node";
 
 import { DIAGNOSTIC_SOURCE } from "../constants";
-import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefabClient";
+import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefab";
 import {
   DiagnosticAnalyzer,
   DiagnosticAnalyzerArgs,

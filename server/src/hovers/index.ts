@@ -1,7 +1,7 @@
 import { Hover } from "vscode-languageserver/node";
 
 import { get } from "../apiClient";
-import { urlFor } from "../prefabClient";
+import { urlFor } from "../prefab";
 import type { HoverAnalyzer, HoverAnalyzerArgs } from "../types";
 import evaluations from "./evaluations";
 import linkTitle from "./linkTitle";

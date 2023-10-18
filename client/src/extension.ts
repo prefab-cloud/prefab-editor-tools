@@ -35,7 +35,7 @@ export function activate(context: ExtensionContext) {
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
     },
     initializationOptions: {
-      customHandlers: ["$/prefab.getInput"],
+      customHandlers: ["$/prefab.getInput", "$/prefab.pickOption"],
     },
   };
 
@@ -45,6 +45,18 @@ export function activate(context: ExtensionContext) {
     "Prefab",
     serverOptions,
     clientOptions
+  );
+
+  client.onRequest(
+    "$/prefab.pickOption",
+    async ({ title, options }: { title: string; options: string[] }) => {
+      const option = await window.showQuickPick(options, {
+        title,
+        canPickMany: false,
+      });
+
+      return option;
+    }
   );
 
   client.onRequest(

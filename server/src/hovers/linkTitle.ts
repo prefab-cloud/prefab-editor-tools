@@ -2,7 +2,7 @@ import { methodAtPosition } from "../documentAnnotations";
 import {
   filterForMissingKeys as defaultFilterForMissingKeys,
   urlFor,
-} from "../prefabClient";
+} from "../prefab";
 import { type HoverAnalyzerArgs } from "../types";
 
 type Dependencies = {

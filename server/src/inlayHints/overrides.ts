@@ -4,7 +4,7 @@ import {
   overrideKeys,
   overrides as prefabOverrides,
   valueOfToString,
-} from "../prefabClient";
+} from "../prefab";
 import { InlayHintAnalyzer, InlayHintAnalyzerArgs } from "../types";
 
 const pad = (value: string) => ` ${value} `;
