@@ -13,7 +13,7 @@ const overrides: InlayHintAnalyzer = async ({
   log,
 }: InlayHintAnalyzerArgs) => {
   log("InlayHint", {
-    overrides: document.methodLocations,
+    methodLocations: document.methodLocations,
   });
 
   return document.methodLocations
