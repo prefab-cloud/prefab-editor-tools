@@ -5,9 +5,9 @@ import {
   type CodeActionAnalyzerArgs,
   CustomHandler,
 } from "../types";
+import { ensureSupportsCustomHandlers } from "../ui/ensureSupportsCustomHandlers";
 import { contains } from "../utils/positions";
 import { stringAtPosition } from "../utils/stringAtPosition";
-import { ensureSupportsCustomHandlers } from "./ensureSupportsCustomHandlers";
 
 const requiredCustomHandlers = [CustomHandler.getInput];
 

@@ -2,8 +2,8 @@ import { describe, expect, it, mock } from "bun:test";
 import { type Connection } from "vscode-languageserver/node";
 
 import RubySDK from "../sdks/ruby";
-import { log, mkAnnotatedDocument, mockRequest } from "../testHelpers";
-import { ClientContext, CustomHandler } from "../types";
+import { log,mkAnnotatedDocument, mockRequest } from "../testHelpers";
+import { type ClientContext, CustomHandler } from "../types";
 import extractConfig from "./extractConfig";
 
 const documentUri = "file://does/not/matter";
@@ -149,7 +149,7 @@ describe("extractConfig", () => {
       refresh: async () => {},
       settings: { apiKey },
       post,
-      clientContext: {} as ClientContext,
+      clientContext,
     });
 
     expect(sendRequestMock).toHaveBeenCalledTimes(1);
@@ -192,12 +192,12 @@ describe("extractConfig", () => {
       allKeys,
       document,
       connection,
+      clientContext,
       log,
       params,
       refresh: async () => {},
       settings: { apiKey },
       post,
-      clientContext: {} as ClientContext,
     });
 
     expect(sendRequestMock).toHaveBeenCalledTimes(1);

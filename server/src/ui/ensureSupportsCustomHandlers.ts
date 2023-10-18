@@ -1,4 +1,16 @@
-import type { ClientContext, CustomHandlerValue, Logger } from "../types";
+import {
+  ClientContext,
+  CustomHandler,
+  CustomHandlerValue,
+  Logger,
+} from "../types";
+import { getInput } from "./getInput";
+import { pickOption } from "./pickOption";
+
+const mapping = {
+  [CustomHandler.pickOption]: pickOption,
+  [CustomHandler.getInput]: getInput,
+};
 
 export const ensureSupportsCustomHandlers = (
   requiredCustomHandlers: CustomHandlerValue[],
@@ -6,12 +18,12 @@ export const ensureSupportsCustomHandlers = (
   log: Logger
 ) => {
   const unsupportedHandlers = requiredCustomHandlers.filter(
-    (handler) => !clientContext.customHandlers.includes(handler)
+    (handler) => !mapping[handler].supported(clientContext)
   );
 
   if (unsupportedHandlers.length) {
     log(
-      "CodeActions",
+      "UI",
       `Client does not support custom handlers: ${unsupportedHandlers.join(
         ", "
       )}`

@@ -3,7 +3,7 @@ import { methodAtPosition } from "../documentAnnotations";
 import {
   filterForMissingKeys as defaultFilterForMissingKeys,
   valueOfToString,
-} from "../prefabClient";
+} from "../prefab";
 import type { HoverAnalyzerArgs } from "../types";
 import pluralize from "../utils/pluralize";
 

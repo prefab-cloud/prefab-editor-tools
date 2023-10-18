@@ -1,16 +1,12 @@
 import { Range, TextEdit } from "vscode-languageserver/node";
 
 import { post as defaultPost } from "../apiClient";
+import { allKeys as defaultAllKeys,getProjectEnvFromApiKey } from "../prefab";
 import {
-  allKeys as defaultAllKeys,
-  getProjectEnvFromApiKey,
-} from "../prefabClient";
-import {
-  CustomHandler,
   type ExecutableCommand,
   type ExecutableCommandExecuteArgs,
-  type GetInputResponse,
 } from "../types";
+import { getInput } from "../ui/getInput";
 
 type Dependencies = {
   post?: typeof defaultPost;
@@ -44,12 +40,10 @@ const extractConfig: ExecutableCommand<Args> = {
       return;
     }
 
-    const result: GetInputResponse = await connection.sendRequest(
-      CustomHandler.getInput,
-      { title: "Enter the config name" }
-    );
-
-    const key = (result?.input ?? "").trim();
+    const key = await getInput({
+      title: "Enter the config name",
+      connection,
+    });
 
     if (key) {
       const allKeys = await (args.allKeys ?? defaultAllKeys)();

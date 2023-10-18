@@ -22,7 +22,7 @@ import {
 import { runAllHovers } from "./hovers";
 import { NULL_HINT, runAllInlayHints } from "./inlayHints";
 import { makeLogger } from "./logger";
-import { prefabPromise } from "./prefabClient";
+import { prefabPromise } from "./prefab";
 import { getSettings, settings, updateSettings } from "./settings";
 import { type ClientContext } from "./types";
 
@@ -215,8 +215,10 @@ connection.onCodeLens(async (params) => {
 
   return runAllCodeLens({
     log,
+    clientContext,
     getActiveDiagnostics,
     document,
+    settings,
   });
 });
 
