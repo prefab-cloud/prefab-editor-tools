@@ -6,7 +6,7 @@
   "publisher": "Prefab",
   "license": "MIT",
   "icon": "client/images/logo.png",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "categories": [],
   "engines": {
     "vscode": "^1.75.0"
