@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "REPLACE_ME"
+    "url": "https://github.com/prefab-cloud/prefab-editor-tools.git"
   },
   "contributes": {
     "configuration": {
