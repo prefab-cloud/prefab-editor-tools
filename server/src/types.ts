@@ -205,4 +205,5 @@ export type CodeActionAnalyzerArgs = {
 export type ClientContext = {
   capabilities: ClientCapabilities;
   customHandlers: CustomHandlerValue[];
+  editorIdentifier: "vscode" | "other";
 };

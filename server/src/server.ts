@@ -16,7 +16,7 @@ import { getActiveDiagnostics, runAllDiagnostics } from "./diagnostics";
 import { commands, commandLookup } from "./commands";
 import { runAllCodeLens } from "./codeLens";
 import { runAllHovers } from "./hovers";
-import { runAllInlayHints } from "./inlayHints";
+import { runAllInlayHints, NULL_HINT } from "./inlayHints";
 import { runAllCompletions } from "./completions";
 import { runAllCodeActions } from "./codeActions";
 
@@ -57,6 +57,8 @@ connection.onInitialize((params) => {
     // but it's the only way to get the client to send us this information ATM.
     // See https://github.com/microsoft/language-server-protocol/issues/642
     customHandlers: params.initializationOptions?.customHandlers ?? [],
+    editorIdentifier:
+      params.clientInfo?.name === "Visual Studio Code" ? "vscode" : "other",
   };
 
   log(
@@ -261,6 +263,9 @@ connection.onHover(async (params) => {
 });
 
 connection.onRequest(InlayHintRequest.method, async (params) => {
+  await ready();
+
+  log("Lifecycle", `InlayHintRequest: ${JSON.stringify(params)}`);
   const document = getAnnotatedDocument(params.textDocument.uri);
 
   if (!document) {
@@ -273,6 +278,11 @@ connection.onRequest(InlayHintRequest.method, async (params) => {
 
   const inlayHints = await runAllInlayHints({ log, document });
 
+  if (inlayHints.length === 0 && clientContext.editorIdentifier === "vscode") {
+    log("Lifecycle", `InlayHintRequest: returning NULL_HINT`);
+    return [NULL_HINT];
+  }
+
   return inlayHints;
 });
 
@@ -280,29 +290,28 @@ const update = async (uri: string) => {
   const document = getAnnotatedDocument(uri);
 
   if (!document) {
-    log("Lifecycle", `debouncedUpdate: document not found ${uri}`);
+    log("Lifecycle", `document not found ${uri}`);
     return null;
   }
-
-  log("Lifecycle", `DEBUG SDK: ${uri} | sdk: ${document.sdk.name}`);
 
   const { diagnostics, changed } = await runAllDiagnostics({
     log,
     document,
   });
 
-  connection.sendDiagnostics({
+  log("Lifecycle", { changed, canRefreshCodeLens, canRefreshInlayHints });
+
+  await connection.sendDiagnostics({
     uri,
     diagnostics,
   });
 
-  if (changed && canRefreshCodeLens) {
-    connection.sendRequest("workspace/codeLens/refresh");
+  if (canRefreshInlayHints) {
+    await connection.sendRequest("workspace/inlayHint/refresh");
   }
 
-  // This isn't happening at the right time
-  if (canRefreshInlayHints) {
-    connection.sendRequest("workspace/inlayHint/refresh");
+  if (canRefreshCodeLens) {
+    await connection.sendRequest("workspace/codeLens/refresh");
   }
 };
 

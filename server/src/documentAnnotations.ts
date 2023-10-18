@@ -32,7 +32,7 @@ export const getAnnotatedDocument = (
     textDocument: document,
     sdk,
     completionType,
-    methodLocations: documentAnnotations[document.uri]?.methodLocations || [],
+    methodLocations: documentAnnotations[document.uri]?.methodLocations ?? [],
   };
 };
 

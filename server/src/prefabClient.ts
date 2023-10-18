@@ -214,21 +214,25 @@ export const prefabInit = ({
 }) => {
   log("PrefabClient", "Initializing Prefab client");
 
-  prefab = new Prefab({
-    apiKey,
-    apiUrl: apiUrlOrDefault({ apiUrl }),
-    enableSSE: true,
-    defaultLogLevel: "warn",
-    fetch,
-    onUpdate: () => {
-      log("PrefabClient", "Prefab client updated");
-      internalOnUpdate(log);
-      log("PrefabClient", { overrides });
-      onUpdate();
-    },
-  });
+  prefabPromise = new Promise((resolve) => {
+    prefab = new Prefab({
+      apiKey,
+      apiUrl: apiUrlOrDefault({ apiUrl }),
+      enableSSE: true,
+      defaultLogLevel: "warn",
+      fetch,
+      onUpdate: () => {
+        log("PrefabClient", "Prefab client updated");
+        internalOnUpdate(log);
+        log("PrefabClient", { overrides });
+        onUpdate();
 
-  prefabPromise = prefab.init();
+        resolve();
+      },
+    });
+
+    prefab.init();
+  });
 };
 
 type ProjectEnvId = {
