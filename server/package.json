@@ -1,7 +1,7 @@
 {
   "name": "prefab-language-server",
   "description": "Language Server for Prefab Config, Feature flags, and Log Levels",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "author": "Jeffrey Chupp",
   "license": "MIT",
   "engines": {
