@@ -13,3 +13,4 @@ server/tsconfig.tsbuildinfo
 client/tsconfig.tsbuildinfo
 tsconfig.tsbuildinfo
 tsconfig.json
+node_modules/
