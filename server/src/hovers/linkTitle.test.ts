@@ -2,7 +2,7 @@ import { expect, it, describe } from "bun:test";
 
 import linkTitle from "./linkTitle";
 
-import { MethodType, type MethodLocation } from "../types";
+import { type ClientContext, MethodType, type MethodLocation } from "../types";
 
 import { log, mkAnnotatedDocument } from "../testHelpers";
 
@@ -40,6 +40,7 @@ describe("link", () => {
 
     const result = await linkTitle({
       document,
+      clientContext: {} as ClientContext,
       position,
       providedUrlFor,
       log,
@@ -60,6 +61,7 @@ describe("link", () => {
 
     const result = await linkTitle({
       document,
+      clientContext: {} as ClientContext,
       position,
       log,
       settings: { apiKey: "123-P3-E5-SDK-..." },
@@ -85,6 +87,7 @@ describe("link", () => {
 
     const result = await linkTitle({
       document,
+      clientContext: {} as ClientContext,
       position,
       log,
       filterForMissingKeys,

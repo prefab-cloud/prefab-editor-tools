@@ -24,7 +24,15 @@ const extractConfig: ExecutableCommand<Args> = {
   command,
 
   execute: async (args: Args) => {
-    const { connection, document, log, params, refresh, settings } = args;
+    const {
+      clientContext,
+      connection,
+      document,
+      log,
+      params,
+      refresh,
+      settings,
+    } = args;
 
     log("Command", `extractConfig: ${JSON.stringify(params)}`);
 
@@ -70,6 +78,7 @@ const extractConfig: ExecutableCommand<Args> = {
         requestPath: "/api/v1/config/",
         payload,
         log,
+        clientContext,
       });
 
       if (request.status !== 200) {

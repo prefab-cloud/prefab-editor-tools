@@ -6,7 +6,7 @@ import {
   mockRequest,
   cannedEvaluationResponse,
 } from "../testHelpers";
-import { MethodType } from "../types";
+import { type ClientContext, MethodType } from "../types";
 
 import { runAllHovers } from "./index";
 
@@ -43,6 +43,7 @@ describe("runAllHovers", () => {
 
     const result = await runAllHovers({
       settings: { apiKey: "123-P3-E5-SDK-..." },
+      clientContext: {} as ClientContext,
       document,
       position,
       log,

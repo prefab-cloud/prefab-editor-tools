@@ -10,7 +10,7 @@ import {
 const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
   command: "prefab.overrideVariant",
   execute: async (args: ExecutableCommandExecuteArgs) => {
-    const { connection, log, settings, params, refresh } = args;
+    const { clientContext, connection, log, settings, params, refresh } = args;
     log("Command", { overrideVariant: params });
 
     const key = extractKey(params.arguments);
@@ -50,6 +50,7 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
           variant: override,
         },
         log,
+        clientContext,
       });
 
       if (request.status !== 200) {
@@ -81,6 +82,7 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
           variant,
         },
         log,
+        clientContext,
       });
 
       if (request.status !== 200) {

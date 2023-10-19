@@ -58,7 +58,11 @@ connection.onInitialize((params) => {
     // See https://github.com/microsoft/language-server-protocol/issues/642
     customHandlers: params.initializationOptions?.customHandlers ?? [],
     editorIdentifier:
-      params.clientInfo?.name === "Visual Studio Code" ? "vscode" : "other",
+      params.clientInfo?.name === "Visual Studio Code"
+        ? "vscode"
+        : (params.clientInfo?.name ?? "unknown")
+            .replaceAll(/[\s_]/g, "-")
+            .toLowerCase(),
   };
 
   log(
@@ -155,6 +159,7 @@ connection.onExecuteCommand(async (params) => {
     settings,
     log,
     refresh,
+    clientContext,
   });
 
   return null;
@@ -256,6 +261,7 @@ connection.onHover(async (params) => {
     settings,
     document,
     position: params.position,
+    clientContext,
     log,
   });
 
