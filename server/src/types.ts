@@ -99,6 +99,7 @@ export interface Settings {
 }
 
 export type ExecutableCommandExecuteArgs = {
+  clientContext: ClientContext;
   connection: Connection;
   document: AnnotatedDocument;
   params: ExecuteCommandParams;
@@ -175,6 +176,7 @@ export type HoverAnalyzerArgs = {
   log: Logger;
   settings: Settings;
   filterForMissingKeys?: typeof defaultFilterForMissingKeys;
+  clientContext: ClientContext;
 };
 
 export type HoverAnalyzer = (args: HoverAnalyzerArgs) => Promise<Hover | null>;
@@ -205,5 +207,5 @@ export type CodeActionAnalyzerArgs = {
 export type ClientContext = {
   capabilities: ClientCapabilities;
   customHandlers: CustomHandlerValue[];
-  editorIdentifier: "vscode" | "other";
+  editorIdentifier: "vscode" | string;
 };

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { URL } from "url";
-import type { Logger, Settings } from "./types";
+import type { ClientContext, Logger, Settings } from "./types";
 import { apiUrlOrDefault } from "./settings";
 
 const VS_EXTENSION_PATH = path.join(__dirname, "../../package.json");
@@ -18,9 +18,11 @@ const version = fs.existsSync(VS_EXTENSION_PATH)
 export const uriAndHeaders = ({
   settings,
   requestPath,
+  clientContext,
 }: {
   settings: Settings;
   requestPath: string;
+  clientContext: ClientContext;
 }) => {
   if (!settings.apiKey) {
     throw new Error("No API key set. Please update your configuration.");
@@ -32,7 +34,7 @@ export const uriAndHeaders = ({
     "Content-Type": "application/json",
     Accept: "application/json",
     Authorization: `Basic ${token}`,
-    "X-PrefabCloud-Client-Version": `prefab-lsp-${version}`,
+    "X-PrefabCloud-Client-Version": `prefab-lsp-${clientContext.editorIdentifier}-${version}`,
   };
 
   const uri = new URL(apiUrlOrDefault(settings));
@@ -45,10 +47,20 @@ type Request = {
   settings: Settings;
   requestPath: string;
   log: Logger;
+  clientContext: ClientContext;
 };
 
-export const get = async ({ settings, requestPath, log }: Request) => {
-  const { uri, headers } = uriAndHeaders({ settings, requestPath });
+export const get = async ({
+  settings,
+  requestPath,
+  log,
+  clientContext,
+}: Request) => {
+  const { uri, headers } = uriAndHeaders({
+    settings,
+    requestPath,
+    clientContext,
+  });
 
   log("ApiClient", { GET: { uri } });
 
@@ -63,8 +75,13 @@ export const post = async ({
   requestPath,
   payload,
   log,
+  clientContext,
 }: Request & { payload: unknown }) => {
-  const { uri, headers } = uriAndHeaders({ settings, requestPath });
+  const { uri, headers } = uriAndHeaders({
+    settings,
+    requestPath,
+    clientContext,
+  });
 
   log("ApiClient", { POST: { uri, payload } });
 

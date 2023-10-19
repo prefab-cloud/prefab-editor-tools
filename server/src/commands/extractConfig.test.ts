@@ -1,7 +1,7 @@
 import { expect, it, describe, mock } from "bun:test";
 
 import { type Connection } from "vscode-languageserver/node";
-import { CustomHandler } from "../types";
+import { ClientContext, CustomHandler } from "../types";
 import { mkAnnotatedDocument, mockRequest, log } from "../testHelpers";
 import RubySDK from "../sdks/ruby";
 
@@ -25,6 +25,8 @@ const allKeys = mock(async () => []);
 const document = mkAnnotatedDocument({
   sdk: RubySDK,
 });
+
+const clientContext = {} as ClientContext;
 
 describe("extractConfig", () => {
   it("replaces the string with a prefab call after creating the config", async () => {
@@ -50,6 +52,7 @@ describe("extractConfig", () => {
       refresh,
       settings: { apiKey },
       post,
+      clientContext,
     });
 
     expect(sendRequestMock).toHaveBeenCalledTimes(2);
@@ -77,6 +80,7 @@ describe("extractConfig", () => {
     expect(post.mock.calls[0]).toStrictEqual([
       {
         log,
+        clientContext,
         payload: {
           configType: "CONFIG",
           key: "some.key",
@@ -107,6 +111,7 @@ describe("extractConfig", () => {
       params,
       refresh: async () => {},
       settings: { apiKey },
+      clientContext,
     });
 
     expect(sendRequestMock).toHaveBeenCalledTimes(1);
@@ -145,6 +150,7 @@ describe("extractConfig", () => {
       refresh: async () => {},
       settings: { apiKey },
       post,
+      clientContext: {} as ClientContext,
     });
 
     expect(sendRequestMock).toHaveBeenCalledTimes(1);
@@ -192,6 +198,7 @@ describe("extractConfig", () => {
       refresh: async () => {},
       settings: { apiKey },
       post,
+      clientContext: {} as ClientContext,
     });
 
     expect(sendRequestMock).toHaveBeenCalledTimes(1);

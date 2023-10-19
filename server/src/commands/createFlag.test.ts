@@ -2,11 +2,14 @@ import { expect, it, describe, mock } from "bun:test";
 
 import { type Connection } from "vscode-languageserver/node";
 import { mkAnnotatedDocument, mockRequest, log } from "../testHelpers";
+import { ClientContext } from "../types";
 
 import createFlag from "./createFlag";
 
 const documentUri = "file://does/not/matter";
 const apiKey = "123-P2-E9-SDK-api-key-1234";
+
+const clientContext = {} as ClientContext;
 
 describe("createFlag", () => {
   it("can open a browser to create a boolean flag", async () => {
@@ -45,6 +48,7 @@ describe("createFlag", () => {
       params: { command: "createFlag", arguments: [documentUri, key] },
       post,
       refresh,
+      clientContext,
     });
 
     expect(post).toHaveBeenCalledTimes(2);
@@ -52,6 +56,7 @@ describe("createFlag", () => {
     expect(post.mock.calls[0]).toStrictEqual([
       {
         log,
+        clientContext,
         settings: {
           apiKey: "123-P2-E9-SDK-api-key-1234",
         },
@@ -66,6 +71,7 @@ describe("createFlag", () => {
     expect(post.mock.calls[1]).toStrictEqual([
       {
         log,
+        clientContext,
         payload: {
           key,
           id: 0,

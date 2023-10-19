@@ -42,6 +42,7 @@ const evaluations = async ({
   settings,
   providedGet,
   filterForMissingKeys,
+  clientContext,
 }: HoverAnalyzerArgs & Dependencies) => {
   log("Hover", { evaluations: { uri: document.uri, position } });
 
@@ -67,6 +68,7 @@ const evaluations = async ({
     settings,
     requestPath: `/api/v1/evaluation-stats/${encodeURIComponent(method.key)}`,
     log,
+    clientContext,
   });
 
   if (request.status !== 200) {

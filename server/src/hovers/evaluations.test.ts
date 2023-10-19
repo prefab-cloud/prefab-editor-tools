@@ -8,7 +8,7 @@ import {
   mockRequest,
   cannedEvaluationResponse,
 } from "../testHelpers";
-import { MethodLocation, MethodType } from "../types";
+import { ClientContext, MethodLocation, MethodType } from "../types";
 
 import evaluations from "./evaluations";
 
@@ -23,6 +23,8 @@ const keyRange = {
 };
 
 const position = { line: 3, character: 20 };
+
+const clientContext = {} as ClientContext;
 
 describe("evaluations", () => {
   beforeEach(() => {
@@ -50,6 +52,7 @@ describe("evaluations", () => {
 
     const result = await evaluations({
       settings,
+      clientContext,
       document,
       position,
       log,
@@ -73,6 +76,7 @@ describe("evaluations", () => {
     expect(providedGet.mock.calls[0]).toStrictEqual([
       {
         log,
+        clientContext,
         requestPath: "/api/v1/evaluation-stats/redis.connection-string",
         settings,
       },
@@ -97,6 +101,7 @@ describe("evaluations", () => {
 
     const result = await evaluations({
       settings: {},
+      clientContext,
       document,
       position,
       log,
@@ -129,6 +134,7 @@ describe("evaluations", () => {
 
     const result = await evaluations({
       settings: {},
+      clientContext,
       document,
       position,
       log,
