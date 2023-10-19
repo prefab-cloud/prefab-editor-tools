@@ -1,21 +1,21 @@
-import {
-  type HoverAnalyzerArgs,
-  type HoverAnalyzer,
-  MethodType,
-} from "../types";
+import { type HoverAnalyzerArgs } from "../types";
 import { methodAtPosition } from "../documentAnnotations";
 import {
-  getProjectEnvFromApiKey,
+  urlFor,
   filterForMissingKeys as defaultFilterForMissingKeys,
 } from "../prefabClient";
 
-const link: HoverAnalyzer = async ({
+type Dependencies = {
+  providedUrlFor?: typeof urlFor;
+};
+
+const linkTitle = async ({
   document,
   log,
   position,
-  settings,
   filterForMissingKeys,
-}: HoverAnalyzerArgs) => {
+  providedUrlFor,
+}: HoverAnalyzerArgs & Dependencies) => {
   log("Hover", { link: { uri: document.uri, position } });
 
   const method = methodAtPosition(document, position);
@@ -34,24 +34,16 @@ const link: HoverAnalyzer = async ({
     return null;
   }
 
-  const { key, type, keyRange } = method;
+  const { key, keyRange } = method;
 
-  const { projectId } = getProjectEnvFromApiKey(settings.apiKey);
+  const url = (providedUrlFor ?? urlFor)(key);
 
-  switch (type) {
-    case MethodType.GET:
-      return {
-        contents: `[${key}](https://app.prefab.cloud/account/projects/${projectId}/configs/${key})`,
-        range: keyRange,
-      };
-    case MethodType.IS_ENABLED:
-      return {
-        contents: `[${key}](https://app.prefab.cloud/account/projects/${projectId}/flags/${key})`,
-        range: keyRange,
-      };
-    default:
-      return null;
+  if (url) {
+    const contents = `[${key}](${url})`;
+    return { contents, range: keyRange };
   }
+
+  return null;
 };
 
-export default link;
+export default linkTitle;
