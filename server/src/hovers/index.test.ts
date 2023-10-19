@@ -22,6 +22,9 @@ const keyRange = {
 
 const position = { line: 3, character: 20 };
 
+const url =
+  "https://app.prefab.cloud/account/projects/3/configs/redis.connection-string";
+
 describe("runAllHovers", () => {
   it("assembles the title and evaluations", async () => {
     const filterForMissingKeys = async () => [];
@@ -44,6 +47,7 @@ describe("runAllHovers", () => {
       position,
       log,
       filterForMissingKeys,
+      providedUrlFor: () => url,
       providedGet: mockRequest(cannedEvaluationResponse),
     });
 

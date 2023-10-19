@@ -46,6 +46,24 @@ const isBooleanConfig = (config: PrefabConfig) => {
   );
 };
 
+export const urlFor = (key: string) => {
+  const config = prefab.raw(key);
+
+  if (!config) {
+    return undefined;
+  }
+
+  const projectId = config.projectId;
+
+  if (config.configType === ConfigType.FEATURE_FLAG) {
+    return `https://app.prefab.cloud/account/projects/${projectId}/flags/${key}`;
+  }
+
+  if (config.configType === ConfigType.CONFIG) {
+    return `https://app.prefab.cloud/account/projects/${projectId}/configs/${key}`;
+  }
+};
+
 export const keysForCompletionType = async (
   completionType: CompletionTypeValue | null
 ) => {

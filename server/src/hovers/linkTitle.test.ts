@@ -18,9 +18,14 @@ const range = {
 
 const position = { line: 3, character: 20 };
 
+const url =
+  "https://app.prefab.cloud/account/projects/3/configs/redis.connection-string";
+
 describe("link", () => {
-  it("can link to a config", async () => {
+  it("can link to a config or flag", async () => {
     const filterForMissingKeys = async () => [];
+
+    const providedUrlFor = () => url;
 
     const document = mkAnnotatedDocument({
       methodLocations: [
@@ -36,43 +41,14 @@ describe("link", () => {
     const result = await linkTitle({
       document,
       position,
+      providedUrlFor,
       log,
       settings: { apiKey: "123-P3-E5-SDK-..." },
       filterForMissingKeys,
     });
 
     expect(result).toStrictEqual({
-      contents:
-        "[redis.connection-string](https://app.prefab.cloud/account/projects/3/configs/redis.connection-string)",
-      range: keyRange,
-    });
-  });
-
-  it("can link to a flag", async () => {
-    const filterForMissingKeys = async () => [];
-
-    const document = mkAnnotatedDocument({
-      methodLocations: [
-        {
-          key: "api.enabled",
-          type: MethodType.IS_ENABLED,
-          range,
-          keyRange,
-        },
-      ],
-    });
-
-    const result = await linkTitle({
-      document,
-      position,
-      log,
-      settings: { apiKey: "123-P3-E5-SDK-..." },
-      filterForMissingKeys,
-    });
-
-    expect(result).toStrictEqual({
-      contents:
-        "[api.enabled](https://app.prefab.cloud/account/projects/3/flags/api.enabled)",
+      contents: `[redis.connection-string](${url})`,
       range: keyRange,
     });
   });
