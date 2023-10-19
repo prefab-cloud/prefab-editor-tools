@@ -4,9 +4,16 @@ import { URL } from "url";
 import type { Logger, Settings } from "./types";
 import { apiUrlOrDefault } from "./settings";
 
-const version: string = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "../../package.json"), "utf-8")
-)["version"];
+const VS_EXTENSION_PATH = path.join(__dirname, "../../package.json");
+const STANDALONE_EXTENSION_PATH = path.join(__dirname, "../package.json");
+
+const readVersion = (path: string) => {
+  return JSON.parse(fs.readFileSync(path, "utf-8"))["version"];
+};
+
+const version = fs.existsSync(VS_EXTENSION_PATH)
+  ? readVersion(VS_EXTENSION_PATH)
+  : readVersion(STANDALONE_EXTENSION_PATH);
 
 export const uriAndHeaders = ({
   settings,

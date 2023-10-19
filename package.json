@@ -15,9 +15,6 @@
     "onLanguage"
   ],
   "main": "./client/out/extension",
-  "bin": {
-    "prefab-ls": "./server/out/cli"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/prefab-cloud/prefab-editor-tools.git"

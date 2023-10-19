@@ -2,6 +2,7 @@ client/src/
 server/src/
 server/node_modules/
 client/node_modules/
+server/out/cli
 *.tgz
 *.vsix
 tsconfig.json
