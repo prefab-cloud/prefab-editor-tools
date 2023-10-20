@@ -2,21 +2,19 @@ import { expect, it, describe } from "bun:test";
 import { Position } from "vscode-languageserver/node";
 import { mkDocument, readFileSync } from "../testHelpers";
 import { CompletionType, MethodType, MethodLocation } from "../types";
-import RubySDK from "./ruby";
-import * as fs from "fs";
-import * as path from "path";
+import PythonSDK from "./python";
 
 type ExampleStringAndPosition = [string, Position];
 
 const FF_EXAMPLES: ExampleStringAndPosition[] = [
-  ['prefab.enabled?("")', { line: 0, character: 17 }],
-  ['prefab.enabled?("', { line: 0, character: 17 }],
-  ["prefab.enabled?('", { line: 0, character: 17 }],
-  ["prefab.enabled?('')", { line: 0, character: 17 }],
-  ['prefab.enabled? ""', { line: 0, character: 17 }],
-  ['prefab.enabled? "', { line: 0, character: 17 }],
-  ["prefab.enabled? '", { line: 0, character: 17 }],
-  ["prefab.enabled? ''", { line: 0, character: 17 }],
+  ['client.enabled("")', { line: 0, character: 16 }],
+  ['client.enabled("', { line: 0, character: 16 }],
+  ["client.enabled('", { line: 0, character: 16 }],
+  ["client.enabled('')", { line: 0, character: 16 }],
+  ['prefab.enabled(""', { line: 0, character: 16 }],
+  ['prefab.enabled("', { line: 0, character: 16 }],
+  ["prefab.enabled('", { line: 0, character: 16 }],
+  ["prefab.enabled(''", { line: 0, character: 16 }],
 ];
 
 const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
@@ -24,84 +22,49 @@ const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
   ["prefab.get('", { line: 0, character: 12 }],
   ['prefab.get("")', { line: 0, character: 12 }],
   ["prefab.get('')", { line: 0, character: 12 }],
-  ['prefab.get "', { line: 0, character: 12 }],
-  ["prefab.get '", { line: 0, character: 12 }],
-  ['prefab.get ""', { line: 0, character: 12 }],
-  ["prefab.get ''", { line: 0, character: 12 }],
+  ['client.get("', { line: 0, character: 12 }],
+  ["client.get('", { line: 0, character: 12 }],
+  ['client.get(""', { line: 0, character: 12 }],
+  ["client.get(''", { line: 0, character: 12 }],
 ];
 
-const missingFlagsAndConfigText = readFileSync("fixtures/ruby.rb.txt");
+const missingFlagsAndConfigText = readFileSync("fixtures/python.py.txt");
 
-const writeStub = (data: object) => {
-  const string = JSON.stringify(data, null, 2);
-
-  const stubPath = path.join(__dirname, "../fixtures/ruby.rb.parsed.json");
-
-  if (fs.readFileSync(stubPath, "utf-8") !== string) {
-    fs.writeFileSync(stubPath, string);
-  }
-};
-
-describe("RubySDK", () => {
+describe("PythonSDK", () => {
   describe("isApplicable", () => {
-    it("is applicable if the languageId is ruby", () => {
+    it("is applicable if the languageId is python", () => {
       const document = mkDocument({
-        languageId: "ruby",
+        languageId: "python",
       });
 
-      expect(RubySDK.isApplicable(document)).toBe(true);
+      expect(PythonSDK.isApplicable(document)).toBe(true);
     });
 
-    it("is applicable if the languageId is eruby", () => {
+    it("is not applicable if the languageId is not python or epython or erb", () => {
       const document = mkDocument({
-        languageId: "eruby",
+        languageId: "not-python",
       });
 
-      expect(RubySDK.isApplicable(document)).toBe(true);
-    });
-
-    it("is applicable if the languageId is erb", () => {
-      const document = mkDocument({
-        languageId: "erb",
-      });
-
-      expect(RubySDK.isApplicable(document)).toBe(true);
-    });
-
-    it("is applicable if file uri ends in .erb", () => {
-      const document = mkDocument({
-        uri: "file:///path/to/file.erb",
-        languageId: "not-obviously-relevant",
-      });
-
-      expect(RubySDK.isApplicable(document)).toBe(true);
-    });
-
-    it("is not applicable if the languageId is not ruby or eruby or erb", () => {
-      const document = mkDocument({
-        languageId: "not-ruby",
-      });
-
-      expect(RubySDK.isApplicable(document)).toBe(false);
+      expect(PythonSDK.isApplicable(document)).toBe(false);
     });
   });
 
   describe("detectMethod", () => {
-    it("can identify a FF call", () => {
-      FF_EXAMPLES.forEach(([text, position]) => {
+    FF_EXAMPLES.forEach(([text, position]) => {
+      it(`can identify a FF call: \`${text}\``, () => {
         const document = mkDocument({ text });
 
-        expect(RubySDK.detectMethod(document, position)).toEqual(
+        expect(PythonSDK.detectMethod(document, position)).toEqual(
           MethodType.IS_ENABLED
         );
       });
     });
 
-    it("can identify a Config call", () => {
-      CONFIG_EXAMPLES.forEach(([text, position]) => {
+    CONFIG_EXAMPLES.forEach(([text, position]) => {
+      it(`can identify a Config call: ${text}`, () => {
         const document = mkDocument({ text });
 
-        expect(RubySDK.detectMethod(document, position)).toEqual(
+        expect(PythonSDK.detectMethod(document, position)).toEqual(
           MethodType.GET
         );
       });
@@ -116,7 +79,7 @@ describe("RubySDK", () => {
           character: position.character - 1,
         };
 
-        expect(RubySDK.detectMethod(document, newPosition)).toBeNull();
+        expect(PythonSDK.detectMethod(document, newPosition)).toBeNull();
       });
 
       CONFIG_EXAMPLES.forEach(([text, position]) => {
@@ -127,7 +90,7 @@ describe("RubySDK", () => {
           character: position.character - 1,
         };
 
-        expect(RubySDK.detectMethod(document, newPosition)).toBeNull();
+        expect(PythonSDK.detectMethod(document, newPosition)).toBeNull();
       });
     });
   });
@@ -137,7 +100,7 @@ describe("RubySDK", () => {
       it(`returns flag names for \`${text}\``, () => {
         const document = mkDocument({ text });
 
-        expect(RubySDK.completionType(document, position)).toEqual(
+        expect(PythonSDK.completionType(document, position)).toEqual(
           CompletionType.BOOLEAN_FEATURE_FLAGS
         );
       });
@@ -147,7 +110,7 @@ describe("RubySDK", () => {
       it(`returns config and non-boolean flag names for \`${text}\``, () => {
         const document = mkDocument({ text });
 
-        expect(RubySDK.completionType(document, position)).toEqual(
+        expect(PythonSDK.completionType(document, position)).toEqual(
           CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS
         );
       });
@@ -162,7 +125,7 @@ describe("RubySDK", () => {
           character: position.character - 1,
         };
 
-        expect(RubySDK.completionType(document, newPosition)).toBeNull();
+        expect(PythonSDK.completionType(document, newPosition)).toBeNull();
       });
 
       CONFIG_EXAMPLES.forEach(([text, position]) => {
@@ -173,7 +136,7 @@ describe("RubySDK", () => {
           character: position.character - 1,
         };
 
-        expect(RubySDK.completionType(document, newPosition)).toBeNull();
+        expect(PythonSDK.completionType(document, newPosition)).toBeNull();
       });
     });
   });
@@ -184,30 +147,30 @@ describe("RubySDK", () => {
         text: missingFlagsAndConfigText,
       });
 
-      const methods = RubySDK.detectMethods(document);
+      const methods = PythonSDK.detectMethods(document);
 
       const expected: MethodLocation[] = [
         {
           type: "GET",
           range: {
             start: {
-              line: 20,
-              character: 4,
+              line: 15,
+              character: 11,
             },
             end: {
-              line: 20,
-              character: 41,
+              line: 15,
+              character: 48,
             },
           },
           key: "api-rate-limit-per-user",
           keyRange: {
             start: {
-              line: 20,
-              character: 16,
+              line: 15,
+              character: 23,
             },
             end: {
-              line: 20,
-              character: 39,
+              line: 15,
+              character: 46,
             },
           },
         },
@@ -215,23 +178,23 @@ describe("RubySDK", () => {
           type: "GET",
           range: {
             start: {
-              line: 20,
-              character: 63,
+              line: 15,
+              character: 75,
             },
             end: {
-              line: 20,
-              character: 98,
+              line: 15,
+              character: 110,
             },
           },
           key: "api-rate-limit-window",
           keyRange: {
             start: {
-              line: 20,
-              character: 75,
+              line: 15,
+              character: 87,
             },
             end: {
-              line: 20,
-              character: 96,
+              line: 15,
+              character: 108,
             },
           },
         },
@@ -239,22 +202,22 @@ describe("RubySDK", () => {
           type: "GET",
           range: {
             start: {
-              line: 28,
+              line: 21,
               character: 8,
             },
             end: {
-              line: 28,
-              character: 31,
+              line: 21,
+              character: 32,
             },
           },
           key: "some.value",
           keyRange: {
             start: {
-              line: 28,
+              line: 21,
               character: 20,
             },
             end: {
-              line: 28,
+              line: 21,
               character: 30,
             },
           },
@@ -263,23 +226,23 @@ describe("RubySDK", () => {
           type: "IS_ENABLED",
           range: {
             start: {
-              line: 2,
+              line: 3,
               character: 7,
             },
             end: {
-              line: 4,
-              character: 5,
+              line: 3,
+              character: 40,
             },
           },
           key: "everyone.is.pro",
           keyRange: {
             start: {
               line: 3,
-              character: 7,
+              character: 23,
             },
             end: {
               line: 3,
-              character: 22,
+              character: 38,
             },
           },
         },
@@ -287,23 +250,23 @@ describe("RubySDK", () => {
           type: "IS_ENABLED",
           range: {
             start: {
-              line: 12,
-              character: 4,
+              line: 9,
+              character: 11,
             },
             end: {
-              line: 12,
-              character: 33,
+              line: 9,
+              character: 40,
             },
           },
           key: "api.enabled",
           keyRange: {
             start: {
-              line: 12,
-              character: 21,
+              line: 9,
+              character: 27,
             },
             end: {
-              line: 12,
-              character: 32,
+              line: 9,
+              character: 38,
             },
           },
         },
@@ -311,23 +274,23 @@ describe("RubySDK", () => {
           type: "IS_ENABLED",
           range: {
             start: {
-              line: 16,
-              character: 4,
+              line: 12,
+              character: 11,
             },
             end: {
-              line: 16,
-              character: 34,
+              line: 12,
+              character: 40,
             },
           },
           key: "hat.enabled",
           keyRange: {
             start: {
-              line: 16,
-              character: 21,
+              line: 12,
+              character: 27,
             },
             end: {
-              line: 16,
-              character: 32,
+              line: 12,
+              character: 38,
             },
           },
         },
@@ -338,8 +301,6 @@ describe("RubySDK", () => {
       methods.forEach((method, index) => {
         expect(method).toStrictEqual(expected[index]);
       });
-
-      writeStub(expected);
     });
   });
 });

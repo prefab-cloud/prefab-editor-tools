@@ -6,7 +6,7 @@ import NodeSDK from "./node";
 import ReactSDK from "./react";
 import RubySDK from "./ruby";
 
-type SDK_NAMES = "ruby" | "javascript" | "react" | "node" | "java";
+type SDK_NAMES = "ruby" | "javascript" | "react" | "node" | "java" | "python";
 
 const SDKs: SDK[] = [RubySDK, NodeSDK, JavascriptSDK, ReactSDK, JavaSDK];
 
