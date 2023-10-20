@@ -6,6 +6,7 @@ import {
   CustomHandler,
 } from "../types";
 
+import { contains } from "../utils/positions";
 import { ensureSupportsCustomHandlers } from "./ensureSupportsCustomHandlers";
 
 import { stringAtPosition } from "../utils/stringAtPosition";
@@ -16,6 +17,8 @@ const extractString: CodeActionAnalyzer = async (
   args: CodeActionAnalyzerArgs
 ) => {
   const { clientContext, document, params, log } = args;
+
+  log("CodeActions", { extractString: document.uri });
 
   if (!clientContext.capabilities.workspace?.applyEdit) {
     log("CodeActions", "Client does not support workspace/applyEdit");
@@ -32,7 +35,13 @@ const extractString: CodeActionAnalyzer = async (
     return [];
   }
 
-  log("CodeActions", { extractString: document.uri });
+  if (
+    document.methodLocations.some((location) =>
+      contains({ container: location.range, comparable: params.range })
+    )
+  ) {
+    return [];
+  }
 
   const identifiedString = stringAtPosition(
     document.textDocument.getText(),

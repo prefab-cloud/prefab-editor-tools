@@ -10,6 +10,7 @@ import { log, mkAnnotatedDocument, mkDocument } from "../testHelpers";
 import extractString from "./extractString";
 import { CustomHandler, type ClientContext } from "../types";
 import RubySDK from "../sdks/ruby";
+import { annotateDocument, getAnnotatedDocument } from "../documentAnnotations";
 
 const range = {
   end: { line: 3, character: 8 },
@@ -107,6 +108,37 @@ describe("extractString", () => {
     });
 
     expect(result).toStrictEqual([expected]);
+  });
+
+  it("does not include the string if it is part of a prefab method", async () => {
+    const rawDocument = mkDocument({
+      text: 'some text\n\nSome content\nprefab.get("Hello there") # comment',
+      languageId: "ruby",
+    });
+
+    annotateDocument(rawDocument);
+
+    const document = getAnnotatedDocument(rawDocument);
+
+    const range = {
+      end: { line: 3, character: 13 },
+      start: { line: 3, character: 13 },
+    };
+
+    const params: CodeActionParams = {
+      context: { triggerKind: 1, diagnostics: [] },
+      range,
+      textDocument: { uri: "file:///Users/ship/src/example.rb" },
+    };
+
+    const result = await extractString({
+      clientContext,
+      document,
+      params,
+      log,
+    });
+
+    expect(result).toStrictEqual([]);
   });
 
   it("returns [] when workspace/applyEdit isn't supported", async () => {
