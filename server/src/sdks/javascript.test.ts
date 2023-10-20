@@ -159,7 +159,7 @@ describe("JavascriptSDK", () => {
             },
             end: {
               line: 8,
-              character: 19,
+              character: 18,
             },
           },
           key: "test",
@@ -182,8 +182,8 @@ describe("JavascriptSDK", () => {
               character: 22,
             },
             end: {
-              line: 11,
-              character: 8,
+              line: 9,
+              character: 15,
             },
           },
           key: "test2",

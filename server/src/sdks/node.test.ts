@@ -274,7 +274,7 @@ describe("NodeSDK", () => {
             },
             end: {
               line: 22,
-              character: 19,
+              character: 18,
             },
           },
           key: "test",
@@ -297,8 +297,8 @@ describe("NodeSDK", () => {
               character: 22,
             },
             end: {
-              line: 25,
-              character: 8,
+              line: 23,
+              character: 15,
             },
           },
           key: "test2",

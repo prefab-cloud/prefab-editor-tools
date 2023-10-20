@@ -72,7 +72,7 @@ export const detectMethods = (
 
       const range = {
         start: document.positionAt(match.index),
-        end: document.positionAt(match.index + match[0].length),
+        end: document.positionAt(match.index + match[0].trim().length),
       };
 
       result.push({

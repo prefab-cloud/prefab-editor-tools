@@ -1,0 +1,24 @@
+class User:
+		@classmethod
+		def pro(cls):
+				if prefab.enabled("everyone.is.pro"):
+						return True
+				else:
+						return Pro.enabled(cls)
+
+		def can_use_api(self):
+				return prefab.enabled("api.enabled")
+
+		def can_use_hat(self):
+				return prefab.enabled("hat.enabled")
+
+		def rate_limit(self):
+				return prefab.get("api-rate-limit-per-user") - ApiUsage.for_user(self, client.get("api-rate-limit-window"))
+
+		def does_not_count(self):
+				return prefab.get()
+
+		def some_value(self):
+				x = prefab.get("some.value")
+				y = client.get("")
+				z = prefab.get("")
