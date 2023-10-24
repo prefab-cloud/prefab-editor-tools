@@ -1,7 +1,7 @@
 import createFlag from "./createFlag";
-import refreshDiagnostics from "./refreshDiagnostics";
-import overrideVariant from "./overrideVariant";
 import extractConfig from "./extractConfig";
+import overrideVariant from "./overrideVariant";
+import refreshDiagnostics from "./refreshDiagnostics";
 
 const commandLookup = Object.fromEntries(
   [createFlag, overrideVariant, refreshDiagnostics, extractConfig].map(

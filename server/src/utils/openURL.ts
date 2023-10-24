@@ -1,6 +1,6 @@
-import type { Logger } from "../types";
-
 import * as childProcess from "child_process";
+
+import type { Logger } from "../types";
 
 const openURL = ({ url, log }: { url: string; log: Logger }) => {
   log("Utility", `Prefab: Opening ${url}`);

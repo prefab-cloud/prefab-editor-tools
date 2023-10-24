@@ -1,9 +1,9 @@
-import { Connection } from "vscode-languageserver/node";
-import { prefabInit } from "./prefabClient";
-import { type Logger, type Settings } from "./types";
-
 import * as fs from "fs";
 import * as path from "path";
+import { Connection } from "vscode-languageserver/node";
+
+import { prefabInit } from "./prefabClient";
+import { type Logger, type Settings } from "./types";
 
 let lastApiKeyWarning = 0;
 

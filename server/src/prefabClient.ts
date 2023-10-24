@@ -1,13 +1,13 @@
 import { Prefab } from "@prefab-cloud/prefab-cloud-node";
-import {
-  CompletionType,
-  ConfigType,
-  CompletionTypeValue,
-  MethodLocation,
-  Logger,
-} from "./types";
 
 import { apiUrlOrDefault } from "./settings";
+import {
+  CompletionType,
+  CompletionTypeValue,
+  ConfigType,
+  Logger,
+  MethodLocation,
+} from "./types";
 
 export let prefab: Prefab;
 export let prefabPromise: Promise<void> = new Promise(() => {});

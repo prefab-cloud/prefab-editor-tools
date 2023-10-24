@@ -5,33 +5,26 @@ import {
   InitializeResult,
   InlayHintRequest,
   ProposedFeatures,
-  TextDocumentSyncKind,
   TextDocuments,
+  TextDocumentSyncKind,
 } from "vscode-languageserver/node";
-
 import { TextDocument } from "vscode-languageserver-textdocument";
 
-import { getActiveDiagnostics, runAllDiagnostics } from "./diagnostics";
-
-import { commands, commandLookup } from "./commands";
-import { runAllCodeLens } from "./codeLens";
-import { runAllHovers } from "./hovers";
-import { runAllInlayHints, NULL_HINT } from "./inlayHints";
-import { runAllCompletions } from "./completions";
 import { runAllCodeActions } from "./codeActions";
-
-import { getSettings, settings, updateSettings } from "./settings";
-
-import { prefabPromise } from "./prefabClient";
-
-import { makeLogger } from "./logger";
-
-import { type ClientContext } from "./types";
-
+import { runAllCodeLens } from "./codeLens";
+import { commandLookup, commands } from "./commands";
+import { runAllCompletions } from "./completions";
+import { getActiveDiagnostics, runAllDiagnostics } from "./diagnostics";
 import {
   annotateDocument as annotateDoc,
   getAnnotatedDocument as getAnnotatedDoc,
 } from "./documentAnnotations";
+import { runAllHovers } from "./hovers";
+import { NULL_HINT, runAllInlayHints } from "./inlayHints";
+import { makeLogger } from "./logger";
+import { prefabPromise } from "./prefabClient";
+import { getSettings, settings, updateSettings } from "./settings";
+import { type ClientContext } from "./types";
 
 // Create a connection for the server, using Node's IPC as a
 // transport (overridden with `--stdio` flag).

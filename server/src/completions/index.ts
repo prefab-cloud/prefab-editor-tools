@@ -1,6 +1,6 @@
 import { CompletionItem } from "vscode-languageserver/node";
-import type { CompletionAnalyzer, CompletionAnalyzerArgs } from "../types";
 
+import type { CompletionAnalyzer, CompletionAnalyzerArgs } from "../types";
 import keys from "./keys";
 
 const completions: CompletionAnalyzer[] = [keys];

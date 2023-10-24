@@ -1,6 +1,7 @@
+import { describe, expect, it } from "bun:test";
 import * as fs from "fs";
 import * as path from "path";
-import { expect, it, describe } from "bun:test";
+
 import { uriAndHeaders } from "./apiClient";
 import { ClientContext } from "./types";
 

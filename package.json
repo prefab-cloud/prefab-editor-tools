@@ -36,10 +36,12 @@
     "vscode:prepublish": "npm run compile",
     "compile": "esbuild ./client/src/extension.ts --minify --bundle --outfile=client/out/extension.js --external:vscode --format=cjs --platform=node && esbuild ./server/src/server.ts --minify --bundle --outfile=server/out/server.js --external:vscode --format=cjs --platform=node && echo '#! /usr/bin/env node' > server/out/cli && cat server/out/server.js >> server/out/cli",
     "lint": "npx eslint . --ext .ts",
+    "lint:fix": "npx eslint . --ext .ts --fix",
     "watch": "tsc -b -w",
     "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
     "tsc-server": "cd server && tsc --watch --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
@@ -47,7 +49,9 @@
     "@typescript-eslint/parser": "^6.7.4",
     "esbuild": "^0.19.3",
     "eslint": "^8.50.0",
-    "typescript": "^5.2.2"
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "typescript": "^5.2.2",
+    "husky": "^8.0.0"
   },
   "dependencies": {
     "@prefab-cloud/prefab-cloud-language-server": "^0.1.4"

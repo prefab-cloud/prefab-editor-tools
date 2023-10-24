@@ -1,15 +1,16 @@
 import { Range, TextEdit } from "vscode-languageserver/node";
+
+import { post as defaultPost } from "../apiClient";
+import {
+  allKeys as defaultAllKeys,
+  getProjectEnvFromApiKey,
+} from "../prefabClient";
 import {
   CustomHandler,
   type ExecutableCommand,
   type ExecutableCommandExecuteArgs,
   type GetInputResponse,
 } from "../types";
-import { post as defaultPost } from "../apiClient";
-import {
-  getProjectEnvFromApiKey,
-  allKeys as defaultAllKeys,
-} from "../prefabClient";
 
 type Dependencies = {
   post?: typeof defaultPost;

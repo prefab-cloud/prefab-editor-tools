@@ -1,8 +1,8 @@
-import { expect, it, describe } from "bun:test";
-import { MethodLocation } from "../types";
-import { DIAGNOSTIC_SOURCE } from "../constants";
+import { describe, expect, it } from "bun:test";
 
+import { DIAGNOSTIC_SOURCE } from "../constants";
 import { log, mkAnnotatedDocument, readFileSync } from "../testHelpers";
+import { MethodLocation } from "../types";
 import missingKeys from "./missingKeys";
 
 const cannedResponse = readFileSync("fixtures/ruby.rb.parsed.json");

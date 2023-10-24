@@ -1,13 +1,12 @@
-import { expect, it, describe } from "bun:test";
+import { describe, expect, it } from "bun:test";
 
 import {
+  cannedEvaluationResponse,
   log,
   mkAnnotatedDocument,
   mockRequest,
-  cannedEvaluationResponse,
 } from "../testHelpers";
 import { type ClientContext, MethodType } from "../types";
-
 import { runAllHovers } from "./index";
 
 const range = {

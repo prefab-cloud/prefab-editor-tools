@@ -1,4 +1,5 @@
 import { Connection } from "vscode-languageserver/node";
+
 import { type Logger } from "./types";
 
 export const makeLogger = (connection: Connection): Logger => {

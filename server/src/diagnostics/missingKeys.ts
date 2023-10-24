@@ -1,3 +1,7 @@
+import { DiagnosticSeverity } from "vscode-languageserver/node";
+
+import { DIAGNOSTIC_SOURCE } from "../constants";
+import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefabClient";
 import {
   DiagnosticAnalyzer,
   DiagnosticAnalyzerArgs,
@@ -5,11 +9,6 @@ import {
   DiagnosticWithSource,
   MethodType,
 } from "../types";
-import { filterForMissingKeys as defaultFilterForMissingKeys } from "../prefabClient";
-
-import { DIAGNOSTIC_SOURCE } from "../constants";
-
-import { DiagnosticSeverity } from "vscode-languageserver/node";
 
 const missingKeys: DiagnosticAnalyzer = async ({
   document,

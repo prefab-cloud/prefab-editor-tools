@@ -1,10 +1,11 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
+
+import { detectSDK } from "./sdks/detection";
 import type {
   AnnotatedDocument,
   DocumentAnnotations,
   MethodLocation,
 } from "./types";
-import { detectSDK } from "./sdks/detection";
 
 export const documentAnnotations: Record<string, DocumentAnnotations> = {};
 

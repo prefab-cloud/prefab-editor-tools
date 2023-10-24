@@ -1,10 +1,9 @@
-import { expect, it, describe, mock } from "bun:test";
-
+import { describe, expect, it, mock } from "bun:test";
 import { type Connection } from "vscode-languageserver/node";
-import { ClientContext, CustomHandler } from "../types";
-import { mkAnnotatedDocument, mockRequest, log } from "../testHelpers";
-import RubySDK from "../sdks/ruby";
 
+import RubySDK from "../sdks/ruby";
+import { log, mkAnnotatedDocument, mockRequest } from "../testHelpers";
+import { ClientContext, CustomHandler } from "../types";
 import extractConfig from "./extractConfig";
 
 const documentUri = "file://does/not/matter";

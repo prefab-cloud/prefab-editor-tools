@@ -1,5 +1,5 @@
-import { TextDocument } from "vscode-languageserver-textdocument";
 import { Position } from "vscode-languageserver/node";
+import { TextDocument } from "vscode-languageserver-textdocument";
 
 export const currentLine = (
   document: TextDocument | undefined,

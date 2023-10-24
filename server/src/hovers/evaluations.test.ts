@@ -1,15 +1,15 @@
-import { beforeEach, expect, it, describe } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
+
 import {
+  cannedEvaluationResponse,
   clearLog,
-  log,
   getLoggedItems,
   lastItem,
+  log,
   mkAnnotatedDocument,
   mockRequest,
-  cannedEvaluationResponse,
 } from "../testHelpers";
 import { ClientContext, MethodLocation, MethodType } from "../types";
-
 import evaluations from "./evaluations";
 
 const range = {

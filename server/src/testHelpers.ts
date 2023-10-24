@@ -1,9 +1,10 @@
+import { mock } from "bun:test";
 import * as fs from "fs";
 import * as path from "path";
-import { AnnotatedDocument, Logger } from "./types";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { mock } from "bun:test";
+
 import { NullSDK } from "./sdks/detection";
+import { AnnotatedDocument, Logger } from "./types";
 
 export const readFileSync = (relativePath: string) => {
   return fs.readFileSync(path.join(__dirname, relativePath), "utf-8");

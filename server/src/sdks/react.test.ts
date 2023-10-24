@@ -1,8 +1,8 @@
-import { expect, it, describe } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { Position } from "vscode-languageserver/node";
+
 import { mkDocument, readFileSync } from "../testHelpers";
 import { CompletionType, MethodLocation, MethodType } from "../types";
-
 import ReactSDK, { RELEVANT_FILETYPES } from "./react";
 
 type ExampleStringAndPosition = [string, Position];

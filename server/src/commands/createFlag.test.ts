@@ -1,9 +1,8 @@
-import { expect, it, describe, mock } from "bun:test";
-
+import { describe, expect, it, mock } from "bun:test";
 import { type Connection } from "vscode-languageserver/node";
-import { mkAnnotatedDocument, mockRequest, log } from "../testHelpers";
-import { ClientContext } from "../types";
 
+import { log, mkAnnotatedDocument, mockRequest } from "../testHelpers";
+import { ClientContext } from "../types";
 import createFlag from "./createFlag";
 
 const documentUri = "file://does/not/matter";

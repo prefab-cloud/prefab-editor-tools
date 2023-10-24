@@ -1,10 +1,8 @@
-import { expect, it, describe } from "bun:test";
-
-import linkTitle from "./linkTitle";
-
-import { type ClientContext, MethodType, type MethodLocation } from "../types";
+import { describe, expect, it } from "bun:test";
 
 import { log, mkAnnotatedDocument } from "../testHelpers";
+import { type ClientContext, type MethodLocation, MethodType } from "../types";
+import linkTitle from "./linkTitle";
 
 const keyRange = {
   start: { line: 3, character: 20 },

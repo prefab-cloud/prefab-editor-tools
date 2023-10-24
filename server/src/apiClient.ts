@@ -1,8 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import { URL } from "url";
-import type { ClientContext, Logger, Settings } from "./types";
+
 import { apiUrlOrDefault } from "./settings";
+import type { ClientContext, Logger, Settings } from "./types";
 
 const VS_EXTENSION_PATH = path.join(__dirname, "../../package.json");
 const STANDALONE_EXTENSION_PATH = path.join(__dirname, "../package.json");

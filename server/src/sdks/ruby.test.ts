@@ -1,10 +1,11 @@
-import { expect, it, describe } from "bun:test";
-import { Position } from "vscode-languageserver/node";
-import { mkDocument, readFileSync } from "../testHelpers";
-import { CompletionType, MethodType, MethodLocation } from "../types";
-import RubySDK from "./ruby";
+import { describe, expect, it } from "bun:test";
 import * as fs from "fs";
 import * as path from "path";
+import { Position } from "vscode-languageserver/node";
+
+import { mkDocument, readFileSync } from "../testHelpers";
+import { CompletionType, MethodLocation, MethodType } from "../types";
+import RubySDK from "./ruby";
 
 type ExampleStringAndPosition = [string, Position];
 

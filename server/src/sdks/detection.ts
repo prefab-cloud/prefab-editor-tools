@@ -1,4 +1,5 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
+
 import { CompletionTypeValue, MethodLocation, MethodTypeValue } from "../types";
 import JavaSDK from "./java";
 import JavascriptSDK from "./javascript";

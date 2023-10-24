@@ -1,18 +1,19 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
+
 import {
   CompletionType,
   CompletionTypeValue,
+  MethodLocation,
   MethodType,
   MethodTypeValue,
-  MethodLocation,
 } from "../types";
-import { type SDK } from "./detection";
 import {
   detectMethod,
+  type DetectMethodRegex,
   detectMethods,
   type DetectMethodsRegex,
-  type DetectMethodRegex,
 } from "./common";
+import { type SDK } from "./detection";
 
 const IMPORT_STATEMENT = "@prefab-cloud/prefab-cloud-node";
 

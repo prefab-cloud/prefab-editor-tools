@@ -1,11 +1,11 @@
-import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 import { post } from "../apiClient";
-import extractKey from "./extractKey";
 import {
-  variantsForFeatureFlag,
   overrides,
   valueOfToString,
+  variantsForFeatureFlag,
 } from "../prefabClient";
+import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
+import extractKey from "./extractKey";
 
 const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
   command: "prefab.overrideVariant",
