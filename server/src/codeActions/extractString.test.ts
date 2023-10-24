@@ -1,16 +1,16 @@
-import { expect, it, describe } from "bun:test";
-
+import { describe, expect, it } from "bun:test";
 import {
   ClientCapabilities,
   CodeAction,
-  CodeActionParams,
   CodeActionKind,
+  CodeActionParams,
 } from "vscode-languageserver/node";
-import { log, mkAnnotatedDocument, mkDocument } from "../testHelpers";
-import extractString from "./extractString";
-import { CustomHandler, type ClientContext } from "../types";
-import RubySDK from "../sdks/ruby";
+
 import { annotateDocument, getAnnotatedDocument } from "../documentAnnotations";
+import RubySDK from "../sdks/ruby";
+import { log, mkAnnotatedDocument, mkDocument } from "../testHelpers";
+import { type ClientContext, CustomHandler } from "../types";
+import extractString from "./extractString";
 
 const range = {
   end: { line: 3, character: 8 },

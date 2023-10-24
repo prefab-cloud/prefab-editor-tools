@@ -1,18 +1,19 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
+
 import {
   CompletionType,
   CompletionTypeValue,
+  MethodLocation,
   MethodType,
   MethodTypeValue,
-  MethodLocation,
 } from "../types";
-import { type SDK } from "./detection";
 import {
   detectMethod,
+  type DetectMethodRegex,
   detectMethods,
   type DetectMethodsRegex,
-  type DetectMethodRegex,
 } from "./common";
+import { type SDK } from "./detection";
 
 // TODO: The `.get` regex is going to be most likely to collide with something non-Prefab. We could improve this by looking backwards for something config-like.
 

@@ -1,12 +1,11 @@
-import type { HoverAnalyzerArgs } from "../types";
-
-import pluralize from "../utils/pluralize";
 import { get } from "../apiClient";
 import { methodAtPosition } from "../documentAnnotations";
 import {
   filterForMissingKeys as defaultFilterForMissingKeys,
   valueOfToString,
 } from "../prefabClient";
+import type { HoverAnalyzerArgs } from "../types";
+import pluralize from "../utils/pluralize";
 
 type EvaluationStats = {
   key: string;

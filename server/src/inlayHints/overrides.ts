@@ -1,10 +1,11 @@
 import { InlayHint } from "vscode-languageserver/node";
-import { InlayHintAnalyzer, InlayHintAnalyzerArgs } from "../types";
+
 import {
-  valueOfToString,
-  overrides as prefabOverrides,
   overrideKeys,
+  overrides as prefabOverrides,
+  valueOfToString,
 } from "../prefabClient";
+import { InlayHintAnalyzer, InlayHintAnalyzerArgs } from "../types";
 
 const pad = (value: string) => ` ${value} `;
 

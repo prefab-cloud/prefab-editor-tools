@@ -1,5 +1,5 @@
-import { expect, it, describe } from "bun:test";
-import { Range, Position } from "vscode-languageserver/node";
+import { describe, expect, it } from "bun:test";
+import { Position, Range } from "vscode-languageserver/node";
 
 import { contains } from "./positions";
 

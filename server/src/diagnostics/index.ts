@@ -1,5 +1,4 @@
 import { DiagnosticAnalyzerArgs, DiagnosticWithSource } from "../types";
-
 import missingKeys from "./missingKeys";
 
 const activeDiagnostics: Record<string, DiagnosticWithSource[]> = {};

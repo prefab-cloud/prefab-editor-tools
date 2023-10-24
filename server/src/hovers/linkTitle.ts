@@ -1,9 +1,9 @@
-import { type HoverAnalyzerArgs } from "../types";
 import { methodAtPosition } from "../documentAnnotations";
 import {
-  urlFor,
   filterForMissingKeys as defaultFilterForMissingKeys,
+  urlFor,
 } from "../prefabClient";
+import { type HoverAnalyzerArgs } from "../types";
 
 type Dependencies = {
   providedUrlFor?: typeof urlFor;

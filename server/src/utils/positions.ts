@@ -1,4 +1,4 @@
-import { Range, Position } from "vscode-languageserver/node";
+import { Position, Range } from "vscode-languageserver/node";
 
 export const contains = ({
   container,

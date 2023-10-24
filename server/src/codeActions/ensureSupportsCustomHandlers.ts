@@ -1,4 +1,4 @@
-import type { CustomHandlerValue, Logger, ClientContext } from "../types";
+import type { ClientContext, CustomHandlerValue, Logger } from "../types";
 
 export const ensureSupportsCustomHandlers = (
   requiredCustomHandlers: CustomHandlerValue[],

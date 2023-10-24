@@ -1,6 +1,7 @@
-import { expect, it, describe } from "bun:test";
-import { detectSDK, NullSDK } from "./detection";
+import { describe, expect, it } from "bun:test";
+
 import { mkDocument } from "../testHelpers";
+import { detectSDK,NullSDK } from "./detection";
 import JavaSDK from "./java";
 import JavascriptSDK from "./javascript";
 import NodeSDK from "./node";

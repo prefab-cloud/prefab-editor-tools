@@ -1,6 +1,6 @@
 import { CodeLens } from "vscode-languageserver/node";
-import type { CodeLensAnalyzer, CodeLensAnalyzerArgs } from "../types";
 
+import type { CodeLensAnalyzer, CodeLensAnalyzerArgs } from "../types";
 import createFlag from "./createFlag";
 import overrideVariant from "./overrideVariant";
 

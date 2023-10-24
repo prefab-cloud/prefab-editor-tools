@@ -1,11 +1,12 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
+
+import { currentLine } from "../documentHelpers";
 import {
   MethodLocation,
   MethodType,
   MethodTypeKeys,
   MethodTypeValue,
 } from "../types";
-import { currentLine } from "../documentHelpers";
 
 export type DetectMethodRegex = {
   [key in keyof typeof MethodType]: RegExp;

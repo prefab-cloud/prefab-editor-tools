@@ -1,8 +1,9 @@
-import { expect, it, describe } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { CompletionItemKind } from "vscode-languageserver/node";
+
+import { log, mkAnnotatedDocument } from "../testHelpers";
 import { CompletionType, type CompletionTypeValue } from "../types";
 import keys from "./keys";
-import { log, mkAnnotatedDocument } from "../testHelpers";
 
 const providedKeysForCompletionType = async (
   type: CompletionTypeValue | null

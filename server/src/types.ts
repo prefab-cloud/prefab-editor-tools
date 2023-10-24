@@ -1,8 +1,8 @@
 import {
   ClientCapabilities,
-  CodeLens,
-  CodeActionParams,
   CodeAction,
+  CodeActionParams,
+  CodeLens,
   CompletionItem,
   Connection,
   Diagnostic,
@@ -13,11 +13,9 @@ import {
   Range,
   TextDocuments,
 } from "vscode-languageserver/node";
-
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import { filterForMissingKeys as defaultFilterForMissingKeys } from "./prefabClient";
-
 import { SDK } from "./sdks/detection";
 
 export const CustomHandler = {

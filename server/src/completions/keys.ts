@@ -1,8 +1,7 @@
 import { CompletionItemKind } from "vscode-languageserver/node";
 
-import type { CompletionAnalyzerArgs } from "../types";
-
 import { keysForCompletionType } from "../prefabClient";
+import type { CompletionAnalyzerArgs } from "../types";
 
 type Dependencies = {
   providedKeysForCompletionType?: typeof keysForCompletionType;

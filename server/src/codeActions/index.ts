@@ -1,6 +1,6 @@
 import type { CodeAction } from "vscode-languageserver/node";
-import type { CodeActionAnalyzer, CodeActionAnalyzerArgs } from "../types";
 
+import type { CodeActionAnalyzer, CodeActionAnalyzerArgs } from "../types";
 import extractString from "./extractString";
 
 const codeActions: CodeActionAnalyzer[] = [extractString];

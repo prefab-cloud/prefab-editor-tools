@@ -1,6 +1,6 @@
 import { InlayHint } from "vscode-languageserver/node";
-import { InlayHintAnalyzer, InlayHintAnalyzerArgs } from "../types";
 
+import { InlayHintAnalyzer, InlayHintAnalyzerArgs } from "../types";
 import overrides from "./overrides";
 
 const ZERO_WIDTH_SPACE = String.fromCodePoint(8203);

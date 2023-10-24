@@ -1,5 +1,5 @@
-import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 import { post as defaultPost } from "../apiClient";
+import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 import extractKey from "./extractKey";
 
 type Dependencies = {

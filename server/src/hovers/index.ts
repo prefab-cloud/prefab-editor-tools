@@ -1,9 +1,8 @@
 import { Hover } from "vscode-languageserver/node";
 
-import type { HoverAnalyzer, HoverAnalyzerArgs } from "../types";
 import { get } from "../apiClient";
 import { urlFor } from "../prefabClient";
-
+import type { HoverAnalyzer, HoverAnalyzerArgs } from "../types";
 import evaluations from "./evaluations";
 import linkTitle from "./linkTitle";
 
