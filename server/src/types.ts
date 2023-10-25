@@ -178,6 +178,7 @@ export type HoverAnalyzerArgs = {
   log: Logger;
   settings: Settings;
   filterForMissingKeys?: typeof defaultFilterForMissingKeys;
+  method: MethodLocation;
   clientContext: ClientContext;
 };
 

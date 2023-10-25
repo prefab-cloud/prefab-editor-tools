@@ -3,13 +3,10 @@ import { beforeEach, describe, expect, it } from "bun:test";
 import {
   cannedEvaluationResponse,
   clearLog,
-  getLoggedItems,
-  lastItem,
   log,
-  mkAnnotatedDocument,
   mockRequest,
 } from "../testHelpers";
-import { ClientContext, MethodLocation, MethodType } from "../types";
+import { ClientContext, MethodType } from "../types";
 import evaluations from "./evaluations";
 
 const range = {
@@ -32,19 +29,12 @@ describe("evaluations", () => {
   });
 
   it("fetches an evaluation from the server", async () => {
-    const filterForMissingKeys = async () => [];
-
-    const document = mkAnnotatedDocument({
-      completionType: () => null,
-      methodLocations: [
-        {
-          key: "redis.connection-string",
-          type: MethodType.GET,
-          range,
-          keyRange,
-        },
-      ],
-    });
+    const method = {
+      key: "redis.connection-string",
+      type: MethodType.GET,
+      range,
+      keyRange,
+    };
 
     const providedGet = mockRequest(cannedEvaluationResponse);
 
@@ -53,11 +43,9 @@ describe("evaluations", () => {
     const result = await evaluations({
       settings,
       clientContext,
-      document,
-      position,
       log,
-      filterForMissingKeys,
       providedGet,
+      method,
     });
 
     expect(result).toStrictEqual({
@@ -83,62 +71,19 @@ describe("evaluations", () => {
     ]);
   });
 
-  it("won't show hover if the key does not exist", async () => {
-    const filterForMissingKeys = async (locations: MethodLocation[]) =>
-      locations;
-
-    const document = mkAnnotatedDocument({
-      completionType: () => null,
-      methodLocations: [
-        {
-          key: "redis.connection-string",
-          type: MethodType.GET,
-          range,
-          keyRange,
-        },
-      ],
-    });
-
-    const result = await evaluations({
-      settings: {},
-      clientContext,
-      document,
-      position,
-      log,
-      filterForMissingKeys,
-      providedGet: mockRequest(cannedEvaluationResponse),
-    });
-
-    expect(result).toBeNull();
-    expect(lastItem(getLoggedItems())).toStrictEqual({
-      message: "Key does not exist",
-      scope: "Hover",
-      severity: "info",
-    });
-  });
-
   it("works for int input", async () => {
-    const filterForMissingKeys = async () => [];
-
-    const document = mkAnnotatedDocument({
-      completionType: () => null,
-      methodLocations: [
-        {
-          key: "james.test1",
-          type: MethodType.GET,
-          range,
-          keyRange,
-        },
-      ],
-    });
+    const method = {
+      key: "james.test1",
+      type: MethodType.GET,
+      range,
+      keyRange,
+    };
 
     const result = await evaluations({
       settings: {},
       clientContext,
-      document,
-      position,
       log,
-      filterForMissingKeys,
+      method,
       providedGet: mockRequest({
         status: 200,
         json: {
