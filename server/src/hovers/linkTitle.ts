@@ -15,6 +15,7 @@ const linkTitle = async ({
   position,
   filterForMissingKeys,
   providedUrlFor,
+  settings,
 }: HoverAnalyzerArgs & Dependencies) => {
   log("Hover", { link: { uri: document.uri, position } });
 
@@ -36,7 +37,7 @@ const linkTitle = async ({
 
   const { key, keyRange } = method;
 
-  const url = (providedUrlFor ?? urlFor)(key);
+  const url = (providedUrlFor ?? urlFor)(key, settings);
 
   if (url) {
     const contents = `[${key}](${url})`;
