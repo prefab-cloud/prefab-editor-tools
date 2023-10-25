@@ -26,8 +26,8 @@ const overrideVariant: CodeLensAnalyzer = async ({
       range,
       command: {
         title: override
-          ? `${method.key}: change/remove local override`
-          : `${method.key}: local override`,
+          ? `${method.key}: change/remove personal override`
+          : `${method.key}: personal override`,
         command: "prefab.overrideVariant",
         arguments: [document.uri, method.key],
       },

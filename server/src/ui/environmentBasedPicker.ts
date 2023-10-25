@@ -1,13 +1,14 @@
 import { Connection } from "vscode-languageserver/node";
 
+import { DEFAULT_ENVIRONMENT_NAME, INHERIT } from "../constants";
 import {
+  configValuesInEnvironments,
   type Environment,
   getConfigFromApi,
   getEnvironmentsFromApi,
   type GetValue,
   type PrefabConfig,
   urlFor,
-  valueOf,
 } from "../prefab";
 import type { ClientContext, Logger, Settings } from "../types";
 import { pickOption } from "../ui/pickOption";
@@ -24,10 +25,6 @@ type Choice = {
 type LocalTitleFormatter = (projectEnvName: string, value: string) => string;
 type RemoteTitleFormatter = (projectEnvName: string) => string;
 
-const getEnvName = (environments: Environment[], id: string): string => {
-  return environments.find((env) => env.id === id)?.name ?? "Default";
-};
-
 export const getOptions = ({
   config,
   environments,
@@ -41,53 +38,32 @@ export const getOptions = ({
   localFormatter: LocalTitleFormatter;
   log: Logger;
 }): Choice[] => {
-  const choices: Choice[] = [];
+  const values = configValuesInEnvironments(config, environments, log);
 
-  config.rows.forEach((row) => {
-    const singleValue = row.values.length === 1 && !row.values[0].criteria;
-    const projectEnvName = getEnvName(
-      environments,
-      row.projectEnvId?.toString()
-    );
+  const choices: Choice[] = values.map((value) => {
+    const projectEnvName = value.environment?.name ?? DEFAULT_ENVIRONMENT_NAME;
+    const projectEnvId = value.environment?.id;
 
-    if (!row.values[0].value) {
-      return;
-    }
-
-    const projectEnvId = row.projectEnvId?.toString();
-
-    if (singleValue) {
-      const value = valueOf(row.values[0].value);
-
-      log("UI", { value });
-
-      choices.push({
-        canEditLocally: true,
-        projectEnvId,
-        projectEnvName,
-        currentValue: value,
-        title: localFormatter(projectEnvName, JSON.stringify(value)),
-      });
-    } else {
-      choices.push({
+    if (value.hasRules) {
+      return {
         canEditLocally: false,
         projectEnvId,
         projectEnvName,
         title: remoteFormatter(projectEnvName),
-      });
-    }
-  });
-
-  environments.map((environment) => {
-    if (!choices.find((choice) => choice.projectEnvId === environment.id)) {
-      const projectEnvName = getEnvName(environments, environment.id);
-
-      choices.push({
-        canEditLocally: true,
-        projectEnvId: environment.id,
+      };
+    } else {
+      const title = localFormatter(
         projectEnvName,
-        title: localFormatter(projectEnvName, "[inherit]"),
-      });
+        value.inherited ? INHERIT : JSON.stringify(value.value)
+      );
+
+      return {
+        canEditLocally: true,
+        projectEnvId,
+        projectEnvName,
+        currentValue: value.value,
+        title,
+      };
     }
   });
 

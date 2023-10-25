@@ -1,4 +1,4 @@
-import { type ConfigValue,prefab } from "./client";
+import { type ConfigValue, prefab } from "./client";
 
 export const valueOf = (value: ConfigValue): ReturnType<typeof prefab.get> => {
   switch (Object.keys(value)[0]) {
@@ -14,6 +14,14 @@ export const valueOf = (value: ConfigValue): ReturnType<typeof prefab.get> => {
       return Number(value.double);
     case "logLevel":
       return value.logLevel;
+    case "weightedValues":
+      return value.weightedValues?.weightedValues
+        .sort((a, b) => b.weight - a.weight)
+        .map((weightedValue) => {
+          const value = weightedValue.value ? valueOf(weightedValue.value) : "";
+          return `${value}: ${weightedValue.weight}%`;
+        })
+        .join(", ");
     default:
       throw new Error(`Unexpected value ${JSON.stringify(value)}`);
   }
