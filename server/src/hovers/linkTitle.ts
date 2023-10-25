@@ -1,8 +1,4 @@
-import { methodAtPosition } from "../documentAnnotations";
-import {
-  filterForMissingKeys as defaultFilterForMissingKeys,
-  urlFor,
-} from "../prefab";
+import { urlFor } from "../prefab";
 import { type HoverAnalyzerArgs } from "../types";
 
 type Dependencies = {
@@ -10,31 +6,10 @@ type Dependencies = {
 };
 
 const linkTitle = async ({
-  document,
-  log,
-  position,
-  filterForMissingKeys,
   providedUrlFor,
   settings,
-}: HoverAnalyzerArgs & Dependencies) => {
-  log("Hover", { link: { uri: document.uri, position } });
-
-  const method = methodAtPosition(document, position);
-
-  if (!method) {
-    log("Hover", "No method found at position");
-    return null;
-  }
-
-  const missingKeyMethods = await (
-    filterForMissingKeys ?? defaultFilterForMissingKeys
-  )([method]);
-
-  if (missingKeyMethods.length > 0) {
-    log("Hover", "Key does not exist");
-    return null;
-  }
-
+  method,
+}: Pick<HoverAnalyzerArgs, "settings" | "method"> & Dependencies) => {
   const { key, keyRange } = method;
 
   const url = (providedUrlFor ?? urlFor)(key, settings);

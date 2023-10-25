@@ -1,9 +1,5 @@
 import { get } from "../apiClient";
-import { methodAtPosition } from "../documentAnnotations";
-import {
-  filterForMissingKeys as defaultFilterForMissingKeys,
-  valueOfToString,
-} from "../prefab";
+import { valueOfToString } from "../prefab";
 import type { HoverAnalyzerArgs } from "../types";
 import pluralize from "../utils/pluralize";
 
@@ -35,34 +31,13 @@ const percent = (value: number) => {
 };
 
 const evaluations = async ({
-  document,
   log,
-  position,
   settings,
   providedGet,
-  filterForMissingKeys,
+  method,
   clientContext,
-}: HoverAnalyzerArgs & Dependencies) => {
-  log("Hover", { evaluations: { uri: document.uri, position } });
-
-  const method = methodAtPosition(document, position);
-
-  if (!method) {
-    log("Hover", "No method found at position");
-    return null;
-  }
-
-  const missingKeyMethods = await (
-    filterForMissingKeys ?? defaultFilterForMissingKeys
-  )([method]);
-
-  if (missingKeyMethods.length > 0) {
-    log("Hover", "Key does not exist");
-    return null;
-  }
-
-  log("Hover", { key: method.key });
-
+}: Pick<HoverAnalyzerArgs, "log" | "settings" | "method" | "clientContext"> &
+  Dependencies) => {
   const request = await (providedGet ?? get)({
     settings,
     requestPath: `/api/v1/evaluation-stats/${encodeURIComponent(method.key)}`,
