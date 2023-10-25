@@ -9,7 +9,7 @@ import {
   urlFor,
   valueOf,
 } from "../prefab";
-import type { ClientContext, Logger,Settings } from "../types";
+import type { ClientContext, Logger, Settings } from "../types";
 import { pickOption } from "../ui/pickOption";
 import openURL from "../utils/openURL";
 
@@ -165,7 +165,7 @@ export const environmentBasedPicker = async ({
   log("UI", { editConfig: { choice } });
 
   if (!choice.canEditLocally) {
-    const url = urlFor(config);
+    const url = urlFor(config, settings);
 
     if (url) {
       log("UI", { editConfig: url });
