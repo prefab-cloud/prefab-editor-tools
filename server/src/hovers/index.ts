@@ -9,9 +9,10 @@ import {
 import type { HoverAnalyzer, HoverAnalyzerArgs } from "../types";
 import evaluations from "./evaluations";
 import linkTitle from "./linkTitle";
+import values from "./values";
 
 // This order matters since it determines how content is concatenated
-const hovers: HoverAnalyzer[] = [linkTitle, evaluations];
+const hovers: HoverAnalyzer[] = [linkTitle, values, evaluations];
 
 type Dependencies = {
   providedGet?: typeof get;

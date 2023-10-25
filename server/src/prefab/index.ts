@@ -9,6 +9,7 @@ import {
   prefabInit,
   prefabPromise,
 } from "./client";
+import { configValuesInEnvironments } from "./configValuesInEnvironments";
 import { filterForMissingKeys } from "./filterForMissingKeys";
 import { getConfigFromApi } from "./getConfigFromApi";
 import {
@@ -39,6 +40,7 @@ export {
   valueOfToString,
   valueToConfigValue,
   variantsForFeatureFlag,
+  configValuesInEnvironments,
   type ConfigValue,
   type Environment,
   type GetValue,
