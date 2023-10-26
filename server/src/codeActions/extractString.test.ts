@@ -41,6 +41,12 @@ const matchingDocument = mkAnnotatedDocument({
   }),
 });
 
+const settings = {
+  optIn: {
+    extractString: true,
+  },
+};
+
 describe("extractString", () => {
   it("returns [] when there's no string under the cursor", async () => {
     const document = mkAnnotatedDocument({
@@ -55,6 +61,7 @@ describe("extractString", () => {
       document,
       params,
       log,
+      settings,
     });
 
     expect(result).toStrictEqual([]);
@@ -69,6 +76,7 @@ describe("extractString", () => {
       },
       params,
       log,
+      settings,
     });
 
     expect(result).toStrictEqual([]);
@@ -87,10 +95,10 @@ describe("extractString", () => {
     };
 
     const expected: CodeAction = {
-      title: `Extract to config: "Hello there"`,
+      title: `Extract to Prefab config: "Hello there"`,
       kind: CodeActionKind.RefactorExtract,
       command: {
-        title: `Extract to config: "Hello there"`,
+        title: `Extract to Prefab config: "Hello there"`,
         command: "prefab.extractConfig",
         arguments: [
           matchingDocument.uri,
@@ -105,6 +113,7 @@ describe("extractString", () => {
       document: matchingDocument,
       params,
       log,
+      settings,
     });
 
     expect(result).toStrictEqual([expected]);
@@ -136,6 +145,7 @@ describe("extractString", () => {
       document,
       params,
       log,
+      settings,
     });
 
     expect(result).toStrictEqual([]);
@@ -154,6 +164,7 @@ describe("extractString", () => {
       document: matchingDocument,
       params,
       log,
+      settings,
     });
 
     expect(result).toStrictEqual([]);
@@ -172,6 +183,21 @@ describe("extractString", () => {
       document: matchingDocument,
       params,
       log,
+      settings,
+    });
+
+    expect(result).toStrictEqual([]);
+  });
+
+  it("returns [] when the user hasn't opt-ed in", async () => {
+    const result = await extractString({
+      clientContext,
+      document: matchingDocument,
+      params,
+      log,
+      settings: {
+        optIn: { extractString: false },
+      },
     });
 
     expect(result).toStrictEqual([]);

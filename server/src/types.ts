@@ -96,6 +96,9 @@ export interface Settings {
   apiKey?: string;
   apiUrl?: string;
   alpha?: boolean;
+  optIn?: {
+    extractString?: boolean;
+  };
 }
 
 export type ExecutableCommandExecuteArgs = {
@@ -205,6 +208,7 @@ export type CodeActionAnalyzerArgs = {
   document: AnnotatedDocument;
   params: CodeActionParams;
   log: Logger;
+  settings: Settings;
 };
 
 export type ClientContext = {

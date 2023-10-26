@@ -28,6 +28,11 @@
           "type": "string",
           "default": "",
           "description": "Your personal API key for Prefab"
+        },
+        "prefab.optIn.extractString": {
+          "type": "boolean",
+          "default": false,
+          "description": "Prompt to extract strings to config"
         }
       }
     }

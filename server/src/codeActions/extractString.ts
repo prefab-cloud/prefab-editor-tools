@@ -14,9 +14,13 @@ const requiredCustomHandlers = [CustomHandler.getInput];
 const extractString: CodeActionAnalyzer = async (
   args: CodeActionAnalyzerArgs
 ) => {
-  const { clientContext, document, params, log } = args;
+  const { clientContext, document, params, log, settings } = args;
 
   log("CodeActions", { extractString: document.uri });
+
+  if (!settings.optIn?.extractString) {
+    return [];
+  }
 
   if (!clientContext.capabilities.workspace?.applyEdit) {
     log("CodeActions", "Client does not support workspace/applyEdit");
@@ -49,10 +53,10 @@ const extractString: CodeActionAnalyzer = async (
   if (identifiedString) {
     return [
       {
-        title: `Extract to config: ${identifiedString.value}`,
+        title: `Extract to Prefab config: ${identifiedString.value}`,
         kind: CodeActionKind.RefactorExtract,
         command: {
-          title: `Extract to config: ${identifiedString.value}`,
+          title: `Extract to Prefab config: ${identifiedString.value}`,
           command: "prefab.extractConfig",
           arguments: [
             document.uri,

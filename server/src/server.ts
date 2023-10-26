@@ -177,11 +177,6 @@ connection.onCompletion(async (params) => {
 });
 
 connection.onCodeAction(async (params) => {
-  if (!settings.alpha) {
-    log("Lifecycle", `onCodeAction: alpha disabled`);
-    return null;
-  }
-
   const document = getAnnotatedDocument(params.textDocument.uri);
 
   if (!document) {
@@ -199,6 +194,7 @@ connection.onCodeAction(async (params) => {
     clientContext,
     params,
     log,
+    settings,
   });
 });
 
