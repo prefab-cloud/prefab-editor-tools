@@ -17,13 +17,8 @@ const editConfig: CodeLensAnalyzer = async ({
   clientContext,
   document,
   log,
-  settings,
 }: CodeLensAnalyzerArgs) => {
   log("CodeLens", { editConfig: document.uri });
-
-  if (!settings.alpha) {
-    return [];
-  }
 
   if (
     !ensureSupportsCustomHandlers(requiredCustomHandlers, clientContext, log)
