@@ -74,6 +74,8 @@ const ReactSDK: SDK = {
   configGet: (key: string) => {
     return `get("${key}")`;
   },
+
+  detectProvidable: () => undefined,
 };
 
 export default ReactSDK;

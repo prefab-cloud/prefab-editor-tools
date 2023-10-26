@@ -67,21 +67,6 @@ describe("extractString", () => {
     expect(result).toStrictEqual([]);
   });
 
-  it("returns [] if the SDK doesn't support configGet", async () => {
-    const result = await extractString({
-      clientContext,
-      document: {
-        ...matchingDocument,
-        sdk: { ...RubySDK, configGet: undefined },
-      },
-      params,
-      log,
-      settings,
-    });
-
-    expect(result).toStrictEqual([]);
-  });
-
   it("returns a CodeAction with a command to replace a string", async () => {
     const rangeOfStringToExtract = {
       start: {

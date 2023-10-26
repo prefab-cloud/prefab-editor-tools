@@ -1,12 +1,14 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
-import { currentLine } from "../documentHelpers";
+import { allMatches, lineFromStartToPosition } from "../documentHelpers";
 import {
+  KeyLocation,
   MethodLocation,
   MethodType,
   MethodTypeKeys,
   MethodTypeValue,
 } from "../types";
+import { contains } from "../utils/positions";
 
 export type DetectMethodRegex = {
   [key in keyof typeof MethodType]: RegExp;
@@ -26,7 +28,7 @@ export const detectMethod = (
   position: Position,
   regexes: DetectMethodRegex
 ): MethodTypeValue | null => {
-  const line = currentLine(document, position);
+  const line = lineFromStartToPosition(document, position);
 
   if (!line) {
     return null;
@@ -43,6 +45,20 @@ export const detectMethod = (
   return null;
 };
 
+export const detectProvidable = (
+  document: TextDocument,
+  position: Position,
+  regex: RegExp
+): KeyLocation | undefined => {
+  const text = document.getText();
+
+  const matches = allMatches(document, text, regex);
+
+  return matches.filter((match) => {
+    return contains({ container: match.range, comparable: position });
+  })[0];
+};
+
 export const detectMethods = (
   document: TextDocument,
   regexes: DetectMethodsRegex
@@ -54,35 +70,11 @@ export const detectMethods = (
   METHOD_KEYS.forEach((methodType) => {
     const regex = regexes[methodType];
 
-    for (const match of text.matchAll(regex)) {
-      if (!match.index) {
-        continue;
-      }
+    const matches = allMatches(document, text, regex);
 
-      const key = match[1];
-
-      // NOTE: This has potential to be wrong if the key conflicts with the
-      // method, but that feels acceptable since it would only affect the
-      // positioning of the diagnostic
-      const offset = match[0].indexOf(key);
-
-      const keyRange = {
-        start: document.positionAt(match.index + offset),
-        end: document.positionAt(match.index + offset + key.length),
-      };
-
-      const range = {
-        start: document.positionAt(match.index),
-        end: document.positionAt(match.index + match[0].trim().length),
-      };
-
-      result.push({
-        type: methodType,
-        range,
-        key,
-        keyRange,
-      });
-    }
+    matches.forEach((match) => {
+      result.push({ ...match, type: methodType });
+    });
   });
 
   return result;

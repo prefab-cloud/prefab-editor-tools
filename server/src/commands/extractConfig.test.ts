@@ -2,7 +2,7 @@ import { describe, expect, it, mock } from "bun:test";
 import { type Connection } from "vscode-languageserver/node";
 
 import RubySDK from "../sdks/ruby";
-import { log,mkAnnotatedDocument, mockRequest } from "../testHelpers";
+import { log, mkAnnotatedDocument, mockRequest } from "../testHelpers";
 import { type ClientContext, CustomHandler } from "../types";
 import extractConfig from "./extractConfig";
 
@@ -57,7 +57,7 @@ describe("extractConfig", () => {
     expect(sendRequestMock).toHaveBeenCalledTimes(2);
     expect(sendRequestMock.mock.calls[0]).toStrictEqual([
       CustomHandler.getInput,
-      { title: "Enter the config name" },
+      { title: "Enter your new config name", defaultValue: undefined },
     ]);
     expect(sendRequestMock.mock.calls[1]).toStrictEqual([
       "workspace/applyEdit",
@@ -116,7 +116,7 @@ describe("extractConfig", () => {
     expect(sendRequestMock).toHaveBeenCalledTimes(1);
     expect(sendRequestMock.mock.calls[0]).toStrictEqual([
       CustomHandler.getInput,
-      { title: "Enter the config name" },
+      { title: "Enter your new config name", defaultValue: undefined },
     ]);
   });
 
@@ -155,7 +155,7 @@ describe("extractConfig", () => {
     expect(sendRequestMock).toHaveBeenCalledTimes(1);
     expect(sendRequestMock.mock.calls[0]).toStrictEqual([
       CustomHandler.getInput,
-      { title: "Enter the config name" },
+      { title: "Enter your new config name", defaultValue: undefined },
     ]);
 
     expect(errorMessageMock).toHaveBeenCalledTimes(1);
@@ -203,7 +203,7 @@ describe("extractConfig", () => {
     expect(sendRequestMock).toHaveBeenCalledTimes(1);
     expect(sendRequestMock.mock.calls[0]).toStrictEqual([
       CustomHandler.getInput,
-      { title: "Enter the config name" },
+      { title: "Enter your new config name", defaultValue: undefined },
     ]);
 
     expect(errorMessageMock).toHaveBeenCalledTimes(1);

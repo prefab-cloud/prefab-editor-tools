@@ -9,13 +9,15 @@ import {
 export const getInput = async ({
   connection,
   title,
+  defaultValue,
 }: {
   connection: Connection;
   title: string;
+  defaultValue?: string;
 }): Promise<undefined | string> => {
   const result: GetInputResponse = await connection.sendRequest(
     CustomHandler.getInput,
-    { title }
+    { title, defaultValue }
   );
 
   if (!result || !result.input) {

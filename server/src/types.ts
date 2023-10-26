@@ -59,11 +59,14 @@ export interface Logger {
 
 export type Documents = TextDocuments<TextDocument>;
 
-export type MethodLocation = {
-  type: MethodTypeValue;
+export type KeyLocation = {
   range: Range;
   key: string;
   keyRange: Range;
+};
+
+export type MethodLocation = KeyLocation & {
+  type: MethodTypeValue;
 };
 
 export const CompletionType = {
