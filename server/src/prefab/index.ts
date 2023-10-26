@@ -8,6 +8,7 @@ import {
   type PrefabConfig,
   prefabInit,
   prefabPromise,
+  userId,
 } from "./client";
 import { configValuesInEnvironments } from "./configValuesInEnvironments";
 import { filterForMissingKeys } from "./filterForMissingKeys";
@@ -48,4 +49,5 @@ export {
   type PrefabConfig,
   type Provided,
   suggestKey,
+  userId,
 };

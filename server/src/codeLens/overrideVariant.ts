@@ -1,4 +1,4 @@
-import { allKeys, overrides } from "../prefab";
+import { allKeys, overrides, userId } from "../prefab";
 import { CodeLensAnalyzer, CodeLensAnalyzerArgs, MethodType } from "../types";
 
 const overrideVariant: CodeLensAnalyzer = async ({
@@ -6,6 +6,10 @@ const overrideVariant: CodeLensAnalyzer = async ({
   log,
 }: CodeLensAnalyzerArgs) => {
   log("CodeLens", { overrideVariant: document.uri });
+
+  if (!userId) {
+    return [];
+  }
 
   const flagKeys = await allKeys();
 
