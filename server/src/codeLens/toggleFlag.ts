@@ -13,13 +13,8 @@ const toggleFlag: CodeLensAnalyzer = async ({
   clientContext,
   document,
   log,
-  settings,
 }: CodeLensAnalyzerArgs) => {
   log("CodeLens", { toggleFlag: document.uri });
-
-  if (!settings.alpha) {
-    return [];
-  }
 
   if (
     !ensureSupportsCustomHandlers(requiredCustomHandlers, clientContext, log)
