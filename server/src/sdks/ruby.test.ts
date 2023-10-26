@@ -343,4 +343,109 @@ describe("RubySDK", () => {
       writeStub(expected);
     });
   });
+
+  describe("detectProvidable", () => {
+    it("finds ENV vars", () => {
+      const document = mkDocument({
+        text: "a = ENV['FOO']\nb = ENV[\"BAZ\"]\nc = ENV['BAR']",
+      });
+
+      const position: Position = {
+        line: 0,
+        character: 12,
+      };
+
+      if (!RubySDK.detectProvidable) {
+        throw new Error("detectProvidable is not defined");
+      }
+
+      const actual = RubySDK.detectProvidable(document, position);
+
+      expect(actual).toStrictEqual({
+        range: {
+          start: {
+            line: 0,
+            character: 4,
+          },
+          end: {
+            line: 0,
+            character: 14,
+          },
+        },
+        key: "'FOO'",
+        keyRange: {
+          start: {
+            line: 0,
+            character: 8,
+          },
+          end: {
+            line: 0,
+            character: 13,
+          },
+        },
+      });
+
+      const anotherPosition: Position = {
+        line: 1,
+        character: 12,
+      };
+
+      const another = RubySDK.detectProvidable(document, anotherPosition);
+
+      expect(another).toStrictEqual({
+        range: {
+          start: {
+            line: 1,
+            character: 4,
+          },
+          end: {
+            line: 1,
+            character: 14,
+          },
+        },
+        key: '"BAZ"',
+        keyRange: {
+          start: {
+            line: 1,
+            character: 8,
+          },
+          end: {
+            line: 1,
+            character: 13,
+          },
+        },
+      });
+
+      const lastOnePosition: Position = {
+        line: 2,
+        character: 5,
+      };
+
+      const lastOne = RubySDK.detectProvidable(document, lastOnePosition);
+
+      expect(lastOne).toStrictEqual({
+        range: {
+          start: {
+            line: 2,
+            character: 4,
+          },
+          end: {
+            line: 2,
+            character: 14,
+          },
+        },
+        key: "'BAR'",
+        keyRange: {
+          start: {
+            line: 2,
+            character: 8,
+          },
+          end: {
+            line: 2,
+            character: 13,
+          },
+        },
+      });
+    });
+  });
 });

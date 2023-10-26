@@ -3,6 +3,7 @@ import {
   configValuesInEnvironments,
   getConfigFromApi,
   getEnvironmentsFromApi,
+  type Provided,
   urlFor,
   valueOf,
 } from "../prefab";
@@ -72,6 +73,13 @@ const values = async ({
             return `${weightedValue.weight}% \`${value}\``;
           })
           .join(", ");
+      }
+
+      // TODO: remove this check on `provided` is in the proto
+      if ("provided" in (value.rawValue ?? {})) {
+        valueStr = `\`${
+          (value.rawValue as Provided).provided.lookup
+        }\` via ENV`;
       }
 
       contents.push(

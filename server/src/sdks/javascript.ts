@@ -63,6 +63,8 @@ const JavascriptSDK: SDK = {
   configGet: (key: string) => {
     return `prefab.get("${key}")`;
   },
+
+  detectProvidable: () => undefined,
 };
 
 export default JavascriptSDK;

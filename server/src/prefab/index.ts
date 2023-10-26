@@ -18,8 +18,9 @@ import {
 } from "./getEnvironmentsFromApi";
 import { getProjectEnvFromApiKey } from "./getProjectEnvFromApiKey";
 import { keysForCompletionType } from "./keysForCompletionType";
+import { suggestKey } from "./suggestKey";
 import { urlFor } from "./urlFor";
-import { valueOf, valueOfToString } from "./valueOf";
+import { type Provided, valueOf, valueOfToString } from "./valueOf";
 import { valueToConfigValue } from "./valueToConfigValue";
 import { variantsForFeatureFlag } from "./variantsForFeatureFlag";
 
@@ -45,4 +46,6 @@ export {
   type Environment,
   type GetValue,
   type PrefabConfig,
+  type Provided,
+  suggestKey,
 };

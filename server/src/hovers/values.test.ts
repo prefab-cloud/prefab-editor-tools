@@ -91,6 +91,25 @@ const flagWithWeights = {
   configType: "FEATURE_FLAG",
 } as unknown as PrefabConfig;
 
+const providedConfig = {
+  id: "16983418120119478",
+  projectId: "103",
+  key: "favorite.shrek.movie",
+  rows: [
+    {
+      values: [
+        {
+          value: {
+            provided: { source: "ENV_VAR", lookup: "FAVORITE_SHREK_MOVIE" },
+          },
+        },
+      ],
+    },
+  ],
+  configType: "CONFIG",
+  draftid: "118",
+} as unknown as PrefabConfig;
+
 const settings = {} as Settings;
 const clientContext = {} as ClientContext;
 
@@ -156,6 +175,21 @@ describe("values", () => {
 
     expect(result?.contents).toBe(
       "- Development: [see rules](https://api.prefab.cloud/account/projects/2/flags/ex2.homepage-h1?environment=4)\n- Production: [see rules](https://api.prefab.cloud/account/projects/2/flags/ex2.homepage-h1?environment=2)\n- Staging: 75% `string 1`, 25% `string 2`"
+    );
+  });
+
+  it("can parse a provided config", async () => {
+    const result = await values({
+      log,
+      method: method(providedConfig),
+      settings,
+      clientContext,
+      providedGetConfigFromApi: () => Promise.resolve(providedConfig),
+      providedGetEnvironmentsFromApi: () => Promise.resolve(environments),
+    });
+
+    expect(result?.contents).toBe(
+      "- Default: `FAVORITE_SHREK_MOVIE` via ENV\n- Development: `[inherit]`\n- Production: `[inherit]`\n- Staging: `[inherit]`"
     );
   });
 });

@@ -1,6 +1,7 @@
 import createFlag from "./createFlag";
 import editConfig from "./editConfig";
 import extractConfig from "./extractConfig";
+import extractProvided from "./extractProvided";
 import overrideVariant from "./overrideVariant";
 import refreshDiagnostics from "./refreshDiagnostics";
 import toggleFlag from "./toggleFlag";
@@ -13,6 +14,7 @@ const commandLookup = Object.fromEntries(
     extractConfig,
     toggleFlag,
     editConfig,
+    extractProvided,
   ].map((cmd) => [cmd.command, cmd])
 );
 

@@ -62,6 +62,8 @@ const JavaSDK: SDK = {
   configGet: (key: string): string => {
     return `configClient.liveString("${key}").get()`;
   },
+
+  detectProvidable: () => undefined,
 };
 
 export default JavaSDK;

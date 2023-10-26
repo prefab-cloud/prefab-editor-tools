@@ -61,10 +61,16 @@ export function activate(context: ExtensionContext) {
 
   client.onRequest(
     "$/prefab.getInput",
-    async ({ title }: { title: string }) => {
+    async ({
+      title,
+      defaultValue,
+    }: {
+      title: string;
+      defaultValue: string | undefined;
+    }) => {
       const input = await window.showInputBox({
         prompt: title,
-        value: "",
+        value: defaultValue ?? "",
       });
 
       return {

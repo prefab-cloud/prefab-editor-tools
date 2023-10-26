@@ -1,5 +1,12 @@
 import { type ConfigValue, prefab } from "./client";
 
+// TODO: remove this when the proto includes `provided`
+export type Provided = {
+  provided: {
+    lookup: string;
+  };
+};
+
 export const valueOf = (value: ConfigValue): ReturnType<typeof prefab.get> => {
   switch (Object.keys(value)[0]) {
     case "string":
@@ -22,6 +29,8 @@ export const valueOf = (value: ConfigValue): ReturnType<typeof prefab.get> => {
           return `${value}: ${weightedValue.weight}%`;
         })
         .join(", ");
+    case "provided":
+      return (value as Provided).provided.lookup;
     default:
       throw new Error(`Unexpected value ${JSON.stringify(value)}`);
   }

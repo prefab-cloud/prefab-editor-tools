@@ -1,7 +1,7 @@
 import { Range, TextEdit } from "vscode-languageserver/node";
 
 import { post as defaultPost } from "../apiClient";
-import { allKeys as defaultAllKeys,getProjectEnvFromApiKey } from "../prefab";
+import { allKeys as defaultAllKeys, getProjectEnvFromApiKey } from "../prefab";
 import {
   type ExecutableCommand,
   type ExecutableCommandExecuteArgs,
@@ -41,7 +41,7 @@ const extractConfig: ExecutableCommand<Args> = {
     }
 
     const key = await getInput({
-      title: "Enter the config name",
+      title: "Enter your new config name",
       connection,
     });
 

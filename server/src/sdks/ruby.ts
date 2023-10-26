@@ -12,6 +12,7 @@ import {
   type DetectMethodRegex,
   detectMethods,
   type DetectMethodsRegex,
+  detectProvidable,
 } from "./common";
 import type { SDK } from "./detection";
 
@@ -24,6 +25,8 @@ const DETECT_METHOD_REGEXES: DetectMethodRegex = {
   IS_ENABLED: /prefab\.enabled\?\(?\s*["']$/,
   GET: /prefab\.get\(?\s*["']$/,
 };
+
+const DETECT_PROVIDABLE_REGEX = /ENV\[(["'].+["'])\]/g;
 
 const RubySDK: SDK = {
   name: "ruby",
@@ -64,6 +67,10 @@ const RubySDK: SDK = {
 
   configGet: (key: string): string => {
     return `$prefab.get("${key}")`;
+  },
+
+  detectProvidable: (document: TextDocument, position: Position) => {
+    return detectProvidable(document, position, DETECT_PROVIDABLE_REGEX);
   },
 };
 

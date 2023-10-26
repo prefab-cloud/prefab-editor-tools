@@ -60,6 +60,8 @@ const PythonSDK: SDK = {
   configGet: (key: string): string => {
     return `prefab.get("${key}")`;
   },
+
+  detectProvidable: () => undefined,
 };
 
 export default PythonSDK;
