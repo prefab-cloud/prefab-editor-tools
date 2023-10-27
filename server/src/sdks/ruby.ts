@@ -17,13 +17,13 @@ import {
 import type { SDK } from "./detection";
 
 const METHOD_REGEXES: DetectMethodsRegex = {
-  IS_ENABLED: /prefab\.enabled\?\(?\s*["']([^'\n]+?)\s*["']\s*\)?/gs,
-  GET: /prefab\.get\(?\s*["']([^'\n]+?)["']\)?\s*/gs,
+  IS_ENABLED: /[pP]refab\.enabled\?\(?\s*["']([^'\n]+?)\s*["']\s*\)?/gs,
+  GET: /[pP]refab\.get\(?\s*["']([^'\n]+?)["']\)?\s*/gs,
 };
 
 const DETECT_METHOD_REGEXES: DetectMethodRegex = {
-  IS_ENABLED: /prefab\.enabled\?\(?\s*["']$/,
-  GET: /prefab\.get\(?\s*["']$/,
+  IS_ENABLED: /[pP]refab\.enabled\?\(?\s*["']$/,
+  GET: /[pP]refab\.get\(?\s*["']$/,
 };
 
 const DETECT_PROVIDABLE_REGEX = /ENV\[(["'].+["'])\]/g;
