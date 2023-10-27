@@ -20,6 +20,14 @@ export const stringAtPosition = (
     if (char === "\n") {
       currentLine++;
       currentChar = 0;
+
+      // Only backticks can be multiline
+      if (currentWrapper !== "`") {
+        insideString = false;
+        currentWrapper = null;
+        startPosition = null;
+      }
+
       continue;
     }
 
