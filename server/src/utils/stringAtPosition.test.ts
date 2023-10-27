@@ -94,4 +94,38 @@ describe("stringAtPosition", () => {
       },
     });
   });
+
+  it("can identify a string in a document that is further in a doc than unbalanced quotes", () => {
+    const str = `# 'hello'
+
+      puts "Hello there" # you're a nice boy "\`
+
+      foo = "''\`bar\`'"`;
+
+    const result = stringAtPosition(str, {
+      line: 4,
+      character: 13,
+    });
+
+    expect(result).toStrictEqual({
+      value: `"''\`bar\`'"`,
+      range: {
+        start: { line: 4, character: 12 },
+        end: { line: 4, character: 22 },
+      },
+    });
+
+    const result2 = stringAtPosition(str, {
+      line: 4,
+      character: 15,
+    });
+
+    expect(result2).toStrictEqual({
+      value: `"''\`bar\`'"`,
+      range: {
+        start: { line: 4, character: 12 },
+        end: { line: 4, character: 22 },
+      },
+    });
+  });
 });
