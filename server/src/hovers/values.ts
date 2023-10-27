@@ -61,7 +61,7 @@ const values = async ({
         })`
       );
     } else {
-      let valueStr = `\`${value.value || INHERIT}\``;
+      let valueStr = `\`${value.value ?? INHERIT}\``;
 
       if (value.rawValue?.weightedValues) {
         valueStr = value.rawValue.weightedValues.weightedValues
