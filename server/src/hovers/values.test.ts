@@ -13,6 +13,17 @@ const defaultOnly = {
   configType: "CONFIG",
 } as unknown as PrefabConfig;
 
+const booleanConfig = {
+  id: "16980840357367557",
+  projectId: 3,
+  key: "boolean.config",
+  rows: [
+    { values: [{ value: { bool: false } }] },
+    { projectEnvId: "2", values: [{ value: { bool: true } }] },
+  ],
+  configType: "CONFIG",
+} as unknown as PrefabConfig;
+
 const flagWithWeights = {
   id: "16970304993831529",
   projectId: "2",
@@ -160,6 +171,21 @@ describe("values", () => {
 
     expect(result?.contents).toBe(
       "- Default: `this-is-default`\n- Development: `[inherit]`\n- Production: `[inherit]`\n- Staging: `[inherit]`"
+    );
+  });
+
+  it("renders values for booleanConfig config", async () => {
+    const result = await values({
+      log,
+      method: method(booleanConfig),
+      settings,
+      clientContext,
+      providedGetConfigFromApi: () => Promise.resolve(booleanConfig),
+      providedGetEnvironmentsFromApi: () => Promise.resolve(environments),
+    });
+
+    expect(result?.contents).toBe(
+      "- Default: `false`\n- Development: `[inherit]`\n- Production: `true`\n- Staging: `[inherit]`"
     );
   });
 
