@@ -192,6 +192,7 @@ export type HoverAnalyzer = (args: HoverAnalyzerArgs) => Promise<Hover | null>;
 
 export type DocumentAnnotations = {
   methodLocations: MethodLocation[];
+  version: TextDocument["version"];
 };
 
 export type AnnotatedDocument = {
