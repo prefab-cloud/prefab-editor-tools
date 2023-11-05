@@ -10,12 +10,17 @@ import type {
 export const documentAnnotations: Record<string, DocumentAnnotations> = {};
 
 export const annotateDocument = (document: TextDocument) => {
+  if (documentAnnotations[document.uri]?.version === document.version) {
+    return;
+  }
+
   const sdk = detectSDK(document);
 
   const methodLocations = sdk.detectMethods(document);
 
   documentAnnotations[document.uri] = {
     methodLocations,
+    version: document.version,
   };
 };
 

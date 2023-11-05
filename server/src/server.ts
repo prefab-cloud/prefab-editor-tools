@@ -98,10 +98,17 @@ connection.onDidChangeConfiguration((change) => {
   updateSettings(connection, change.settings.prefab, log, refresh);
 });
 
-const ready = async () => {
+const getReady = async () => {
   await getSettings(connection, log, refresh);
 
   await prefabPromise;
+};
+
+let readyPromise: Promise<void> | undefined;
+
+const ready = async () => {
+  readyPromise = readyPromise ?? getReady();
+  await readyPromise;
 };
 
 const getDocument = (
@@ -159,6 +166,8 @@ connection.onExecuteCommand(async (params) => {
 });
 
 connection.onCompletion(async (params) => {
+  await ready();
+
   const document = getAnnotatedDocument(params.textDocument.uri);
 
   if (!document) {
@@ -283,7 +292,17 @@ connection.onRequest(InlayHintRequest.method, async (params) => {
   return inlayHints;
 });
 
-const update = async (uri: string) => {
+const updates: Record<string, TextDocument["version"]> = {};
+
+const update = async (rawDocument: TextDocument) => {
+  const uri = rawDocument.uri;
+
+  if (updates[uri] === rawDocument.version) {
+    return;
+  }
+
+  updates[uri] = rawDocument.version;
+
   const document = getAnnotatedDocument(uri);
 
   if (!document) {
@@ -325,7 +344,7 @@ documents.onDidOpen(async (change) => {
 
   annotateDocument(getDocument(change.document));
 
-  update(change.document.uri);
+  update(change.document);
 });
 
 documents.onDidChangeContent(async (change) => {
@@ -333,7 +352,7 @@ documents.onDidChangeContent(async (change) => {
 
   annotateDocument(getDocument(change.document));
 
-  update(change.document.uri);
+  update(change.document);
 });
 
 const refresh = async () => {
@@ -341,7 +360,7 @@ const refresh = async () => {
 
   documents.all().forEach(async (doc) => {
     annotateDocument(getDocument(doc));
-    update(doc.uri);
+    update(doc);
   });
 };
 
