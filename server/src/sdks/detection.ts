@@ -11,25 +11,10 @@ import JavascriptSDK from "./javascript";
 import NodeSDK from "./node";
 import ReactSDK from "./react";
 import RubySDK from "./ruby";
-import YamlSDK from "./yaml";
 
-type SDK_NAMES =
-  | "ruby"
-  | "javascript"
-  | "react"
-  | "node"
-  | "java"
-  | "python"
-  | "yaml";
+type SDK_NAMES = "ruby" | "javascript" | "react" | "node" | "java" | "python";
 
-const SDKs: SDK[] = [
-  RubySDK,
-  NodeSDK,
-  JavascriptSDK,
-  ReactSDK,
-  JavaSDK,
-  YamlSDK,
-];
+const SDKs: SDK[] = [RubySDK, NodeSDK, JavascriptSDK, ReactSDK, JavaSDK];
 
 export type SDK = {
   name: SDK_NAMES | "no-applicable-sdk";
