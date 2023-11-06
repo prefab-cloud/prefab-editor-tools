@@ -36,6 +36,7 @@ const RubySDK: SDK = {
       document.languageId === "ruby" ||
       document.languageId === "eruby" ||
       document.languageId === "erb" ||
+      document.languageId === "yaml" ||
       document.uri.endsWith(".erb")
     );
   },
