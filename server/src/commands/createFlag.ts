@@ -8,12 +8,10 @@ type Dependencies = {
 
 const createBooleanFlag = async ({
   connection,
-  settings,
   key,
   log,
   refresh,
   post,
-  clientContext,
 }: ExecutableCommandExecuteArgs & {
   key: string;
   post: typeof defaultPost;
@@ -23,13 +21,10 @@ const createBooleanFlag = async ({
     defaultValue: false,
   };
 
-  const recipeRequest = await post({
-    settings,
-    requestPath: "/api/v1/config-recipes/feature-flag/boolean",
-    payload: recipePaylod,
-    log,
-    clientContext,
-  });
+  const recipeRequest = await post(
+    "/api/v1/config-recipes/feature-flag/boolean",
+    recipePaylod
+  );
 
   if (recipeRequest.status !== 200) {
     const error = await recipeRequest.text();
@@ -44,13 +39,7 @@ const createBooleanFlag = async ({
 
   log("Command", { payload });
 
-  const request = await post({
-    settings,
-    requestPath: "/api/v1/config/",
-    payload,
-    log,
-    clientContext,
-  });
+  const request = await post("/api/v1/config/", payload);
 
   if (request.status !== 200) {
     const error = await request.text();

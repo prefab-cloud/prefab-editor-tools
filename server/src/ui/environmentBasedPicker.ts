@@ -93,9 +93,7 @@ export const environmentBasedPicker = async ({
 }): Promise<(Choice & { config: PrefabConfig }) | undefined> => {
   const config = await getConfigFromApi({
     key,
-    settings,
     log,
-    clientContext,
   });
 
   if (!config) {
@@ -105,11 +103,7 @@ export const environmentBasedPicker = async ({
 
   log("UI", { [loggerName]: config });
 
-  const environments = await getEnvironmentsFromApi({
-    settings,
-    log,
-    clientContext,
-  });
+  const environments = await getEnvironmentsFromApi(log);
 
   log("UI", { [loggerName]: environments });
 

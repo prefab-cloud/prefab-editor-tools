@@ -1,8 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { URL } from "url";
 
-import { apiUrlOrDefault } from "./settings";
+import { Client } from "./prefab-common/src/api/client";
 import type { ClientContext, Logger, Settings } from "./types";
 
 const VS_EXTENSION_PATH = path.join(__dirname, "../../package.json");
@@ -16,79 +15,35 @@ const version = fs.existsSync(VS_EXTENSION_PATH)
   ? readVersion(VS_EXTENSION_PATH)
   : readVersion(STANDALONE_EXTENSION_PATH);
 
-export const uriAndHeaders = ({
+export const editorIdentifier = (clientContext: ClientContext) => {
+  return `${clientContext.editorIdentifier}-${version}`;
+};
+
+let apiClient: Client;
+
+export const updateApiClient = ({
   settings,
-  requestPath,
+  log,
   clientContext,
 }: {
   settings: Settings;
-  requestPath: string;
-  clientContext: ClientContext;
-}) => {
-  if (!settings.apiKey) {
-    throw new Error("No API key set. Please update your configuration.");
-  }
-
-  const token = Buffer.from(`authuser:${settings.apiKey}`).toString("base64");
-
-  const headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    Authorization: `Basic ${token}`,
-    "X-PrefabCloud-Client-Version": `prefab-lsp-${clientContext.editorIdentifier}-${version}`,
-  };
-
-  const uri = new URL(apiUrlOrDefault(settings));
-  uri.pathname = requestPath;
-
-  return { uri: uri.toString(), headers };
-};
-
-type Request = {
-  settings: Settings;
-  requestPath: string;
   log: Logger;
   clientContext: ClientContext;
-};
-
-export const get = async ({
-  settings,
-  requestPath,
-  log,
-  clientContext,
-}: Request) => {
-  const { uri, headers } = uriAndHeaders({
-    settings,
-    requestPath,
-    clientContext,
-  });
-
-  log("ApiClient", { GET: { uri } });
-
-  return fetch(uri, {
-    method: "GET",
-    headers,
+}) => {
+  apiClient = new Client({
+    apiUrl: settings.apiUrl,
+    apiKey: settings.apiKey,
+    clientIdentifier: editorIdentifier(clientContext),
+    log,
   });
 };
 
-export const post = async ({
-  settings,
-  requestPath,
-  payload,
-  log,
-  clientContext,
-}: Request & { payload: unknown }) => {
-  const { uri, headers } = uriAndHeaders({
-    settings,
-    requestPath,
-    clientContext,
-  });
-
-  log("ApiClient", { POST: { uri, payload } });
-
-  return fetch(uri, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(payload),
-  });
+export const get = async (requestPath: string) => {
+  return apiClient.get(requestPath);
 };
+
+export const post = async (requestPath: string, payload: unknown) => {
+  return apiClient.post(requestPath, payload);
+};
+
+export { Client, apiClient };

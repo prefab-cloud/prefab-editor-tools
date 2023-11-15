@@ -1,12 +1,12 @@
-import { beforeEach, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it, Mock } from "bun:test";
 
 import {
   cannedEvaluationResponse,
   clearLog,
   log,
-  mockRequest,
+  mockClient,
 } from "../testHelpers";
-import { ClientContext, MethodType } from "../types";
+import { MethodType } from "../types";
 import evaluations from "./evaluations";
 
 const range = {
@@ -21,8 +21,6 @@ const keyRange = {
 
 const position = { line: 3, character: 20 };
 
-const clientContext = {} as ClientContext;
-
 describe("evaluations", () => {
   beforeEach(() => {
     clearLog();
@@ -36,16 +34,12 @@ describe("evaluations", () => {
       keyRange,
     };
 
-    const providedGet = mockRequest(cannedEvaluationResponse);
-
-    const settings = {};
+    const providedClient = mockClient({ get: cannedEvaluationResponse });
 
     const result = await evaluations({
-      settings,
-      clientContext,
       log,
-      providedGet,
       method,
+      providedClient,
     });
 
     expect(result).toStrictEqual({
@@ -60,14 +54,10 @@ describe("evaluations", () => {
       },
     });
 
-    expect(providedGet).toHaveBeenCalledTimes(1);
-    expect(providedGet.mock.calls[0]).toStrictEqual([
-      {
-        log,
-        clientContext,
-        requestPath: "/api/v1/evaluation-stats/redis.connection-string",
-        settings,
-      },
+    expect(providedClient.get).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((providedClient.get as Mock<any>).mock.calls[0]).toStrictEqual([
+      "/api/v1/evaluation-stats/redis.connection-string",
     ]);
   });
 
@@ -79,12 +69,8 @@ describe("evaluations", () => {
       keyRange,
     };
 
-    const result = await evaluations({
-      settings: {},
-      clientContext,
-      log,
-      method,
-      providedGet: mockRequest({
+    const providedClient = mockClient({
+      get: {
         status: 200,
         json: {
           key: "james.test1",
@@ -95,18 +81,17 @@ describe("evaluations", () => {
             "108": {
               name: "Production",
               total: 3,
-              counts: [
-                {
-                  configValue: {
-                    int: 1,
-                  },
-                  count: 3,
-                },
-              ],
+              counts: [{ configValue: { int: 1 }, count: 3 }],
             },
           },
         },
-      }),
+      },
+    });
+
+    const result = await evaluations({
+      log,
+      method,
+      providedClient,
     });
 
     expect(result).toStrictEqual({

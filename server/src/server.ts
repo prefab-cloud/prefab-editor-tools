@@ -10,6 +10,7 @@ import {
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
+import { updateApiClient } from "./apiClient";
 import { runAllCodeActions } from "./codeActions";
 import { runAllCodeLens } from "./codeLens";
 import { commandLookup, commands } from "./commands";
@@ -40,6 +41,10 @@ let canRefreshInlayHints = false;
 let clientContext: ClientContext;
 
 const log = makeLogger(connection);
+
+const refreshApiClient = async () => {
+  updateApiClient({ settings, log, clientContext });
+};
 
 connection.onInitialize((params) => {
   log("Lifecycle", { onInitialize: params });
@@ -95,11 +100,17 @@ connection.onInitialize((params) => {
 });
 
 connection.onDidChangeConfiguration((change) => {
-  updateSettings(connection, change.settings.prefab, log, refresh);
+  updateSettings(
+    connection,
+    change.settings.prefab,
+    log,
+    refresh,
+    refreshApiClient
+  );
 });
 
 const getReady = async () => {
-  await getSettings(connection, log, refresh);
+  await getSettings(connection, log, refresh, refreshApiClient);
 
   await prefabPromise;
 };
@@ -261,7 +272,6 @@ connection.onHover(async (params) => {
     settings,
     document,
     position: params.position,
-    clientContext,
     log,
   });
 

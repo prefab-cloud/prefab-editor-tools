@@ -1,23 +1,16 @@
 import { get } from "../apiClient";
-import { ClientContext, Logger, Settings } from "../types";
+import { Logger } from "../types";
 
 export type Environment = {
   id: string;
   name: string;
 };
 
-export const getEnvironmentsFromApi = async ({
-  settings,
-  log,
-  clientContext,
-}: {
-  settings: Settings;
-  log: Logger;
-  clientContext: ClientContext;
-}): Promise<Environment[]> => {
+export const getEnvironmentsFromApi = async (
+  log: Logger
+): Promise<Environment[]> => {
   const requestPath = "/api/v1/project-environments";
-
-  const response = await get({ settings, log, requestPath, clientContext });
+  const response = await get(requestPath);
 
   if (response.status !== 200) {
     log.error("PrefabClient", {

@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "types": ["bun-types"]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", ".vscode-test", "*.test.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["src/prefab-common/**/*.ts"]
 }

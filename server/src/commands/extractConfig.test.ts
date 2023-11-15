@@ -77,17 +77,12 @@ describe("extractConfig", () => {
 
     expect(post).toHaveBeenCalledTimes(1);
     expect(post.mock.calls[0]).toStrictEqual([
+      "/api/v1/config/",
       {
-        log,
-        clientContext,
-        payload: {
-          configType: "CONFIG",
-          key: "some.key",
-          projectId: "2",
-          rows: [{ values: [{ value: { string: "some text here" } }] }],
-        },
-        requestPath: "/api/v1/config/",
-        settings: { apiKey },
+        configType: "CONFIG",
+        key: "some.key",
+        projectId: "2",
+        rows: [{ values: [{ value: { string: "some text here" } }] }],
       },
     ]);
 

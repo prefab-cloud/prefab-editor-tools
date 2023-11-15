@@ -1,5 +1,5 @@
-import { CompletionType, CompletionTypeValue,ConfigType } from "../types";
-import { type PrefabConfig,prefabPromise } from "./client";
+import { type PrefabConfig, prefabPromise } from "../prefab";
+import { CompletionType, CompletionTypeValue, ConfigType } from "../types";
 import { getAllConfigs } from "./getAllConfigs";
 
 const isBooleanConfig = (config: PrefabConfig) => {

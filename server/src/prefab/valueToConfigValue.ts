@@ -1,3 +1,4 @@
+import { type ConfigValue, type PrefabConfig } from "../prefab";
 import {
   isUnretryableError,
   type RetryableError,
@@ -5,7 +6,6 @@ import {
   type UnRetryableError,
   unretryableError,
 } from "../types";
-import { type ConfigValue, type PrefabConfig } from "./client";
 
 type ConfigValueType = "string" | "stringList" | "int" | "bool" | "double";
 
