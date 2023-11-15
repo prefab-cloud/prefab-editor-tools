@@ -26,7 +26,7 @@ const extractProvided: ExecutableCommand<Args> = {
   command,
 
   execute: async (args: Args) => {
-    const { settings, log, document, connection, clientContext, params } = args;
+    const { settings, log, document, connection, params } = args;
 
     log("Command", { extractProvided: params });
 
@@ -73,13 +73,7 @@ const extractProvided: ExecutableCommand<Args> = {
 
     const post = args.post ?? defaultPost;
 
-    const request = await post({
-      settings,
-      requestPath: "/api/v1/config/",
-      payload,
-      log,
-      clientContext,
-    });
+    const request = await post("/api/v1/config/", payload);
 
     if (request.status !== 200) {
       connection.window.showErrorMessage(

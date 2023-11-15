@@ -1,6 +1,6 @@
 import { Hover } from "vscode-languageserver/node";
 
-import { get } from "../apiClient";
+import { apiClient } from "../apiClient";
 import { methodAtPosition } from "../documentAnnotations";
 import {
   filterForMissingKeys as defaultFilterForMissingKeys,
@@ -15,7 +15,7 @@ import values from "./values";
 const hovers: HoverAnalyzer[] = [linkTitle, values, evaluations];
 
 type Dependencies = {
-  providedGet?: typeof get;
+  providedClient?: typeof apiClient;
   providedUrlFor?: typeof urlFor;
 };
 

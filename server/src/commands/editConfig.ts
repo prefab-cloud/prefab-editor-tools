@@ -69,13 +69,7 @@ const editConfig: ExecutableCommand<ExecutableCommandExecuteArgs> = {
 
     const requestPath = "/api/v1/config/set-default/";
 
-    const setResponse = await post({
-      settings,
-      log,
-      requestPath,
-      clientContext,
-      payload,
-    });
+    const setResponse = await post(requestPath, payload);
 
     if (setResponse.status !== 200) {
       connection.window.showErrorMessage("Failed to edit config.");

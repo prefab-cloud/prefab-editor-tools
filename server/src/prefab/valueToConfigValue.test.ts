@@ -1,7 +1,7 @@
-import { describe,expect, it } from "bun:test";
+import { describe, expect, it } from "bun:test";
 
+import { type ConfigValue, type PrefabConfig } from "../prefab";
 import { retryableError } from "../types";
-import { type ConfigValue,type PrefabConfig } from "./client";
 import { valueToConfigValue } from "./valueToConfigValue";
 
 const changedBy = {

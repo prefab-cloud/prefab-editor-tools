@@ -1,5 +1,5 @@
 import { post } from "../apiClient";
-import { overrides, valueOfToString,variantsForFeatureFlag } from "../prefab";
+import { overrides, valueOfToString, variantsForFeatureFlag } from "../prefab";
 import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
 import { pickOption } from "../ui/pickOption";
 import extractKey from "./extractKey";
@@ -7,7 +7,7 @@ import extractKey from "./extractKey";
 const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
   command: "prefab.overrideVariant",
   execute: async (args: ExecutableCommandExecuteArgs) => {
-    const { clientContext, connection, log, settings, params, refresh } = args;
+    const { clientContext, connection, log, params, refresh } = args;
     log("Command", { overrideVariant: params });
 
     const key = extractKey(params.arguments);
@@ -41,15 +41,9 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
     if (removeCopy && result === removeCopy) {
       log("Command", "Remove variant ");
 
-      const request = await post({
-        requestPath: "/api/v1/config/remove-variant",
-        settings,
-        payload: {
-          configKey: key,
-          variant: override,
-        },
-        log,
-        clientContext,
+      const request = await post("/api/v1/config/remove-variant", {
+        configKey: key,
+        variant: override,
       });
 
       if (request.status !== 200) {
@@ -73,15 +67,9 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
 
       log("Command", { selectedVariant: variant });
 
-      const request = await post({
-        requestPath: "/api/v1/config/assign-variant",
-        settings,
-        payload: {
-          configKey: key,
-          variant,
-        },
-        log,
-        clientContext,
+      const request = await post("/api/v1/config/assign-variant", {
+        configKey: key,
+        variant,
       });
 
       if (request.status !== 200) {

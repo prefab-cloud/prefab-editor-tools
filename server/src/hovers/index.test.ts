@@ -1,10 +1,11 @@
 import { describe, expect, it } from "bun:test";
 
+import { updateApiClient } from "../apiClient";
 import {
   cannedEvaluationResponse,
   log,
   mkAnnotatedDocument,
-  mockRequest,
+  mockClient,
 } from "../testHelpers";
 import { type ClientContext, MethodType } from "../types";
 import { runAllHovers } from "./index";
@@ -40,15 +41,22 @@ describe("runAllHovers", () => {
       ],
     });
 
-    const result = await runAllHovers({
-      settings: { apiKey: "123-P3-E5-SDK-..." },
+    const settings = { apiKey: "123-P3-E5-SDK-..." };
+
+    updateApiClient({
+      settings,
+      log,
       clientContext: {} as ClientContext,
+    });
+
+    const result = await runAllHovers({
+      settings,
       document,
       position,
       log,
       filterForMissingKeys,
       providedUrlFor: () => url,
-      providedGet: mockRequest(cannedEvaluationResponse),
+      providedClient: mockClient({ get: cannedEvaluationResponse }),
     });
 
     expect(result).toStrictEqual({

@@ -26,7 +26,8 @@ const SUPPORTED_FILES = [".env", ".envrc", ".env.local"];
 const getSettings = async (
   connection: Connection,
   log: Logger,
-  refresh: () => Promise<void>
+  refresh: () => Promise<void>,
+  refreshApiClient: () => void
 ) => {
   const workspaceFolders = await connection.workspace.getWorkspaceFolders();
 
@@ -61,14 +62,15 @@ const getSettings = async (
     log("Settings", "Using API key from settings");
   }
 
-  updateSettings(connection, newSettings, log, refresh);
+  updateSettings(connection, newSettings, log, refresh, refreshApiClient);
 };
 
 const updateSettings = (
   connection: Connection,
   newSettings: Partial<Settings>,
   log: Logger,
-  refresh: () => Promise<void>
+  refresh: () => Promise<void>,
+  refreshApiClient: () => void
 ) => {
   if ((!newSettings || !newSettings.apiKey) && !settings.apiKey) {
     connection.console.error("No API key set. Please update your settings.");
@@ -80,8 +82,13 @@ const updateSettings = (
   }
 
   if (settings.apiKey !== newSettings.apiKey) {
+    settings = newSettings;
+
+    refreshApiClient();
+
     if (newSettings.apiKey) {
       log("Settings", "Initializing internal Prefab client");
+
       prefabInit({
         apiKey: newSettings.apiKey,
         apiUrl: newSettings.apiUrl,
@@ -92,9 +99,9 @@ const updateSettings = (
         },
       });
     }
+  } else {
+    settings = newSettings;
   }
-
-  settings = newSettings;
 
   return settings;
 };

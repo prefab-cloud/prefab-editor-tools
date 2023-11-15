@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 
 import { type PrefabConfig } from "../prefab";
 import { log } from "../testHelpers";
-import { type ClientContext, MethodType, type Settings } from "../types";
+import { MethodType, type Settings } from "../types";
 import values from "./values";
 
 const defaultOnly = {
@@ -122,7 +122,6 @@ const providedConfig = {
 } as unknown as PrefabConfig;
 
 const settings = {} as Settings;
-const clientContext = {} as ClientContext;
 
 const keyRange = {
   start: { line: 3, character: 20 },
@@ -164,7 +163,6 @@ describe("values", () => {
       log,
       method: method(defaultOnly),
       settings,
-      clientContext,
       providedGetConfigFromApi: () => Promise.resolve(defaultOnly),
       providedGetEnvironmentsFromApi: () => Promise.resolve(environments),
     });
@@ -179,7 +177,6 @@ describe("values", () => {
       log,
       method: method(booleanConfig),
       settings,
-      clientContext,
       providedGetConfigFromApi: () => Promise.resolve(booleanConfig),
       providedGetEnvironmentsFromApi: () => Promise.resolve(environments),
     });
@@ -194,13 +191,12 @@ describe("values", () => {
       log,
       method: method(flagWithWeights),
       settings,
-      clientContext,
       providedGetConfigFromApi: () => Promise.resolve(flagWithWeights),
       providedGetEnvironmentsFromApi: () => Promise.resolve(environments),
     });
 
     expect(result?.contents).toBe(
-      "- Development: [see rules](https://api.prefab.cloud/account/projects/2/flags/ex2.homepage-h1?environment=4)\n- Production: [see rules](https://api.prefab.cloud/account/projects/2/flags/ex2.homepage-h1?environment=2)\n- Staging: 75% `string 1`, 25% `string 2`"
+      "- Development: [see rules](https://app.prefab.cloud/account/projects/2/flags/ex2.homepage-h1?environment=4)\n- Production: [see rules](https://app.prefab.cloud/account/projects/2/flags/ex2.homepage-h1?environment=2)\n- Staging: 75% `string 1`, 25% `string 2`"
     );
   });
 
@@ -209,7 +205,6 @@ describe("values", () => {
       log,
       method: method(providedConfig),
       settings,
-      clientContext,
       providedGetConfigFromApi: () => Promise.resolve(providedConfig),
       providedGetEnvironmentsFromApi: () => Promise.resolve(environments),
     });

@@ -21,15 +21,7 @@ const extractConfig: ExecutableCommand<Args> = {
   command,
 
   execute: async (args: Args) => {
-    const {
-      clientContext,
-      connection,
-      document,
-      log,
-      params,
-      refresh,
-      settings,
-    } = args;
+    const { connection, document, log, params, refresh, settings } = args;
 
     log("Command", `extractConfig: ${JSON.stringify(params)}`);
 
@@ -68,13 +60,7 @@ const extractConfig: ExecutableCommand<Args> = {
         rows: [{ values: [{ value: { string: withoutQuotes } }] }],
       };
 
-      const request = await post({
-        settings,
-        requestPath: "/api/v1/config/",
-        payload,
-        log,
-        clientContext,
-      });
+      const request = await post("/api/v1/config/", payload);
 
       if (request.status !== 200) {
         connection.window.showErrorMessage(

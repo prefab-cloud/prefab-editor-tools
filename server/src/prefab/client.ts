@@ -1,5 +1,6 @@
 import { Prefab } from "@prefab-cloud/prefab-cloud-node";
 
+import type { ConfigValue } from "../prefab-common/src/types";
 import { apiUrlOrDefault } from "../settings";
 import { Logger } from "../types";
 import { getAllConfigs } from "./getAllConfigs";
@@ -9,16 +10,6 @@ export let prefabPromise: Promise<void> = new Promise(() => {});
 export let userId: string;
 export let overrides: Record<string, ConfigValue> = {};
 export let overrideKeys: string[] = [];
-
-export type PrefabConfig = Exclude<ReturnType<typeof prefab.raw>, undefined>;
-
-export type GetValue = Exclude<ReturnType<typeof prefab.get>, undefined>;
-
-export type ConfigRow = PrefabConfig["rows"][0];
-
-export type ConditionalValue = ConfigRow["values"][0];
-
-export type ConfigValue = Exclude<ConditionalValue["value"], undefined>;
 
 const DEFAULT_CONTEXT_USER_ID_NAMESPACE = "prefab-api-key";
 const DEFAULT_CONTEXT_USER_ID = "user-id";

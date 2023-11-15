@@ -1,11 +1,18 @@
+import type {
+  ConfigValue,
+  GetValue,
+  PrefabConfig,
+} from "../prefab-common/src/types";
+import {
+  type Provided,
+  valueOf,
+  valueOfToString,
+} from "../prefab-common/src/valueOf";
 import { allKeys } from "./allKeys";
 import {
-  type ConfigValue,
-  type GetValue,
   overrideKeys,
   overrides,
   prefab,
-  type PrefabConfig,
   prefabInit,
   prefabPromise,
   userId,
@@ -21,7 +28,6 @@ import { getProjectEnvFromApiKey } from "./getProjectEnvFromApiKey";
 import { keysForCompletionType } from "./keysForCompletionType";
 import { suggestKey } from "./suggestKey";
 import { urlFor } from "./urlFor";
-import { type Provided, valueOf, valueOfToString } from "./valueOf";
 import { valueToConfigValue } from "./valueToConfigValue";
 import { variantsForFeatureFlag } from "./variantsForFeatureFlag";
 

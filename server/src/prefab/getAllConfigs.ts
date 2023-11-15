@@ -1,4 +1,4 @@
-import { prefab, type PrefabConfig } from "./client";
+import { prefab, type PrefabConfig } from "../prefab";
 
 export const getAllConfigs = (): PrefabConfig[] => {
   const configs: PrefabConfig[] = [];

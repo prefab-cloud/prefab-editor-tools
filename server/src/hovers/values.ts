@@ -18,18 +18,14 @@ const values = async ({
   log,
   method,
   settings,
-  clientContext,
   providedGetConfigFromApi,
   providedGetEnvironmentsFromApi,
-}: Pick<HoverAnalyzerArgs, "log" | "method" | "settings" | "clientContext"> &
-  Dependencies) => {
+}: Pick<HoverAnalyzerArgs, "log" | "method" | "settings"> & Dependencies) => {
   const { key, keyRange } = method;
 
   const config = await (providedGetConfigFromApi ?? getConfigFromApi)({
     key,
-    settings,
     log,
-    clientContext,
   });
 
   if (!config) {
@@ -41,11 +37,7 @@ const values = async ({
 
   const environments = await (
     providedGetEnvironmentsFromApi ?? getEnvironmentsFromApi
-  )({
-    settings,
-    log,
-    clientContext,
-  });
+  )(log);
 
   const values = configValuesInEnvironments(config, environments, log);
 

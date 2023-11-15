@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
+import { Client } from "./prefab-common/src/api/client";
 import { NullSDK } from "./sdks/detection";
 import { AnnotatedDocument, Logger } from "./types";
 
@@ -59,7 +60,7 @@ export const getLoggedItems = () => {
   return loggedItems;
 };
 
-type SimpleResponse = {
+export type SimpleResponse = {
   status: number;
   json: Record<string, unknown>;
   statusText?: string;
@@ -85,6 +86,29 @@ export const mockRequest = (
       json: async () => request.json,
     } as unknown as Response;
   });
+};
+
+export const mockClient = ({
+  get,
+  post,
+}: {
+  get?: SimpleResponse | SimpleResponse[];
+  post?: SimpleResponse | SimpleResponse[];
+}) => {
+  const client = {
+    get: () => {},
+    post: () => {},
+  };
+
+  if (get) {
+    client.get = mockRequest(get);
+  }
+
+  if (post) {
+    client.post = mockRequest(post);
+  }
+
+  return client as unknown as Client;
 };
 
 export const lastItem = (array: unknown[]) => {
