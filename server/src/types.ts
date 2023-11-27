@@ -79,13 +79,6 @@ export const CompletionType = {
 export type CompletionTypeValue =
   (typeof CompletionType)[keyof typeof CompletionType];
 
-export const ConfigType = {
-  CONFIG: 1,
-  FEATURE_FLAG: 2,
-};
-
-export type ConfigTypeValue = (typeof ConfigType)[keyof typeof ConfigType];
-
 export const MethodType = {
   GET: "GET",
   IS_ENABLED: "IS_ENABLED",

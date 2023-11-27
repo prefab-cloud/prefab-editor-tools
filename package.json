@@ -46,6 +46,7 @@
     "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
     "tsc-server": "cd server && tsc --watch --noEmit",
     "test": "bun test",
+    "update-submodule": "git submodule update --remote server/src/prefab-common",
     "prepare": "husky install"
   },
   "devDependencies": {

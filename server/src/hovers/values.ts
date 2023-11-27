@@ -1,3 +1,4 @@
+import { apiClient } from "../apiClient";
 import { DEFAULT_ENVIRONMENT_NAME, INHERIT } from "../constants";
 import {
   configValuesInEnvironments,
@@ -24,8 +25,9 @@ const values = async ({
   const { key, keyRange } = method;
 
   const config = await (providedGetConfigFromApi ?? getConfigFromApi)({
+    client: apiClient,
     key,
-    log,
+    errorLog: log,
   });
 
   if (!config) {
@@ -37,7 +39,7 @@ const values = async ({
 
   const environments = await (
     providedGetEnvironmentsFromApi ?? getEnvironmentsFromApi
-  )(log);
+  )({ client: apiClient, log });
 
   const values = configValuesInEnvironments(config, environments, log);
 

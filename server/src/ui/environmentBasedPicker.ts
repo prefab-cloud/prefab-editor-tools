@@ -1,5 +1,6 @@
 import { Connection } from "vscode-languageserver/node";
 
+import { apiClient } from "../apiClient";
 import { DEFAULT_ENVIRONMENT_NAME, INHERIT } from "../constants";
 import {
   configValuesInEnvironments,
@@ -92,8 +93,9 @@ export const environmentBasedPicker = async ({
   connection: Connection;
 }): Promise<(Choice & { config: PrefabConfig }) | undefined> => {
   const config = await getConfigFromApi({
+    client: apiClient,
     key,
-    log,
+    errorLog: log,
   });
 
   if (!config) {
@@ -103,7 +105,7 @@ export const environmentBasedPicker = async ({
 
   log("UI", { [loggerName]: config });
 
-  const environments = await getEnvironmentsFromApi(log);
+  const environments = await getEnvironmentsFromApi({ client: apiClient, log });
 
   log("UI", { [loggerName]: environments });
 

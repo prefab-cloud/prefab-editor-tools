@@ -1,8 +1,16 @@
+import { getConfigFromApi } from "../prefab-common/src/api/getConfigFromApi";
+import {
+  type Environment,
+  getEnvironmentsFromApi,
+} from "../prefab-common/src/api/getEnvironmentsFromApi";
+import { configValuesInEnvironments } from "../prefab-common/src/configValuesInEnvironments";
+import { getProjectEnvFromApiKey } from "../prefab-common/src/getProjectEnvFromApiKey";
 import type {
   ConfigValue,
   GetValue,
   PrefabConfig,
 } from "../prefab-common/src/types";
+import { urlFor as rawUrlFor, urlForKey } from "../prefab-common/src/urlFor";
 import {
   type Provided,
   valueOf,
@@ -17,19 +25,22 @@ import {
   prefabPromise,
   userId,
 } from "./client";
-import { configValuesInEnvironments } from "./configValuesInEnvironments";
 import { filterForMissingKeys } from "./filterForMissingKeys";
-import { getConfigFromApi } from "./getConfigFromApi";
-import {
-  type Environment,
-  getEnvironmentsFromApi,
-} from "./getEnvironmentsFromApi";
-import { getProjectEnvFromApiKey } from "./getProjectEnvFromApiKey";
 import { keysForCompletionType } from "./keysForCompletionType";
 import { suggestKey } from "./suggestKey";
-import { urlFor } from "./urlFor";
 import { valueToConfigValue } from "./valueToConfigValue";
 import { variantsForFeatureFlag } from "./variantsForFeatureFlag";
+
+const urlFor = (
+  config: PrefabConfig | string,
+  settings: { apiUrl?: string }
+) => {
+  if (typeof config === "string") {
+    return urlForKey(prefab, settings.apiUrl, config);
+  }
+
+  return rawUrlFor(settings.apiUrl, config);
+};
 
 export {
   allKeys,
