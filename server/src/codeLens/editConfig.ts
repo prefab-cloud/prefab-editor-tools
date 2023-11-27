@@ -1,8 +1,8 @@
 import { allKeys, prefab } from "../prefab";
+import { ConfigType } from "../prefab-common/src/types";
 import {
   CodeLensAnalyzer,
   CodeLensAnalyzerArgs,
-  ConfigType,
   CustomHandler,
   MethodType,
 } from "../types";
