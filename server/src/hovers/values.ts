@@ -4,7 +4,6 @@ import {
   configValuesInEnvironments,
   getConfigFromApi,
   getEnvironmentsFromApi,
-  type Provided,
   urlFor,
   valueOf,
 } from "../prefab";
@@ -69,11 +68,13 @@ const values = async ({
           .join(", ");
       }
 
-      // TODO: remove this check on `provided` is in the proto
-      if ("provided" in (value.rawValue ?? {})) {
-        valueStr = `\`${
-          (value.rawValue as Provided).provided.lookup
-        }\` via ENV`;
+      log("Hover", { valueStr });
+
+      if (value.rawValue?.provided?.source?.toString() === "ENV_VAR") {
+        if (value.rawValue.confidential) {
+          valueStr = `\`${value.rawValue.provided.lookup}\``;
+        }
+        valueStr += ` via ENV`;
       }
 
       contents.push(

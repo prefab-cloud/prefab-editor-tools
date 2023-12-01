@@ -9,13 +9,10 @@ import type {
   ConfigValue,
   GetValue,
   PrefabConfig,
+  Provided,
 } from "../prefab-common/src/types";
 import { urlFor as rawUrlFor, urlForKey } from "../prefab-common/src/urlFor";
-import {
-  type Provided,
-  valueOf,
-  valueOfToString,
-} from "../prefab-common/src/valueOf";
+import { valueOf, valueOfToString } from "../prefab-common/src/valueOf";
 import { allKeys } from "./allKeys";
 import {
   overrideKeys,
