@@ -304,10 +304,10 @@ connection.onRequest(InlayHintRequest.method, async (params) => {
 
 const updates: Record<string, TextDocument["version"]> = {};
 
-const update = async (rawDocument: TextDocument) => {
+const update = async (rawDocument: TextDocument, force: boolean) => {
   const uri = rawDocument.uri;
 
-  if (updates[uri] === rawDocument.version) {
+  if (!force && updates[uri] === rawDocument.version) {
     return;
   }
 
@@ -354,7 +354,7 @@ documents.onDidOpen(async (change) => {
 
   annotateDocument(getDocument(change.document));
 
-  update(change.document);
+  update(change.document, false);
 });
 
 documents.onDidChangeContent(async (change) => {
@@ -362,7 +362,7 @@ documents.onDidChangeContent(async (change) => {
 
   annotateDocument(getDocument(change.document));
 
-  update(change.document);
+  update(change.document, false);
 });
 
 const refresh = async () => {
@@ -370,7 +370,7 @@ const refresh = async () => {
 
   documents.all().forEach(async (doc) => {
     annotateDocument(getDocument(doc));
-    update(doc);
+    update(doc, true);
   });
 };
 
