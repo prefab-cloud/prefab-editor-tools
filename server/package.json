@@ -11,7 +11,7 @@
     "prefab-ls": "./out/cli"
   },
   "dependencies": {
-    "@prefab-cloud/prefab-cloud-node": "^0.1.5",
+    "@prefab-cloud/prefab-cloud-node": "^0.1.9",
     "vscode-languageserver": "^8.1.0",
     "vscode-languageserver-textdocument": "^1.0.8"
   },
