@@ -1,7 +1,7 @@
 {
   "name": "@prefab-cloud/prefab-cloud-language-server",
   "description": "Language Server for Prefab Config, Feature flags, and Log Levels",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "author": "Jeffrey Chupp",
   "license": "MIT",
   "engines": {
