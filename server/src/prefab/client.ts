@@ -1,4 +1,5 @@
 import { Prefab } from "@prefab-cloud/prefab-cloud-node";
+import { type Connection } from "vscode-languageserver/node";
 
 import type { ConfigValue } from "../prefab-common/src/types";
 import { apiUrlOrDefault } from "../settings";
@@ -29,7 +30,7 @@ const internalOnUpdate = (log: Logger) => {
   if (!userId) {
     log.error(
       "PrefabClient",
-      "No user ID found. Overrides and other user-specific functionality will not be enabled."
+      "No user ID found. Overrides and other user-specific functionality will not be enabled.",
     );
     return;
   }
@@ -66,11 +67,13 @@ export const prefabInit = ({
   apiKey,
   apiUrl,
   log,
+  connection,
   onUpdate,
 }: {
   apiKey: string;
   apiUrl: string | undefined;
   log: Logger;
+  connection: Connection;
   onUpdate: () => void;
 }) => {
   log("PrefabClient", "Initializing Prefab client");
@@ -92,6 +95,10 @@ export const prefabInit = ({
       },
     });
 
-    prefab.init();
+    prefab.init().catch((e) => {
+      connection.window.showErrorMessage(
+        "Prefab Error: " + e.toString().replace(/Error: /, ""),
+      );
+    });
   });
 };

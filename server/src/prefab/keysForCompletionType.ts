@@ -4,7 +4,9 @@ import { CompletionType, CompletionTypeValue } from "../types";
 import { getAllConfigs } from "./getAllConfigs";
 
 const isBooleanConfig = (config: PrefabConfig) => {
-  const allowableValues = config.allowableValues.map((value) => value.bool);
+  const allowableValues = (config.allowableValues ?? []).map(
+    (value) => value.bool,
+  );
 
   return (
     allowableValues.length === 2 &&
@@ -14,7 +16,7 @@ const isBooleanConfig = (config: PrefabConfig) => {
 };
 
 export const keysForCompletionType = async (
-  completionType: CompletionTypeValue | null
+  completionType: CompletionTypeValue | null,
 ) => {
   if (completionType === null) {
     return [];
@@ -31,7 +33,7 @@ export const keysForCompletionType = async (
           (config) =>
             config.configType === ConfigType.CONFIG ||
             (config.configType === ConfigType.FEATURE_FLAG &&
-              !isBooleanConfig(config))
+              !isBooleanConfig(config)),
         )
         .map((config) => config.key);
     case CompletionType.NON_BOOLEAN_FEATURE_FLAGS:
@@ -39,7 +41,7 @@ export const keysForCompletionType = async (
         .filter(
           (config) =>
             config.configType === ConfigType.FEATURE_FLAG &&
-            !isBooleanConfig(config)
+            !isBooleanConfig(config),
         )
         .map((config) => config.key);
     case CompletionType.BOOLEAN_FEATURE_FLAGS:
@@ -47,7 +49,7 @@ export const keysForCompletionType = async (
         .filter(
           (config) =>
             config.configType === ConfigType.FEATURE_FLAG &&
-            isBooleanConfig(config)
+            isBooleanConfig(config),
         )
         .map((config) => config.key);
     default:

@@ -6,9 +6,9 @@ import {
 import { configValuesInEnvironments } from "../prefab-common/src/configValuesInEnvironments";
 import { getProjectEnvFromApiKey } from "../prefab-common/src/getProjectEnvFromApiKey";
 import type {
+  Config,
   ConfigValue,
   GetValue,
-  PrefabConfig,
   Provided,
 } from "../prefab-common/src/types";
 import { urlFor as rawUrlFor, urlForKey } from "../prefab-common/src/urlFor";
@@ -28,16 +28,15 @@ import { suggestKey } from "./suggestKey";
 import { valueToConfigValue } from "./valueToConfigValue";
 import { variantsForFeatureFlag } from "./variantsForFeatureFlag";
 
-const urlFor = (
-  config: PrefabConfig | string,
-  settings: { apiUrl?: string }
-) => {
+const urlFor = (config: Config | string, settings: { apiUrl?: string }) => {
   if (typeof config === "string") {
     return urlForKey(prefab, settings.apiUrl, config);
   }
 
   return rawUrlFor(settings.apiUrl, config);
 };
+
+type PrefabConfig = Config;
 
 export {
   allKeys,

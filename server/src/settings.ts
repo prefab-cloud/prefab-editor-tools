@@ -14,7 +14,7 @@ const warnAboutMissingApiKey = (connection: Connection) => {
     lastApiKeyWarning = now;
 
     connection.window.showWarningMessage(
-      "Prefab: No API key set. Please set your API key in the Prefab extension settings."
+      "Prefab: No API key set. Please set your API key in the Prefab extension settings.",
     );
   }
 };
@@ -27,7 +27,7 @@ const getSettings = async (
   connection: Connection,
   log: Logger,
   refresh: () => Promise<void>,
-  refreshApiClient: () => void
+  refreshApiClient: () => void,
 ) => {
   const workspaceFolders = await connection.workspace.getWorkspaceFolders();
 
@@ -70,7 +70,7 @@ const updateSettings = (
   newSettings: Partial<Settings>,
   log: Logger,
   refresh: () => Promise<void>,
-  refreshApiClient: () => void
+  refreshApiClient: () => void,
 ) => {
   if ((!newSettings || !newSettings.apiKey) && !settings.apiKey) {
     connection.console.error("No API key set. Please update your settings.");
@@ -93,6 +93,7 @@ const updateSettings = (
         apiKey: newSettings.apiKey,
         apiUrl: newSettings.apiUrl,
         log,
+        connection,
         onUpdate: () => {
           log("Settings", "Internal Prefab client updated");
           refresh();

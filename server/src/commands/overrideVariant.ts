@@ -17,6 +17,13 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
     // get the flag from prefab and get all the variants
     const variants = await variantsForFeatureFlag(key);
 
+    if (!variants) {
+      connection.console.error(
+        `Prefab: Could not find variants for feature flag ${key}`,
+      );
+      return;
+    }
+
     const options = variants
       .filter((variant) => {
         return JSON.stringify(variant) !== JSON.stringify(override);
@@ -51,7 +58,7 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
         connection.console.error(
           `Prefab: Failed to override variant: ${
             request.status
-          } | ${JSON.stringify(json, null, 2)}`
+          } | ${JSON.stringify(json, null, 2)}`,
         );
         return;
       }
@@ -74,7 +81,7 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
 
       if (request.status !== 200) {
         connection.console.error(
-          `Prefab: Failed to override variant: ${request.status}`
+          `Prefab: Failed to override variant: ${request.status}`,
         );
         return;
       }
