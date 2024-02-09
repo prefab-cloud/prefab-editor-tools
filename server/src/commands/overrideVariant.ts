@@ -1,7 +1,7 @@
 import { post } from "../apiClient";
 import { overrides, valueOfToString, variantsForFeatureFlag } from "../prefab";
 import type { ExecutableCommand, ExecutableCommandExecuteArgs } from "../types";
-import { pickOption } from "../ui/pickOption";
+import { deprecatedPickOption } from "../ui/pickOption";
 import extractKey from "./extractKey";
 
 const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
@@ -38,7 +38,7 @@ const overrideVariant: ExecutableCommand<ExecutableCommandExecuteArgs> = {
       options.push(removeCopy);
     }
 
-    const result = await pickOption({
+    const result = await deprecatedPickOption({
       connection,
       clientContext,
       title: `Override ${key} for your machine`,

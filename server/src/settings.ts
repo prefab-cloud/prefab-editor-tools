@@ -32,8 +32,7 @@ const getSettings = async (
   const workspaceFolders = await connection.workspace.getWorkspaceFolders();
 
   let apiKey: string | undefined = undefined;
-
-  log("Lifecycle", { getSettings: { workspaceFolders } });
+  const envVars: Settings["envVars"] = {};
 
   workspaceFolders?.forEach((folder) => {
     SUPPORTED_FILES.forEach((file) => {
@@ -47,6 +46,11 @@ const getSettings = async (
                 apiKey = line.split("PREFAB_API_KEY=")[1];
 
                 log("Settings", `Pulled API key from ${file} file ${envFile}`);
+              } else {
+                const match = line.match(/^([^=]+)=(.*)$/);
+                if (match) {
+                  envVars[match[1]] = match[2];
+                }
               }
             });
         }
@@ -61,6 +65,8 @@ const getSettings = async (
   } else {
     log("Settings", "Using API key from settings");
   }
+
+  newSettings.envVars = envVars;
 
   updateSettings(connection, newSettings, log, refresh, refreshApiClient);
 };
