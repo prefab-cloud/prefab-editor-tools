@@ -63,6 +63,8 @@ const internalOnUpdate = (log: Logger) => {
   overrideKeys = Object.keys(overrides);
 };
 
+let onUpdateFailureCount = 0;
+
 export const prefabInit = ({
   apiKey,
   apiUrl,
@@ -86,12 +88,24 @@ export const prefabInit = ({
       defaultLogLevel: "warn",
       fetch,
       onUpdate: () => {
-        log("PrefabClient", "Prefab client updated");
-        internalOnUpdate(log);
-        log("PrefabClient", { overrides });
-        onUpdate();
+        try {
+          log("PrefabClient", "Prefab client updated");
+          internalOnUpdate(log);
+          log("PrefabClient", { overrides });
+          onUpdate();
 
-        resolve();
+          resolve();
+        } catch (e) {
+          onUpdateFailureCount++;
+
+          if (onUpdateFailureCount > 3) {
+            connection.window.showErrorMessage(
+              "Prefab onUpdate Error: " +
+                (e ?? "").toString().replace(/Error: /, ""),
+            );
+          }
+          log.error("PrefabClient", "Error updating Prefab client: " + e);
+        }
       },
     });
 

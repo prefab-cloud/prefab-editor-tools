@@ -65,7 +65,7 @@ connection.onInitialize((params) => {
 
   log(
     "Lifecycle",
-    `Custom Handlers ${JSON.stringify(clientContext.customHandlers)}`
+    `Custom Handlers ${JSON.stringify(clientContext.customHandlers)}`,
   );
 
   const result: InitializeResult = {
@@ -105,7 +105,7 @@ connection.onDidChangeConfiguration((change) => {
     change.settings.prefab,
     log,
     refresh,
-    refreshApiClient
+    refreshApiClient,
   );
 });
 
@@ -123,7 +123,7 @@ const ready = async () => {
 };
 
 const getDocument = (
-  uriOrDocument: string | TextDocument
+  uriOrDocument: string | TextDocument,
 ): TextDocument | undefined => {
   return typeof uriOrDocument === "string"
     ? documents.get(uriOrDocument)
@@ -149,7 +149,7 @@ connection.onExecuteCommand(async (params) => {
 
   if (!params.arguments[0].startsWith("file://")) {
     throw new Error(
-      "Prefab: executeCommand expects the first argument to be a document uri."
+      "Prefab: executeCommand expects the first argument to be a document uri.",
     );
   }
 
@@ -158,7 +158,7 @@ connection.onExecuteCommand(async (params) => {
   if (!document) {
     log(
       "Lifecycle",
-      `executeCommand: document not found ${params.arguments[0]}`
+      `executeCommand: document not found ${params.arguments[0]}`,
     );
     return null;
   }
@@ -184,7 +184,7 @@ connection.onCompletion(async (params) => {
   if (!document) {
     log(
       "Lifecycle",
-      `onCompletion: document not found ${params.textDocument.uri}`
+      `onCompletion: document not found ${params.textDocument.uri}`,
     );
     return null;
   }
@@ -202,7 +202,7 @@ connection.onCodeAction(async (params) => {
   if (!document) {
     log(
       "Lifecycle",
-      `onCodeAction: document not found ${params.textDocument.uri}`
+      `onCodeAction: document not found ${params.textDocument.uri}`,
     );
     return null;
   }
@@ -224,7 +224,7 @@ connection.onCodeLens(async (params) => {
   if (!document) {
     log(
       "Lifecycle",
-      `onCodeLens: document not found ${params.textDocument.uri}`
+      `onCodeLens: document not found ${params.textDocument.uri}`,
     );
     return null;
   }
@@ -246,7 +246,7 @@ connection.onRequest(
     if (!document) {
       log(
         "Lifecycle",
-        `DocumentDiagnosticRequest: document not found ${params.textDocument.uri}`
+        `DocumentDiagnosticRequest: document not found ${params.textDocument.uri}`,
       );
       return null;
     }
@@ -254,7 +254,7 @@ connection.onRequest(
     const { diagnostics } = await runAllDiagnostics({ log, document });
 
     return { items: diagnostics };
-  }
+  },
 );
 
 connection.onHover(async (params) => {
@@ -287,7 +287,7 @@ connection.onRequest(InlayHintRequest.method, async (params) => {
   if (!document) {
     log(
       "Lifecycle",
-      `InlayHintRequest: document not found ${params.textdocument.uri}`
+      `InlayHintRequest: document not found ${params.textdocument.uri}`,
     );
     return null;
   }

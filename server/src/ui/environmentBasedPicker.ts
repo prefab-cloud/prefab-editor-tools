@@ -12,7 +12,7 @@ import {
   urlFor,
 } from "../prefab";
 import type { ClientContext, Logger, Settings } from "../types";
-import { pickOption } from "../ui/pickOption";
+import { deprecatedPickOption } from "../ui/pickOption";
 import openURL from "../utils/openURL";
 
 type Choice = {
@@ -55,7 +55,7 @@ export const getOptions = ({
     } else {
       const title = localFormatter(
         projectEnvName,
-        value.inherited ? INHERIT : JSON.stringify(value.value)
+        value.inherited ? INHERIT : JSON.stringify(value.value),
       );
 
       return {
@@ -117,7 +117,7 @@ export const environmentBasedPicker = async ({
     log,
   });
 
-  const result = await pickOption({
+  const result = await deprecatedPickOption({
     connection,
     clientContext,
     title,

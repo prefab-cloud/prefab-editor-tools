@@ -51,7 +51,7 @@ export interface Logger {
   (
     scope: LogScope,
     message: unknown,
-    severity?: "info" | "error" | "warn"
+    severity?: "info" | "error" | "warn",
   ): void;
   error: (scope: LogScope, message: unknown) => void;
   warn: (scope: LogScope, message: unknown) => void;
@@ -95,6 +95,7 @@ export interface Settings {
   optIn?: {
     extractString?: boolean;
   };
+  envVars?: Record<string, string>;
 }
 
 export type ExecutableCommandExecuteArgs = {
@@ -137,7 +138,7 @@ export type DiagnosticAnalyzerArgs = {
 };
 
 export type DiagnosticAnalyzer = (
-  args: DiagnosticAnalyzerArgs
+  args: DiagnosticAnalyzerArgs,
 ) => Promise<DiagnosticWithSource[]>;
 
 export type CodeLensAnalyzerArgs = {
@@ -149,7 +150,7 @@ export type CodeLensAnalyzerArgs = {
 };
 
 export type CodeLensAnalyzer = (
-  args: CodeLensAnalyzerArgs
+  args: CodeLensAnalyzerArgs,
 ) => Promise<CodeLens[]>;
 
 export type InlayHintAnalyzerArgs = {
@@ -158,7 +159,7 @@ export type InlayHintAnalyzerArgs = {
 };
 
 export type InlayHintAnalyzer = (
-  args: InlayHintAnalyzerArgs
+  args: InlayHintAnalyzerArgs,
 ) => Promise<InlayHint[]>;
 
 export type CompletionAnalyzerArgs = {
@@ -168,7 +169,7 @@ export type CompletionAnalyzerArgs = {
 };
 
 export type CompletionAnalyzer = (
-  args: CompletionAnalyzerArgs
+  args: CompletionAnalyzerArgs,
 ) => Promise<CompletionItem[]>;
 
 export type HoverAnalyzerArgs = {
@@ -196,7 +197,7 @@ export type AnnotatedDocument = {
 };
 
 export type CodeActionAnalyzer = (
-  args: CodeActionAnalyzerArgs
+  args: CodeActionAnalyzerArgs,
 ) => Promise<CodeAction[]>;
 
 export type CodeActionAnalyzerArgs = {
@@ -227,7 +228,7 @@ export type RetryError = UnRetryableError | RetryableError;
 
 const createError = <T extends RetryError>(
   retryableValue: T["retryable"],
-  message: string
+  message: string,
 ): T => {
   return {
     retryable: retryableValue,
@@ -242,7 +243,7 @@ export const retryableError = (message: string): RetryableError =>
 
 const isErrorOfType = (
   error: unknown,
-  retryable: boolean
+  retryable: boolean,
 ): error is RetryError => {
   return (
     typeof error === "object" &&
