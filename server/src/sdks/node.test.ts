@@ -3,7 +3,7 @@ import { Position } from "vscode-languageserver/node";
 
 import { mkDocument, readFileSync } from "../testHelpers";
 import { CompletionType, MethodLocation, MethodType } from "../types";
-import NodeSDK, { doesNotLookLikeBrowserJS,RELEVANT_FILETYPES } from "./node";
+import NodeSDK, { doesNotLookLikeBrowserJS, RELEVANT_FILETYPES } from "./node";
 
 type ExampleStringAndPosition = [string, Position];
 
@@ -122,7 +122,7 @@ describe("NodeSDK", () => {
         const document = mkDocument({ text: importPrefabPrelude + text });
 
         expect(NodeSDK.detectMethod(document, position)).toEqual(
-          MethodType.IS_ENABLED
+          MethodType.IS_ENABLED,
         );
       });
     });
@@ -132,7 +132,7 @@ describe("NodeSDK", () => {
         const document = mkDocument({ text: importPrefabPrelude + text });
 
         expect(NodeSDK.detectMethod(document, position)).toEqual(
-          MethodType.GET
+          MethodType.GET,
         );
       });
     });
@@ -191,9 +191,10 @@ describe("NodeSDK", () => {
       FF_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text: importPrefabPrelude + text });
 
-        expect(NodeSDK.completionType(document, position)).toEqual(
-          CompletionType.BOOLEAN_FEATURE_FLAGS
-        );
+        expect(NodeSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
       });
     });
 
@@ -201,9 +202,48 @@ describe("NodeSDK", () => {
       CONFIG_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text: importPrefabPrelude + text });
 
-        expect(NodeSDK.completionType(document, position)).toEqual(
-          CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS
-        );
+        expect(NodeSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
+      });
+    });
+
+    it("can complete mid-word", () => {
+      const examples: [string, Position, string][] = [
+        [
+          importPrefabPrelude + 'prefab.get("ap")',
+          { line: 3, character: 14 },
+          CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+        ],
+        [
+          importPrefabPrelude + 'prefab.isFeatureEnabled("ap")',
+          { line: 3, character: 27 },
+          CompletionType.BOOLEAN_FEATURE_FLAGS,
+        ],
+      ];
+
+      examples.forEach(([text, position, expectedType]) => {
+        const document = mkDocument({ text });
+        expect(NodeSDK.completionType(document, position)).toEqual({
+          completionType: expectedType,
+          prefix: "ap",
+        });
+      });
+    });
+
+    it("won't complete from outside the key", () => {
+      const examples: ExampleStringAndPosition[] = [
+        [importPrefabPrelude + 'prefab.get("no")', { line: 3, character: 15 }],
+        [
+          importPrefabPrelude + 'prefab.isFeatureEnabled("no")',
+          { line: 3, character: 28 },
+        ],
+      ];
+
+      examples.forEach(([text, position]) => {
+        const document = mkDocument({ text });
+        expect(NodeSDK.completionType(document, position)).toBeNull();
       });
     });
 

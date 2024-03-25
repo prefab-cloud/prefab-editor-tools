@@ -30,7 +30,7 @@ describe("runAllHovers", () => {
     const filterForMissingKeys = async () => [];
 
     const document = mkAnnotatedDocument({
-      completionType: () => null,
+      completionTypeWithPrefix: () => null,
       methodLocations: [
         {
           key: "redis.connection-string",

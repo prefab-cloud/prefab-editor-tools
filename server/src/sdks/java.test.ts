@@ -58,7 +58,7 @@ describe("JavaSDK", () => {
         const document = mkDocument({ text });
 
         expect(JavaSDK.detectMethod(document, position)).toEqual(
-          MethodType.IS_ENABLED
+          MethodType.IS_ENABLED,
         );
       });
     });
@@ -68,7 +68,7 @@ describe("JavaSDK", () => {
         const document = mkDocument({ text });
 
         expect(JavaSDK.detectMethod(document, position)).toEqual(
-          MethodType.GET
+          MethodType.GET,
         );
       });
     });
@@ -103,9 +103,10 @@ describe("JavaSDK", () => {
       FF_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text });
 
-        expect(JavaSDK.completionType(document, position)).toEqual(
-          CompletionType.BOOLEAN_FEATURE_FLAGS
-        );
+        expect(JavaSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
       });
     });
 
@@ -113,9 +114,45 @@ describe("JavaSDK", () => {
       CONFIG_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text });
 
-        expect(JavaSDK.completionType(document, position)).toEqual(
-          CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS
-        );
+        expect(JavaSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
+      });
+    });
+
+    it("can complete mid-word", () => {
+      const examples: [string, Position, string][] = [
+        [
+          '.liveString("ap")',
+          { line: 0, character: 15 },
+          CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+        ],
+        [
+          '.featureIsOn("ap")',
+          { line: 0, character: 16 },
+          CompletionType.BOOLEAN_FEATURE_FLAGS,
+        ],
+      ];
+
+      examples.forEach(([text, position, expectedType]) => {
+        const document = mkDocument({ text });
+        expect(JavaSDK.completionType(document, position)).toEqual({
+          completionType: expectedType,
+          prefix: "ap",
+        });
+      });
+    });
+
+    it("won't complete from outside the key", () => {
+      const examples: ExampleStringAndPosition[] = [
+        ['.liveString("ap")', { line: 0, character: 16 }],
+        ['.featureIsOn("ap")', { line: 0, character: 17 }],
+      ];
+
+      examples.forEach(([text, position]) => {
+        const document = mkDocument({ text });
+        expect(JavaSDK.completionType(document, position)).toBeNull();
       });
     });
 

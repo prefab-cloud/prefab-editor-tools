@@ -21,13 +21,13 @@ type NewDoc = {
 };
 
 export const mkAnnotatedDocument = (
-  args: Partial<AnnotatedDocument>
+  args: Partial<AnnotatedDocument>,
 ): AnnotatedDocument => {
   return {
     uri: args.uri ?? defaultUriForTests,
     textDocument: args.textDocument ?? mkDocument({}),
     methodLocations: args.methodLocations ?? [],
-    completionType: args.completionType ?? (() => null),
+    completionTypeWithPrefix: args.completionTypeWithPrefix ?? (() => null),
     sdk: args.sdk ?? NullSDK,
   };
 };
@@ -37,7 +37,7 @@ export const mkDocument = (doc: Partial<NewDoc>): TextDocument => {
     doc.uri ?? defaultUriForTests,
     doc.languageId ?? "some-language",
     doc.version ?? 1,
-    doc.text ?? "some text"
+    doc.text ?? "some text",
   );
 };
 
@@ -67,7 +67,7 @@ export type SimpleResponse = {
 };
 
 export const mockRequest = (
-  requestOrRequests: SimpleResponse | SimpleResponse[]
+  requestOrRequests: SimpleResponse | SimpleResponse[],
 ) => {
   const requests = Array.isArray(requestOrRequests)
     ? requestOrRequests

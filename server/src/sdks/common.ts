@@ -26,7 +26,7 @@ const METHOD_KEYS: MethodTypeKeys[] = [
 export const detectMethod = (
   document: TextDocument,
   position: Position,
-  regexes: DetectMethodRegex
+  regexes: DetectMethodRegex,
 ): MethodTypeValue | null => {
   const line = lineFromStartToPosition(document, position);
 
@@ -45,10 +45,30 @@ export const detectMethod = (
   return null;
 };
 
+export const prefixAt = (
+  document: TextDocument,
+  position: Position,
+  regex: RegExp,
+): string => {
+  const line = lineFromStartToPosition(document, position);
+
+  if (!line) {
+    return "";
+  }
+
+  const match = line.match(regex);
+
+  if (!match) {
+    return "";
+  }
+
+  return match[1] ?? "";
+};
+
 export const detectProvidable = (
   document: TextDocument,
   position: Position,
-  regex: RegExp
+  regex: RegExp,
 ): KeyLocation | undefined => {
   const text = document.getText();
 
@@ -61,7 +81,7 @@ export const detectProvidable = (
 
 export const detectMethods = (
   document: TextDocument,
-  regexes: DetectMethodsRegex
+  regexes: DetectMethodsRegex,
 ): MethodLocation[] => {
   const result: MethodLocation[] = [];
 

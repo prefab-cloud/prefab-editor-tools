@@ -55,7 +55,7 @@ describe("JavascriptSDK", () => {
         const document = mkDocument({ text });
 
         expect(JavascriptSDK.detectMethod(document, position)).toEqual(
-          MethodType.IS_ENABLED
+          MethodType.IS_ENABLED,
         );
       });
     });
@@ -65,7 +65,7 @@ describe("JavascriptSDK", () => {
         const document = mkDocument({ text });
 
         expect(JavascriptSDK.detectMethod(document, position)).toEqual(
-          MethodType.GET
+          MethodType.GET,
         );
       });
     });
@@ -100,9 +100,10 @@ describe("JavascriptSDK", () => {
       FF_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text });
 
-        expect(JavascriptSDK.completionType(document, position)).toEqual(
-          CompletionType.BOOLEAN_FEATURE_FLAGS
-        );
+        expect(JavascriptSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
       });
     });
 
@@ -110,9 +111,45 @@ describe("JavascriptSDK", () => {
       CONFIG_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text });
 
-        expect(JavascriptSDK.completionType(document, position)).toEqual(
-          CompletionType.NON_BOOLEAN_FEATURE_FLAGS
-        );
+        expect(JavascriptSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.NON_BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
+      });
+    });
+
+    it("can complete mid-word", () => {
+      const examples: [string, Position, string][] = [
+        [
+          'prefab.get("ap")',
+          { line: 0, character: 14 },
+          CompletionType.NON_BOOLEAN_FEATURE_FLAGS,
+        ],
+        [
+          'prefab.isEnabled("ap")',
+          { line: 0, character: 20 },
+          CompletionType.BOOLEAN_FEATURE_FLAGS,
+        ],
+      ];
+
+      examples.forEach(([text, position, expectedType]) => {
+        const document = mkDocument({ text });
+        expect(JavascriptSDK.completionType(document, position)).toEqual({
+          completionType: expectedType,
+          prefix: "ap",
+        });
+      });
+    });
+
+    it("won't complete from outside the key", () => {
+      const examples: ExampleStringAndPosition[] = [
+        ['prefab.get("ap")', { line: 0, character: 15 }],
+        ['prefab.isEnabled("ap")', { line: 0, character: 21 }],
+      ];
+
+      examples.forEach(([text, position]) => {
+        const document = mkDocument({ text });
+        expect(JavascriptSDK.completionType(document, position)).toBeNull();
       });
     });
 

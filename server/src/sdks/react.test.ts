@@ -13,21 +13,21 @@ const usePrefabPrelude = `
 `;
 
 const FF_EXAMPLES: ExampleStringAndPosition[] = [
-  ['prefab.isEnabled("")', { line: 3, character: 18 }],
-  ['prefab.isEnabled("', { line: 3, character: 18 }],
-  ["prefab.isEnabled('", { line: 3, character: 18 }],
-  ["prefab.isEnabled('')", { line: 3, character: 18 }],
-  ["prefab.isEnabled(`", { line: 3, character: 18 }],
-  ["prefab.isEnabled(``)", { line: 3, character: 18 }],
+  ['isEnabled("")', { line: 3, character: 11 }],
+  ['isEnabled("', { line: 3, character: 11 }],
+  ["isEnabled('", { line: 3, character: 11 }],
+  ["isEnabled('')", { line: 3, character: 11 }],
+  ["isEnabled(`", { line: 3, character: 11 }],
+  ["isEnabled(``)", { line: 3, character: 11 }],
 ];
 
 const CONFIG_EXAMPLES: ExampleStringAndPosition[] = [
-  ['prefab.get("', { line: 3, character: 12 }],
-  ['prefab.get("")', { line: 3, character: 12 }],
-  ["prefab.get('", { line: 3, character: 12 }],
-  ["prefab.get('')", { line: 3, character: 12 }],
-  ["prefab.get(`", { line: 3, character: 12 }],
-  ["prefab.get(``)", { line: 3, character: 12 }],
+  ['get("', { line: 3, character: 5 }],
+  ['get("")', { line: 3, character: 5 }],
+  ["get('", { line: 3, character: 5 }],
+  ["get('')", { line: 3, character: 5 }],
+  ["get(`", { line: 3, character: 5 }],
+  ["get(``)", { line: 3, character: 5 }],
 ];
 
 const missingFlagsAndConfigText = readFileSync("fixtures/react.js.txt");
@@ -59,7 +59,7 @@ describe("ReactSDK", () => {
         const document = mkDocument({ text: usePrefabPrelude + text });
 
         expect(ReactSDK.detectMethod(document, position)).toEqual(
-          MethodType.IS_ENABLED
+          MethodType.IS_ENABLED,
         );
       });
     });
@@ -69,7 +69,7 @@ describe("ReactSDK", () => {
         const document = mkDocument({ text: usePrefabPrelude + text });
 
         expect(ReactSDK.detectMethod(document, position)).toEqual(
-          MethodType.GET
+          MethodType.GET,
         );
       });
     });
@@ -128,9 +128,10 @@ describe("ReactSDK", () => {
       FF_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text: usePrefabPrelude + text });
 
-        expect(ReactSDK.completionType(document, position)).toEqual(
-          CompletionType.BOOLEAN_FEATURE_FLAGS
-        );
+        expect(ReactSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
       });
     });
 
@@ -138,9 +139,45 @@ describe("ReactSDK", () => {
       CONFIG_EXAMPLES.forEach(([text, position]) => {
         const document = mkDocument({ text: usePrefabPrelude + text });
 
-        expect(ReactSDK.completionType(document, position)).toEqual(
-          CompletionType.NON_BOOLEAN_FEATURE_FLAGS
-        );
+        expect(ReactSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.NON_BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
+      });
+    });
+
+    it("can complete mid-word", () => {
+      const examples: [string, Position, string][] = [
+        [
+          usePrefabPrelude + 'get("ap")',
+          { line: 3, character: 7 },
+          CompletionType.NON_BOOLEAN_FEATURE_FLAGS,
+        ],
+        [
+          usePrefabPrelude + 'isEnabled("ap")',
+          { line: 3, character: 13 },
+          CompletionType.BOOLEAN_FEATURE_FLAGS,
+        ],
+      ];
+
+      examples.forEach(([text, position, expectedType]) => {
+        const document = mkDocument({ text });
+        expect(ReactSDK.completionType(document, position)).toEqual({
+          completionType: expectedType,
+          prefix: "ap",
+        });
+      });
+    });
+
+    it("won't complete from outside the key", () => {
+      const examples: ExampleStringAndPosition[] = [
+        [usePrefabPrelude + 'get("ap")', { line: 3, character: 8 }],
+        [usePrefabPrelude + 'isEnabled("ap")', { line: 3, character: 14 }],
+      ];
+
+      examples.forEach(([text, position]) => {
+        const document = mkDocument({ text });
+        expect(ReactSDK.completionType(document, position)).toBeNull();
       });
     });
 

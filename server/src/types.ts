@@ -82,7 +82,7 @@ export type CompletionTypeValue =
 export const MethodType = {
   GET: "GET",
   IS_ENABLED: "IS_ENABLED",
-};
+} as const;
 
 export type MethodTypeKeys = keyof typeof MethodType;
 
@@ -188,10 +188,17 @@ export type DocumentAnnotations = {
   version: TextDocument["version"];
 };
 
+export type CompletionTypeWithPrefix = {
+  completionType: CompletionTypeValue;
+  prefix: string;
+};
+
 export type AnnotatedDocument = {
   uri: string;
   textDocument: TextDocument;
-  completionType: (position: Position) => CompletionTypeValue | null;
+  completionTypeWithPrefix: (
+    position: Position,
+  ) => CompletionTypeWithPrefix | null;
   methodLocations: MethodLocation[];
   sdk: SDK;
 };

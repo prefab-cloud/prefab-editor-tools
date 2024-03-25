@@ -66,6 +66,8 @@ const getSettings = async (
     log("Settings", "Using API key from settings");
   }
 
+  log("Settings", newSettings);
+
   newSettings.envVars = envVars;
 
   updateSettings(connection, newSettings, log, refresh, refreshApiClient);

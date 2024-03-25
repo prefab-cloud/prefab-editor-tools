@@ -56,7 +56,7 @@ describe("PythonSDK", () => {
         const document = mkDocument({ text });
 
         expect(PythonSDK.detectMethod(document, position)).toEqual(
-          MethodType.IS_ENABLED
+          MethodType.IS_ENABLED,
         );
       });
     });
@@ -66,7 +66,7 @@ describe("PythonSDK", () => {
         const document = mkDocument({ text });
 
         expect(PythonSDK.detectMethod(document, position)).toEqual(
-          MethodType.GET
+          MethodType.GET,
         );
       });
     });
@@ -101,9 +101,10 @@ describe("PythonSDK", () => {
       it(`returns flag names for \`${text}\``, () => {
         const document = mkDocument({ text });
 
-        expect(PythonSDK.completionType(document, position)).toEqual(
-          CompletionType.BOOLEAN_FEATURE_FLAGS
-        );
+        expect(PythonSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
       });
     });
 
@@ -111,9 +112,45 @@ describe("PythonSDK", () => {
       it(`returns config and non-boolean flag names for \`${text}\``, () => {
         const document = mkDocument({ text });
 
-        expect(PythonSDK.completionType(document, position)).toEqual(
-          CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS
-        );
+        expect(PythonSDK.completionType(document, position)).toEqual({
+          completionType: CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+          prefix: "",
+        });
+      });
+    });
+
+    it("can complete mid-word", () => {
+      const examples: [string, Position, string][] = [
+        [
+          'prefab.get("ap")',
+          { line: 0, character: 14 },
+          CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+        ],
+        [
+          'prefab.enabled("ap")',
+          { line: 0, character: 18 },
+          CompletionType.BOOLEAN_FEATURE_FLAGS,
+        ],
+      ];
+
+      examples.forEach(([text, position, expectedType]) => {
+        const document = mkDocument({ text });
+        expect(PythonSDK.completionType(document, position)).toEqual({
+          completionType: expectedType,
+          prefix: "ap",
+        });
+      });
+    });
+
+    it("won't complete from outside the key", () => {
+      const examples: ExampleStringAndPosition[] = [
+        ['prefab.get("no")', { line: 0, character: 15 }],
+        ['prefab.enabled("no")', { line: 0, character: 19 }],
+      ];
+
+      examples.forEach(([text, position]) => {
+        const document = mkDocument({ text });
+        expect(PythonSDK.completionType(document, position)).toBeNull();
       });
     });
 
