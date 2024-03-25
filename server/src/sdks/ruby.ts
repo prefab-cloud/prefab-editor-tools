@@ -2,7 +2,7 @@ import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import {
   CompletionType,
-  CompletionTypeValue,
+  CompletionTypeWithPrefix,
   MethodLocation,
   MethodType,
   MethodTypeValue,
@@ -13,6 +13,7 @@ import {
   detectMethods,
   type DetectMethodsRegex,
   detectProvidable,
+  prefixAt,
 } from "./common";
 import type { SDK } from "./detection";
 
@@ -22,8 +23,8 @@ const METHOD_REGEXES: DetectMethodsRegex = {
 };
 
 const DETECT_METHOD_REGEXES: DetectMethodRegex = {
-  IS_ENABLED: /[pP]refab\.enabled\?\(?\s*["']$/,
-  GET: /[pP]refab\.get\(?\s*["']$/,
+  IS_ENABLED: /[pP]refab\.enabled\?\(?\s*["']([^)"']*)$/,
+  GET: /[pP]refab\.get\(?\s*["']([^)"']*)$/,
 };
 
 const DETECT_PROVIDABLE_REGEX = /ENV\[(["'].+["'])\]/g;
@@ -43,7 +44,7 @@ const RubySDK: SDK = {
 
   detectMethod: (
     document: TextDocument,
-    position: Position
+    position: Position,
   ): MethodTypeValue | null => {
     return detectMethod(document, position, DETECT_METHOD_REGEXES);
   },
@@ -54,16 +55,21 @@ const RubySDK: SDK = {
 
   completionType: (
     document: TextDocument,
-    position: Position
-  ): CompletionTypeValue | null => {
-    switch (RubySDK.detectMethod(document, position)) {
-      case MethodType.IS_ENABLED:
-        return CompletionType.BOOLEAN_FEATURE_FLAGS;
-      case MethodType.GET:
-        return CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS;
-      default:
-        return null;
+    position: Position,
+  ): CompletionTypeWithPrefix | null => {
+    const methodType = RubySDK.detectMethod(document, position);
+
+    if (methodType === null) {
+      return null;
     }
+
+    return {
+      completionType:
+        methodType === MethodType.IS_ENABLED
+          ? CompletionType.BOOLEAN_FEATURE_FLAGS
+          : CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+      prefix: prefixAt(document, position, DETECT_METHOD_REGEXES[methodType]),
+    };
   },
 
   configGet: (key: string): string => {

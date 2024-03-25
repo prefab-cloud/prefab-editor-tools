@@ -2,7 +2,7 @@ import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import {
   CompletionType,
-  CompletionTypeValue,
+  CompletionTypeWithPrefix,
   MethodLocation,
   MethodType,
   MethodTypeValue,
@@ -12,14 +12,15 @@ import {
   type DetectMethodRegex,
   detectMethods,
   type DetectMethodsRegex,
+  prefixAt,
 } from "./common";
 import { type SDK } from "./detection";
 
 export const RELEVANT_FILETYPES = ["javascript", "typescript"];
 
 const DETECT_METHOD_REGEXES: DetectMethodRegex = {
-  IS_ENABLED: /prefab\.isEnabled\(["`']$/,
-  GET: /prefab\.get\(["`']$/,
+  IS_ENABLED: /prefab\.isEnabled\(["`']([^)"']*)$/,
+  GET: /prefab\.get\(["`']([^)"']*)$/,
 };
 
 const METHOD_REGEXES: DetectMethodsRegex = {
@@ -37,7 +38,7 @@ const JavascriptSDK: SDK = {
 
   detectMethod: (
     document: TextDocument,
-    position: Position
+    position: Position,
   ): MethodTypeValue | null => {
     return detectMethod(document, position, DETECT_METHOD_REGEXES);
   },
@@ -48,16 +49,20 @@ const JavascriptSDK: SDK = {
 
   completionType: (
     document: TextDocument,
-    position: Position
-  ): CompletionTypeValue | null => {
-    switch (JavascriptSDK.detectMethod(document, position)) {
-      case MethodType.IS_ENABLED:
-        return CompletionType.BOOLEAN_FEATURE_FLAGS;
-      case MethodType.GET:
-        return CompletionType.NON_BOOLEAN_FEATURE_FLAGS;
-      default:
-        return null;
+    position: Position,
+  ): CompletionTypeWithPrefix | null => {
+    const methodType = JavascriptSDK.detectMethod(document, position);
+    if (methodType === null) {
+      return null;
     }
+
+    return {
+      completionType:
+        methodType === MethodType.IS_ENABLED
+          ? CompletionType.BOOLEAN_FEATURE_FLAGS
+          : CompletionType.NON_BOOLEAN_FEATURE_FLAGS,
+      prefix: prefixAt(document, position, DETECT_METHOD_REGEXES[methodType]),
+    };
   },
 
   configGet: (key: string) => {

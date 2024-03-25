@@ -15,13 +15,19 @@ const onCompletion = async ({
 }: CompletionAnalyzerArgs & Dependencies) => {
   log("Completion", { name: "keys" });
 
-  const completionType = document.completionType(position);
+  const completionTypeWithPrefix = document.completionTypeWithPrefix(position);
 
-  log("Completion", { completionType });
+  log("Completion", { completionTypeWithPrefix });
 
-  const configKeys = await (
-    providedKeysForCompletionType ?? keysForCompletionType
-  )(completionType);
+  if (!completionTypeWithPrefix) {
+    return [];
+  }
+
+  const configKeys = (
+    await (providedKeysForCompletionType ?? keysForCompletionType)(
+      completionTypeWithPrefix.completionType,
+    )
+  ).filter((key) => key.startsWith(completionTypeWithPrefix.prefix));
 
   log("Completion", { configKeys });
 
@@ -30,6 +36,7 @@ const onCompletion = async ({
       label: name,
       kind: CompletionItemKind.Constant,
       data: name,
+      insertText: name.replace(completionTypeWithPrefix.prefix, ""),
     };
   });
 };

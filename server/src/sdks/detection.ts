@@ -1,7 +1,7 @@
 import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import {
-  CompletionTypeValue,
+  CompletionTypeWithPrefix,
   KeyLocation,
   MethodLocation,
   MethodTypeValue,
@@ -39,7 +39,7 @@ export type SDK = {
   completionType: (
     document: TextDocument,
     position: Position,
-  ) => CompletionTypeValue | null;
+  ) => CompletionTypeWithPrefix | null;
   configGet: (key: string) => string;
 };
 

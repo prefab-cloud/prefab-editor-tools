@@ -12,7 +12,7 @@ let client: LanguageClient;
 export function activate(context: ExtensionContext) {
   // The server is implemented in node
   const serverModule = context.asAbsolutePath(
-    path.join("server", "out", "server.js")
+    path.join("server", "out", "server.js"),
   );
 
   // If the extension is launched in debug mode then the debug server options are used
@@ -44,7 +44,7 @@ export function activate(context: ExtensionContext) {
     "prefab-language-server",
     "Prefab",
     serverOptions,
-    clientOptions
+    clientOptions,
   );
 
   client.onRequest(
@@ -56,7 +56,7 @@ export function activate(context: ExtensionContext) {
       });
 
       return option;
-    }
+    },
   );
 
   client.onRequest(
@@ -76,7 +76,7 @@ export function activate(context: ExtensionContext) {
       return {
         input,
       };
-    }
+    },
   );
 
   // Start the client. This will also launch the server

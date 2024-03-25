@@ -2,7 +2,7 @@ import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import {
   CompletionType,
-  CompletionTypeValue,
+  CompletionTypeWithPrefix,
   MethodLocation,
   MethodType,
   MethodTypeValue,
@@ -12,6 +12,7 @@ import {
   type DetectMethodRegex,
   detectMethods,
   type DetectMethodsRegex,
+  prefixAt,
 } from "./common";
 import { type SDK } from "./detection";
 
@@ -23,8 +24,8 @@ const DOCUMENT_METHOD_REGEX =
   /document\.(getElementById|querySelector|querySelectorAll)/;
 
 const DETECT_METHOD_REGEXES: DetectMethodRegex = {
-  IS_ENABLED: /prefab\.isFeatureEnabled\(["`']$/,
-  GET: /prefab\.get\(["`']$/,
+  IS_ENABLED: /prefab\.isFeatureEnabled\(["`']([^)"`']*)$/,
+  GET: /prefab\.get\(["`']([^)"`']*)$/,
 };
 
 const METHOD_REGEXES: DetectMethodsRegex = {
@@ -43,7 +44,7 @@ export const doesNotLookLikeBrowserJS = (document: TextDocument): boolean => {
   return true;
 };
 
-const JavascriptSDK: SDK = {
+const NodeSDK: SDK = {
   name: "node",
 
   isApplicable: (document: TextDocument) => {
@@ -56,7 +57,7 @@ const JavascriptSDK: SDK = {
 
   detectMethod: (
     document: TextDocument,
-    position: Position
+    position: Position,
   ): MethodTypeValue | null => {
     const text = document.getText();
 
@@ -73,16 +74,21 @@ const JavascriptSDK: SDK = {
 
   completionType: (
     document: TextDocument,
-    position: Position
-  ): CompletionTypeValue | null => {
-    switch (JavascriptSDK.detectMethod(document, position)) {
-      case MethodType.IS_ENABLED:
-        return CompletionType.BOOLEAN_FEATURE_FLAGS;
-      case MethodType.GET:
-        return CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS;
-      default:
-        return null;
+    position: Position,
+  ): CompletionTypeWithPrefix | null => {
+    const methodType = NodeSDK.detectMethod(document, position);
+
+    if (methodType === null) {
+      return null;
     }
+
+    return {
+      completionType:
+        methodType === MethodType.IS_ENABLED
+          ? CompletionType.BOOLEAN_FEATURE_FLAGS
+          : CompletionType.CONFIGS_AND_NON_BOOLEAN_FEATURE_FLAGS,
+      prefix: prefixAt(document, position, DETECT_METHOD_REGEXES[methodType]),
+    };
   },
 
   configGet: (key: string) => {
@@ -92,4 +98,4 @@ const JavascriptSDK: SDK = {
   detectProvidable: () => undefined,
 };
 
-export default JavascriptSDK;
+export default NodeSDK;

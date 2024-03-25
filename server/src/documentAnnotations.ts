@@ -25,7 +25,7 @@ export const annotateDocument = (document: TextDocument) => {
 };
 
 export const getAnnotatedDocument = (
-  document: TextDocument
+  document: TextDocument,
 ): AnnotatedDocument => {
   const sdk = detectSDK(document);
 
@@ -37,14 +37,14 @@ export const getAnnotatedDocument = (
     uri: document.uri,
     textDocument: document,
     sdk,
-    completionType,
+    completionTypeWithPrefix: completionType,
     methodLocations: documentAnnotations[document.uri]?.methodLocations ?? [],
   };
 };
 
 export const methodAtPosition = (
   document: AnnotatedDocument,
-  position: Position
+  position: Position,
 ): MethodLocation | undefined => {
   const location = document.methodLocations.find((method) => {
     return (

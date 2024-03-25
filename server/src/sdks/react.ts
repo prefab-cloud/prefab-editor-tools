@@ -2,7 +2,7 @@ import { Position, TextDocument } from "vscode-languageserver-textdocument";
 
 import {
   CompletionType,
-  CompletionTypeValue,
+  CompletionTypeWithPrefix,
   MethodLocation,
   MethodType,
   MethodTypeValue,
@@ -12,14 +12,15 @@ import {
   type DetectMethodRegex,
   detectMethods,
   type DetectMethodsRegex,
+  prefixAt,
 } from "./common";
 import { type SDK } from "./detection";
 
 export const RELEVANT_FILETYPES = ["javascriptreact", "typescriptreact"];
 
 const DETECT_METHOD_REGEXES: DetectMethodRegex = {
-  IS_ENABLED: /isEnabled\(["`']$/,
-  GET: /get\(["`']$/,
+  IS_ENABLED: /isEnabled\(["`']([^)"']*)$/,
+  GET: /get\(["`']([^)"']*)$/,
 };
 
 const METHOD_REGEXES: DetectMethodsRegex = {
@@ -36,7 +37,7 @@ const ReactSDK: SDK = {
 
   detectMethod: (
     document: TextDocument,
-    position: Position
+    position: Position,
   ): MethodTypeValue | null => {
     const text = document.getText();
 
@@ -59,16 +60,20 @@ const ReactSDK: SDK = {
 
   completionType: (
     document: TextDocument,
-    position: Position
-  ): CompletionTypeValue | null => {
-    switch (ReactSDK.detectMethod(document, position)) {
-      case MethodType.IS_ENABLED:
-        return CompletionType.BOOLEAN_FEATURE_FLAGS;
-      case MethodType.GET:
-        return CompletionType.NON_BOOLEAN_FEATURE_FLAGS;
-      default:
-        return null;
+    position: Position,
+  ): CompletionTypeWithPrefix | null => {
+    const methodType = ReactSDK.detectMethod(document, position);
+    if (methodType === null) {
+      return null;
     }
+
+    return {
+      completionType:
+        methodType === MethodType.IS_ENABLED
+          ? CompletionType.BOOLEAN_FEATURE_FLAGS
+          : CompletionType.NON_BOOLEAN_FEATURE_FLAGS,
+      prefix: prefixAt(document, position, DETECT_METHOD_REGEXES[methodType]),
+    };
   },
 
   configGet: (key: string) => {
