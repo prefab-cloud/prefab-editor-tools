@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Connection } from "vscode-languageserver/node";
 
-import { prefabInit } from "./prefab";
+import { getProjectEnvFromApiKey, prefabInit } from "./prefab";
 import { type Logger, type Settings } from "./types";
 
 let lastApiKeyWarning = 0;
@@ -96,6 +96,9 @@ const updateSettings = (
 
     if (newSettings.apiKey) {
       log("Settings", "Initializing internal Prefab client");
+
+      // validate the apiKey. TODO: this might as well set the project and env in Settings
+      getProjectEnvFromApiKey(newSettings.apiKey);
 
       prefabInit({
         apiKey: newSettings.apiKey,
