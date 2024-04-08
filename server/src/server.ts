@@ -302,6 +302,10 @@ connection.onRequest(InlayHintRequest.method, async (params) => {
   return inlayHints;
 });
 
+connection.onRequest("PING", async (params) => {
+  return { message: "PONG", params };
+});
+
 const updates: Record<string, TextDocument["version"]> = {};
 
 const update = async (rawDocument: TextDocument, force: boolean) => {

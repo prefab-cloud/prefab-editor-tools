@@ -29,48 +29,62 @@ const getSettings = async (
   refresh: () => Promise<void>,
   refreshApiClient: () => void,
 ) => {
-  const workspaceFolders = await connection.workspace.getWorkspaceFolders();
+  if (process.env.SKIP_SETTINGS === undefined) {
+    const workspaceFolders = await connection.workspace.getWorkspaceFolders();
 
-  let apiKey: string | undefined = undefined;
-  const envVars: Settings["envVars"] = {};
+    let apiKey: string | undefined = undefined;
+    const envVars: Settings["envVars"] = {};
 
-  workspaceFolders?.forEach((folder) => {
-    SUPPORTED_FILES.forEach((file) => {
-      if (folder.uri.startsWith("file://") && !apiKey) {
-        const envFile = path.join(folder.uri.split("file://")[1], file);
-        if (fs.existsSync(envFile)) {
-          fs.readFileSync(envFile, "utf8")
-            .split("\n")
-            .forEach((line) => {
-              if (/^(EXPORT )?PREFAB_API_KEY=/.test(line)) {
-                apiKey = line.split("PREFAB_API_KEY=")[1];
+    workspaceFolders?.forEach((folder) => {
+      SUPPORTED_FILES.forEach((file) => {
+        if (folder.uri.startsWith("file://") && !apiKey) {
+          const envFile = path.join(folder.uri.split("file://")[1], file);
+          if (fs.existsSync(envFile)) {
+            fs.readFileSync(envFile, "utf8")
+              .split("\n")
+              .forEach((line) => {
+                if (/^(EXPORT )?PREFAB_API_KEY=/.test(line)) {
+                  apiKey = line.split("PREFAB_API_KEY=")[1];
 
-                log("Settings", `Pulled API key from ${file} file ${envFile}`);
-              } else {
-                const match = line.match(/^([^=]+)=(.*)$/);
-                if (match) {
-                  envVars[match[1]] = match[2];
+                  log(
+                    "Settings",
+                    `Pulled API key from ${file} file ${envFile}`,
+                  );
+                } else {
+                  const match = line.match(/^([^=]+)=(.*)$/);
+                  if (match) {
+                    envVars[match[1]] = match[2];
+                  }
                 }
-              }
-            });
+              });
+          }
         }
-      }
+      });
     });
-  });
+    const newSettings = await connection.workspace.getConfiguration("prefab");
 
-  const newSettings = await connection.workspace.getConfiguration("prefab");
+    if (apiKey) {
+      newSettings.apiKey = apiKey;
+    } else {
+      log("Settings", "Using API key from settings");
+    }
 
-  if (apiKey) {
-    newSettings.apiKey = apiKey;
+    log("Settings", newSettings);
+
+    newSettings.envVars = envVars;
+
+    updateSettings(connection, newSettings, log, refresh, refreshApiClient);
   } else {
-    log("Settings", "Using API key from settings");
+    if (process.env.PREFAB_API_KEY) {
+      updateSettings(
+        connection,
+        { apiKey: process.env.PREFAB_API_KEY },
+        log,
+        refresh,
+        refreshApiClient,
+      );
+    }
   }
-
-  log("Settings", newSettings);
-
-  newSettings.envVars = envVars;
-
-  updateSettings(connection, newSettings, log, refresh, refreshApiClient);
 };
 
 const updateSettings = (
