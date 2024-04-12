@@ -243,23 +243,23 @@ describe("ReactSDK", () => {
           type: "GET",
           range: {
             start: {
-              line: 13,
+              line: 16,
               character: 14,
             },
             end: {
-              line: 13,
-              character: 29,
+              line: 16,
+              character: 31,
             },
           },
-          key: "new-logo",
+          key: "some-value",
           keyRange: {
             start: {
-              line: 13,
+              line: 16,
               character: 19,
             },
             end: {
-              line: 13,
-              character: 27,
+              line: 16,
+              character: 29,
             },
           },
         },
@@ -267,23 +267,47 @@ describe("ReactSDK", () => {
           type: "GET",
           range: {
             start: {
-              line: 17,
+              line: 20,
               character: 2,
             },
             end: {
-              line: 17,
+              line: 20,
               character: 20,
             },
           },
           key: "api.enabled",
           keyRange: {
             start: {
-              line: 17,
+              line: 20,
               character: 7,
             },
             end: {
-              line: 17,
+              line: 20,
               character: 18,
+            },
+          },
+        },
+        {
+          type: "GET",
+          range: {
+            start: {
+              line: 21,
+              character: 17,
+            },
+            end: {
+              line: 21,
+              character: 35,
+            },
+          },
+          key: "another.one",
+          keyRange: {
+            start: {
+              line: 21,
+              character: 22,
+            },
+            end: {
+              line: 21,
+              character: 33,
             },
           },
         },
@@ -315,22 +339,22 @@ describe("ReactSDK", () => {
           type: "IS_ENABLED",
           range: {
             start: {
-              line: 15,
+              line: 18,
               character: 13,
             },
             end: {
-              line: 15,
+              line: 18,
               character: 34,
             },
           },
-          key: "new-logo",
+          key: "abc-logo",
           keyRange: {
             start: {
-              line: 15,
+              line: 18,
               character: 24,
             },
             end: {
-              line: 15,
+              line: 18,
               character: 32,
             },
           },
@@ -339,22 +363,22 @@ describe("ReactSDK", () => {
           type: "IS_ENABLED",
           range: {
             start: {
-              line: 15,
+              line: 18,
               character: 38,
             },
             end: {
-              line: 15,
+              line: 18,
               character: 60,
             },
           },
-          key: "new-logo2",
+          key: "abc-logo2",
           keyRange: {
             start: {
-              line: 15,
+              line: 18,
               character: 49,
             },
             end: {
-              line: 15,
+              line: 18,
               character: 58,
             },
           },
@@ -363,22 +387,22 @@ describe("ReactSDK", () => {
           type: "IS_ENABLED",
           range: {
             start: {
-              line: 15,
+              line: 18,
               character: 64,
             },
             end: {
-              line: 15,
+              line: 18,
               character: 86,
             },
           },
-          key: "new-logo3",
+          key: "abc-logo3",
           keyRange: {
             start: {
-              line: 15,
+              line: 18,
               character: 75,
             },
             end: {
-              line: 15,
+              line: 18,
               character: 84,
             },
           },

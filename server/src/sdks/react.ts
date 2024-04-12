@@ -25,7 +25,7 @@ const DETECT_METHOD_REGEXES: DetectMethodRegex = {
 
 const METHOD_REGEXES: DetectMethodsRegex = {
   IS_ENABLED: /isEnabled\(\s*["']([^'\n]+?)\s*["']\s*\)/gs,
-  GET: /get\(?\s*["']([^'\n]+?)["']\)?\s*/gs,
+  GET: /(?<!\.)\bget\(?\s*["']([^'\n]+?)["']\)?\s*/gs,
 };
 
 const ReactSDK: SDK = {
