@@ -10,10 +10,17 @@ const Test = () => {
 
 const Test2 = () => {
   const { isEnabled , get} = usePrefab();
+  const [searchParams, setSearchParams] = useSearchParams();
+  // This doesn't match because it is being called on an object
+  const searchTerm = searchParams.get("q") ?? "";
 
-  const foo= (get("new-logo")) ;
+  const foo= (get("some-value")) ;
 
-  const ok = isEnabled("new-logo") || isEnabled("new-logo2") || isEnabled("new-logo3");
+  const ok = isEnabled("abc-logo") || isEnabled("abc-logo2") || isEnabled("abc-logo3");
 
   get("api.enabled");
+  console.log(`${get("another.one")}`);
+
+  // This shouldn't match because it isn't a standalone `get`
+  forget("about.it");
 };

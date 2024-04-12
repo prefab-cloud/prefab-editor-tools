@@ -24,7 +24,7 @@ export const makeLogger = (connection: Connection): Logger => {
       );
     }
 
-    connection.console[method](`[${scope}] !!!: ${stringMessage}`);
+    connection.console[method](`[${scope}]: ${stringMessage}`);
   };
 
   log.error = (scope, message) => {
