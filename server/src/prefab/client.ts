@@ -83,7 +83,7 @@ export const prefabInit = ({
   prefabPromise = new Promise((resolve) => {
     prefab = new Prefab({
       apiKey,
-      apiUrl: apiUrlOrDefault({ apiUrl }),
+      sources: [apiUrlOrDefault({ apiUrl })],
       enableSSE: true,
       defaultLogLevel: "warn",
       fetch,
